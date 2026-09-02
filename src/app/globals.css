@@ -1,0 +1,408 @@
+@import "tailwindcss";
+
+:root {
+  --ov-void: #0c0014;
+  --ov-bg: #14001f;
+  --ov-bg-2: #220038;
+  --ov-surface: rgba(255, 255, 255, 0.06);
+  --ov-surface-2: rgba(255, 255, 255, 0.1);
+  --ov-line: rgba(228, 0, 255, 0.28);
+  --ov-magenta: #e400ff;
+  --ov-magenta-2: #ff4de8;
+  --ov-cyan: #9eecff;
+  --ov-gold: #ffc24a;
+  --ov-rose: #ff5d7a;
+  --ov-ok: #5dffb2;
+  --ov-text: #f6f3ff;
+  --ov-muted: #b9a8cc;
+  --background: var(--ov-bg);
+  --foreground: var(--ov-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-void: var(--ov-void);
+  --color-ovbg: var(--ov-bg);
+  --color-ovbg2: var(--ov-bg-2);
+  --color-magenta: var(--ov-magenta);
+  --color-cyan: var(--ov-cyan);
+  --color-gold: var(--ov-gold);
+  --color-rose: var(--ov-rose);
+  --color-ok: var(--ov-ok);
+  --color-muted: var(--ov-muted);
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-outfit);
+  --font-serif: var(--font-cormorant);
+  --radius-lg: 0.375rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.5rem;
+  --radius-3xl: 0.5rem;
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+body {
+  background: var(--ov-bg);
+  color: var(--ov-text);
+  font-family: var(--font-outfit), "Segoe UI", sans-serif;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button, input, select, textarea { font: inherit; }
+
+::selection {
+  background: rgba(228, 0, 255, 0.35);
+  color: white;
+}
+
+.ov-bg {
+  background-color: var(--ov-void);
+  background-image:
+    linear-gradient(180deg, rgba(12, 0, 20, 0.35), rgba(12, 0, 20, 0.78)),
+    url("/branding/hero-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: none;
+  backdrop-filter: blur(18px);
+}
+
+.glow-line {
+  background: linear-gradient(90deg, transparent, var(--ov-magenta), var(--ov-cyan), transparent);
+  height: 1px;
+  opacity: 0.7;
+}
+
+.wave-bottom {
+  position: relative;
+}
+.wave-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 140px;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 120%, rgba(228,0,255,0.35), transparent 60%),
+    linear-gradient(0deg, rgba(12,0,20,0.9), transparent);
+}
+
+.radar {
+  background:
+    radial-gradient(circle at center, rgba(157,236,255,0.18), transparent 42%),
+    repeating-radial-gradient(circle at center, rgba(228,0,255,0.22) 0 1px, transparent 1px 18%);
+}
+
+.priority-high { color: #ff5d7a; }
+.priority-medium { color: #ffc24a; }
+.priority-normal { color: #9eecff; }
+
+.scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(228,0,255,0.35);
+  border-radius: 99px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  background: rgba(8, 0, 16, 0.55);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: white;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  font-size: 13px;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(157, 236, 255, 0.7);
+  box-shadow: 0 0 0 2px rgba(157, 236, 255, 0.15);
+}
+
+.btn,
+.chip,
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  border-radius: 4px;
+  padding: 0.22rem 0.55rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  transition: 120ms ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  box-shadow: none;
+}
+.btn-primary,
+.chip-primary {
+  background: var(--ov-magenta);
+  color: white;
+  border-color: transparent;
+}
+.btn-primary:hover,
+.chip-primary:hover { filter: brightness(1.08); }
+.btn-ghost {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.82);
+}
+.btn-danger {
+  background: rgba(255, 93, 122, 0.16);
+  border-color: rgba(255, 93, 122, 0.4);
+  color: #ffd0d8;
+}
+.btn-cyan,
+.chip-on,
+.tab-on {
+  background: var(--ov-cyan);
+  color: #14001f;
+  border-color: transparent;
+}
+.btn:disabled,
+.chip:disabled,
+.tab:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-lg {
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+.list-row-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.list-row-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 4px;
+  padding: 0.08rem 0.4rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.leaflet-container {
+  background: #0c0014;
+  font-family: inherit;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+.leaflet-tooltip, .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: #1a0028;
+  color: #f6f3ff;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+.leaflet-popup-content { margin: 12px 16px; }
+.leaflet-control-zoom a {
+  background: #1a0028 !important;
+  color: #9eecff !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(12,0,20,0.75) !important;
+  color: rgba(255,255,255,0.55) !important;
+}
+
+.gis-map-panel {
+  background: linear-gradient(180deg, rgba(18, 0, 28, 0.88), rgba(12, 0, 20, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+}
+.leaflet-control-layers {
+  background: rgba(18, 0, 28, 0.94) !important;
+  color: #f6f3ff;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(14px);
+}
+.leaflet-control-layers-expanded {
+  padding: 10px 12px;
+  min-width: 200px;
+}
+.leaflet-control-layers-base,
+.leaflet-control-layers-overlays {
+  margin: 0;
+}
+.leaflet-control-layers label {
+  color: #f6f3ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 13px;
+}
+.leaflet-control-layers-separator {
+  border-top-color: rgba(255, 255, 255, 0.14) !important;
+  margin: 8px 0;
+}
+.leaflet-bar {
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+.leaflet-control-layers-toggle {
+  background-color: rgba(18, 0, 28, 0.94) !important;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px !important;
+}
+.leaflet-bottom.leaflet-left {
+  margin-left: 6px;
+  margin-bottom: 12px;
+}
+.gis-stage .leaflet-container {
+  border-radius: 0;
+  background: #12001c;
+}
+.gis-stage .leaflet-top.leaflet-right {
+  top: 0.55rem;
+  right: 0.55rem;
+}
+
+input.gis-compact-input,
+select.gis-compact-input,
+.gis-compact-input {
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.gis-tree {
+  display: grid;
+  gap: 1px;
+}
+.gis-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 30px;
+  margin: 0;
+  padding: 0 8px 0 4px;
+  border: 0;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+.gis-tree-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.gis-tree-row.is-path:not(.is-selected) {
+  color: rgba(246, 243, 255, 0.92);
+}
+.gis-tree-row.is-selected {
+  background: rgba(228, 0, 255, 0.2);
+  color: #fff;
+  box-shadow: inset 2px 0 0 #9eecff;
+}
+.gis-tree-row.is-selected:hover {
+  background: rgba(228, 0, 255, 0.28);
+}
+.gis-tree-chevron,
+.gis-tree-chevron-spacer {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+}
+.gis-tree-chevron:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #9eecff;
+}
+.gis-tree-swatch {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 99px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+.gis-tree-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.gis-tree-meta {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.34);
+}
+.gis-tree-row.is-selected .gis-tree-meta {
+  color: rgba(158, 236, 255, 0.78);
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; color: #111; }
+  .glass { background: white; border: 1px solid #ddd; box-shadow: none; }
+}

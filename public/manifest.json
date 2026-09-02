@@ -1,0 +1,17 @@
+{
+  "name": "SHEPHERD360 — One Voice 27 Pastoral Visitation",
+  "short_name": "SHEPHERD360",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#14001f",
+  "theme_color": "#14001f",
+  "description": "Connecting Shepherds. Caring for Members.",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

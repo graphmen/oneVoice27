@@ -1,0 +1,731 @@
+One Voice 27 PASTORAL VISITATION MANAGEMENT SYSTEM
+
+Concept and System Requirements Document
+
+1. Background
+
+The Pastoral Visitation Management System is a digital platform designed to strengthen the relationship between pastors and church members through a structured, measurable, and accountable visitation program.
+
+The system will allow church administrators to register pastors and members, link pastors to their assigned members, create visitation schedules, and monitor visitation activities.
+
+A key feature of the system will be GPS-based geofencing. Each member’s residential location will be registered in the system using geographical coordinates. When a pastor physically travels to the member’s registered location and enters the defined geofence, the system will recognize that the pastor has arrived within the member’s residential area.
+
+However, entering the geofence alone will not complete the visitation record. The pastor will be required to confirm the visit and select the appropriate type of visitation. This creates a reliable record showing who was visited, by whom, when, where, and for what purpose.
+
+⸻
+
+2. Main Objective
+
+The primary objective is to create a digital system that enables the church to:
+
+* Organize and schedule pastoral visitation.
+* Connect pastors with their assigned church members.
+* Identify members requiring visitation.
+* Verify that a pastor physically reached the member’s registered location.
+* Record the date and time of each visitation.
+* Categorize the purpose/type of visitation.
+* Monitor pastoral visitation activity at church, conference, or organizational level.
+* Provide administrators with reports and dashboards showing visitation performance.
+* Improve accountability without turning pastoral care into a purely administrative exercise.
+
+⸻
+
+3. Core Concept
+
+The system should establish a relationship between:
+
+Pastor → Assigned Members → Visitation Schedule → GPS Location → Geofence Verification → Visit Type → Visit Record → Administrative Dashboard
+
+For example:
+
+Pastor John is assigned 50 church members.
+
+The system identifies members who are due for visitation and creates a visitation routine.
+
+Pastor John receives a notification:
+
+Member to Visit: Jane Doe
+Location: Registered residential location
+Visit Due: 5 September 2026
+
+When Pastor John travels to Jane Doe’s residence, the application detects that he has entered the predefined geofence around Jane’s registered location.
+
+The application then records:
+
+Location Verified: Pastor is within the member’s visitation zone.
+
+Pastor John must then confirm the visit and select:
+
+* Pastoral Visitation
+* General Visitation
+* Stewardship Visitation
+* Other/Custom Visitation
+
+The system then creates a permanent visitation record.
+
+The administrator can see:
+
+Pastor John visited Jane Doe on 5 September 2026 at 14:37. Location verified. Visit type: Pastoral Visitation.
+
+⸻
+
+4. User Roles
+
+The system should have different levels of access.
+
+A. Master Administrator
+
+The Master Administrator has the highest level of access.
+
+The Master Administrator should be able to:
+
+* Create and manage churches.
+* Create and manage pastors.
+* Create and manage church members.
+* Assign pastors to members.
+* View all visitation records.
+* View visitation statistics.
+* Create and manage visitation categories.
+* Define geofence settings.
+* View pastors’ visitation activity.
+* Generate reports.
+* Monitor overdue visits.
+* View visitation history.
+* Manage system settings.
+* Manage user permissions.
+
+The Master Administrator should have access to a comprehensive dashboard.
+
+⸻
+
+B. Church/Local Administrator
+
+A local administrator should be able to manage information relating to a specific congregation.
+
+Functions may include:
+
+* Register members.
+* Register or manage pastors assigned to the church.
+* Assign members to pastors.
+* View visitation schedules.
+* Monitor visitation completion.
+* View local visitation reports.
+* Identify members who have not been visited.
+* Generate church-level reports.
+
+The local administrator should not automatically have access to information belonging to other churches unless authorized.
+
+⸻
+
+C. Pastor
+
+The pastor should have access to a mobile-friendly application/dashboard.
+
+The pastor should be able to:
+
+* View assigned members.
+* View visitation schedule.
+* See members due for visitation.
+* Navigate to a member’s registered location.
+* Receive reminders.
+* Detect when they enter a member’s geofence.
+* Confirm a visitation.
+* Select visitation type.
+* Add optional visitation notes.
+* View previous visitation history where appropriate.
+* View upcoming visitation assignments.
+
+The pastor should not be able to manually create a verified visit without satisfying the location verification requirement, except where the administrator has authorized a manual exception process.
+
+⸻
+
+5. Member Profile
+
+Each church member should have a digital profile.
+
+The profile may contain:
+
+* Member ID
+* Full name
+* Contact information
+* Church/congregation
+* Assigned pastor
+* Residential address
+* GPS coordinates
+* Geofence radius
+* Visitation frequency
+* Last visitation date
+* Next scheduled visitation
+* Visitation history
+* Preferred contact information
+* Relevant administrative information
+
+Sensitive information should only be accessible to authorized users.
+
+⸻
+
+6. GPS and Geofencing System
+
+This is one of the most important features.
+
+When a member is registered, their residential location should be captured using GPS coordinates.
+
+For example:
+
+Latitude: -17.xxxxxx
+Longitude: 31.xxxxxx
+
+The system then creates a virtual boundary around the location.
+
+For example:
+
+Geofence radius: 50 metres
+
+The radius should be configurable by an administrator because residential environments differ.
+
+How it works
+
+1. Member’s residential coordinates are registered.
+2. A geofence is created around the coordinates.
+3. Pastor receives a visitation assignment.
+4. Pastor travels toward the member’s location.
+5. The application uses the pastor’s device location.
+6. When the pastor enters the geofence, the system detects the event.
+7. The application activates the visitation confirmation option.
+8. Pastor confirms the visitation.
+9. Pastor selects the visitation type.
+10. The system records the visitation.
+
+The visit should include a location-verification status.
+
+Example:
+
+Location Status: Verified
+Geofence: Entered
+Date: 5 September 2026
+Time: 14:37
+Pastor: Pastor John
+Member: Jane Doe
+
+⸻
+
+7. Important Anti-Fraud/Accountability Feature
+
+The system should distinguish between:
+
+Geofence Entry
+
+The pastor’s device has entered the member’s geographical area.
+
+AND
+
+Visit Confirmation
+
+The pastor has actively confirmed that the visitation took place.
+
+A geofence entry should not automatically equal a completed pastoral visit.
+
+This prevents situations where a pastor merely drives past a member’s house or enters the area without actually conducting a visitation.
+
+The system should therefore record:
+
+Geofence detected → Pastor confirmation → Visit type selected → Visit completed
+
+⸻
+
+8. Visitation Types
+
+The system should have configurable visitation categories.
+
+Initial categories may include:
+
+1. Pastoral Visitation
+
+Visits focused on spiritual care, prayer, encouragement, discipleship, family support, spiritual counseling, or general pastoral care.
+
+2. General Visitation
+
+Routine member engagement, welfare checks, relationship building, encouragement, or general church connection.
+
+3. Stewardship Visitation
+
+Visits relating to stewardship education, financial faithfulness, church support, resource management, or stewardship engagement.
+
+4. Crisis Visitation
+
+Visits relating to emergencies, bereavement, illness, family crisis, or other urgent situations.
+
+5. New Member Visitation
+
+Visits to newly baptized, transferred, or newly registered members.
+
+6. Follow-Up Visitation
+
+Visits designed to reconnect with members who have become inactive or have not recently participated in church activities.
+
+7. Other
+
+An administrator-configurable category for other legitimate visitation purposes.
+
+The Master Administrator should be able to add, edit, deactivate, or rename visitation categories.
+
+⸻
+
+9. Visitation Scheduling Engine
+
+The system should be able to create visitation routines automatically.
+
+Each member can have a visitation frequency.
+
+Examples:
+
+* Monthly
+* Every two months
+* Quarterly
+* Biannually
+* Annually
+* Custom
+
+The system uses the visitation frequency to determine when a member becomes due for visitation.
+
+For example:
+
+Member: Jane Doe
+Frequency: Quarterly
+Last Visit: 5 June 2026
+Next Visit Due: 5 September 2026
+
+The system should automatically place Jane Doe on the pastor’s upcoming visitation list.
+
+⸻
+
+10. Intelligent Visitation Prioritization
+
+The system should be capable of prioritizing members.
+
+For example:
+
+High Priority
+
+* New members
+* Members requiring follow-up
+* Members experiencing crises
+* Members who have not been visited for an extended period
+
+Medium Priority
+
+* Members approaching their scheduled visitation date
+
+Normal Priority
+
+* Members whose routine visitation is not yet due
+
+This would allow pastors to focus their time where pastoral care is most needed.
+
+⸻
+
+11. Pastor Dashboard
+
+When a pastor logs in, the dashboard should show:
+
+Today’s Visits
+
+* Member name
+* Location
+* Scheduled time/date
+* Visit type
+* Status
+
+Upcoming Visits
+
+* Member
+* Due date
+* Priority
+* Location
+
+Completed Visits
+
+* Member
+* Date
+* Time
+* Visit type
+* Verification status
+
+Outstanding Visits
+
+* Members whose visits are overdue
+* Number of days overdue
+
+Example:
+
+Today’s Visitation
+
+Member	Priority	Status
+Jane Doe	High	Due
+John Smith	Normal	Completed
+Mary Brown	High	Overdue
+
+⸻
+
+12. Master Administrator Dashboard
+
+The Master Administrator should have a comprehensive dashboard.
+
+It should display:
+
+Overall Statistics
+
+* Total pastors
+* Total churches
+* Total members
+* Visits scheduled
+* Visits completed
+* Visits pending
+* Visits overdue
+* Geofence-verified visits
+* Manually recorded visits
+* Visits by category
+
+Pastor Performance
+
+For example:
+
+Pastor	Assigned Members	Visits Due	Completed	Overdue
+Pastor A	85	20	17	3
+Pastor B	72	15	14	1
+Pastor C	91	25	20	5
+
+The administrator should be able to filter information by:
+
+* Date
+* Pastor
+* Church
+* District
+* Region
+* Visitation type
+* Member
+* Status
+
+⸻
+
+13. Visitation Record
+
+Every completed visitation should generate a permanent record containing:
+
+Pastor: Pastor John
+Member: Jane Doe
+Church: Example Adventist Church
+Date: 5 September 2026
+Time: 14:37
+Visit Type: Pastoral Visitation
+Location Verification: Verified
+Geofence Status: Entered
+GPS Coordinates: Recorded according to privacy policy
+Duration: Optional
+Notes: Optional
+Status: Completed
+
+The system should create a unique visitation ID for every visit.
+
+⸻
+
+14. Notes and Follow-Up
+
+After completing a visit, the pastor may optionally record:
+
+* General notes
+* Follow-up required
+* Prayer request
+* Referral required
+* Next visitation recommendation
+* Urgency level
+
+Because pastoral notes can contain highly sensitive information, the system should provide different privacy levels.
+
+For example:
+
+Administrative Record
+
+Visible to authorized administrators:
+
+Visit completed – Pastoral Visitation – 5 September 2026.
+
+Confidential Pastoral Notes
+
+Accessible only to appropriately authorized pastoral personnel.
+
+The system should avoid exposing confidential pastoral information unnecessarily.
+
+⸻
+
+15. Notifications
+
+The system should provide notifications such as:
+
+Pastor
+
+You have 3 members due for visitation this week.
+
+Reminder
+
+Jane Doe’s visitation is due tomorrow.
+
+Geofence Notification
+
+You have entered the visitation zone for Jane Doe. Confirm visitation when appropriate.
+
+Completion
+
+Visitation recorded successfully.
+
+Administrator
+
+Pastor John has 5 overdue visitations.
+
+⸻
+
+16. Exception Handling
+
+The system must recognize that legitimate visits may sometimes fail to register correctly.
+
+Possible situations include:
+
+* Poor GPS accuracy.
+* No internet connection.
+* Member has moved.
+* GPS coordinates are incorrect.
+* Pastor visits a member in a hospital or another location.
+* Emergency visitation.
+* Member is temporarily staying somewhere else.
+* Device battery failure.
+* Geofence cannot be detected.
+
+The system should therefore have an Exception/Manual Verification Process.
+
+A pastor may request:
+
+Manual Visit Verification
+
+The pastor must provide a reason, and the authorized administrator can approve or reject the exception.
+
+The system should clearly distinguish:
+
+GPS Verified Visit
+
+from
+
+Administrator-Approved Manual Visit
+
+This preserves accountability.
+
+⸻
+
+17. Offline Capability
+
+Because pastors may work in areas with limited internet connectivity, the mobile application should support offline functionality where technically possible.
+
+For example:
+
+1. Pastor downloads the day’s visitation assignments.
+2. Pastor travels to an area without internet.
+3. GPS continues to determine location.
+4. Pastor records the visit.
+5. The visit is stored securely on the device.
+6. When internet connectivity returns, the application synchronizes the information with the central server.
+
+The system should prevent duplicate records during synchronization.
+
+⸻
+
+18. Reports
+
+The system should generate reports including:
+
+Monthly Pastoral Visitation Report
+
+* Pastor
+* Church
+* Number of members assigned
+* Visits scheduled
+* Visits completed
+* Visits outstanding
+* Visit types
+* Verification status
+
+Member Visitation History
+
+Showing every recorded visitation for an individual member.
+
+Pastor Activity Report
+
+Showing visitation activity by pastor.
+
+Church Report
+
+Showing visitation activity by congregation.
+
+Organizational Report
+
+Showing visitation activity across the entire organization.
+
+Reports should be exportable in formats such as PDF and Excel/CSV where appropriate.
+
+⸻
+
+19. Privacy and Security
+
+Because the system involves residential locations and potentially confidential pastoral information, privacy and security must be treated as a core requirement.
+
+The system should:
+
+* Encrypt sensitive information.
+* Use secure authentication.
+* Use role-based access control.
+* Restrict access to member locations.
+* Record administrator activity through audit logs.
+* Protect pastoral notes.
+* Avoid continuously tracking pastors when they are not performing authorized visitation activities.
+* Clearly communicate what location information is collected and when.
+* Allow appropriate data correction when member information changes.
+
+Important principle:
+
+The application should verify a visitation, not become a tool for unnecessary continuous surveillance of pastors or members.
+
+⸻
+
+20. Audit Trail
+
+Every important system action should be recorded.
+
+For example:
+
+Pastor John logged in – 13:52
+
+Pastor John entered Jane Doe’s geofence – 14:35
+
+Pastor John confirmed visitation – 14:37
+
+Visit type selected: Pastoral Visitation
+
+Visit record submitted – 14:38
+
+Administrator viewed visitation record – 15:02
+
+This creates an accountability trail while maintaining appropriate privacy.
+
+⸻
+
+21. Relationship Model
+
+The underlying system should establish relationships between the following entities:
+
+Organization
+
+↓
+
+Conference/Region
+
+↓
+
+Church
+
+↓
+
+Pastor
+
+↓
+
+Assigned Members
+
+↓
+
+Visitation Schedule
+
+↓
+
+Visitation Event
+
+↓
+
+GPS/Geofence Verification
+
+↓
+
+Visitation Type
+
+↓
+
+Report/Dashboard
+
+This structure will allow the system to grow from a single congregation to a conference-wide or organization-wide platform.
+
+⸻
+
+22. Future Features
+
+The system should be designed so that additional features can be added later.
+
+Potential future features include:
+
+* Member self-service portal.
+* Prayer request system.
+* Pastoral counseling appointment system.
+* Small-group integration.
+* Bible study tracking.
+* New-member follow-up.
+* Baptism follow-up.
+* Youth visitation.
+* Elder visitation.
+* Hospital visitation.
+* Funeral/pastoral care tracking.
+* AI-assisted visitation scheduling.
+* Heat maps showing areas with low visitation coverage.
+* Member engagement analytics.
+* Integration with existing church membership databases.
+* SMS/WhatsApp notifications.
+* Calendar integration.
+
+⸻
+
+23. Guiding Philosophy
+
+The system should not be designed simply as a tool for measuring how many houses a pastor has visited.
+
+Its deeper purpose is to help the church answer:
+
+Are our members being cared for, connected with, encouraged, and spiritually supported?
+
+Technology should therefore support the pastoral relationship rather than replace it.
+
+The GPS/geofencing component provides accountability that a visitation occurred, while the pastor remains responsible for the human, spiritual, and relational aspects of the visitation.
+
+⸻
+
+24. Proposed System Name
+
+Possible names include:
+
+PastorConnect
+
+ShepherdLink
+
+ShepherdCare
+
+Pastoral Connect
+
+ShepherdTrack
+
+PastorCare 360
+
+MemberCare
+
+Shepherd360
+
+A strong concept would be:
+
+SHEPHERD360
+
+Connecting Shepherds. Caring for Members.
+
+The system could ultimately become a comprehensive pastoral-care platform rather than merely a visitation tracker.

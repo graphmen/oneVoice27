@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isMaster() {
+      return signedIn() && userDoc().role == 'master_admin';
+    }
+    function isChurchAdmin() {
+      return signedIn() && userDoc().role == 'church_admin';
+    }
+    function isPastor() {
+      return signedIn() && userDoc().role == 'pastor';
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (isMaster() || request.auth.uid == userId || isChurchAdmin());
+      allow write: if isMaster() || (isChurchAdmin() && request.resource.data.role in ['pastor', 'church_admin']);
+    }
+
+    match /territories/{id} {
+      allow read: if signedIn();
+      allow write: if isMaster() || isChurchAdmin();
+    }
+
+    match /churches/{id} {
+      allow read: if signedIn();
+      allow write: if isMaster();
+    }
+
+    match /regions/{id} {
+      allow read: if signedIn();
+      allow write: if isMaster();
+    }
+
+    match /members/{id} {
+      allow read: if signedIn();
+      allow create, update: if isMaster() || isChurchAdmin();
+      allow delete: if isMaster();
+    }
+
+    match /visits/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.pastorId == request.auth.uid;
+      allow update: if isMaster() || isChurchAdmin() || resource.data.pastorId == request.auth.uid;
+    }
+
+    match /categories/{id} {
+      allow read: if signedIn();
+      allow write: if isMaster();
+    }
+
+    match /notifications/{id} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if signedIn();
+    }
+
+    match /auditLogs/{id} {
+      allow read: if isMaster();
+      allow create: if signedIn();
+    }
+
+    match /settings/{id} {
+      allow read: if signedIn();
+      allow write: if isMaster();
+    }
+  }
+}
