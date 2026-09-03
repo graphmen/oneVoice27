@@ -23,6 +23,13 @@ export const metadata: Metadata = {
   description: TAGLINE,
   applicationName: "SHEPHERD360",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-icon", sizes: "180x180" }],
+  },
   keywords: ["One Voice 27", "pastoral visitation", "SHEPHERD360", "Seventh-day Adventist"],
 };
 
