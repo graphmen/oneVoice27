@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FieldHowTo } from "@/components/FieldHowTo";
 import { StatusBadge } from "@/components/ui";
 import { EvaluationLegend, ShepherdPerformanceMatrix } from "@/components/ShepherdMatrix";
 import { useStore } from "@/lib/store";
@@ -15,6 +16,7 @@ import {
 import {
   dueLabel,
   formatDate,
+  formatLongDate,
   fullName,
   isDueSoon,
   isOverdue,
@@ -35,14 +37,18 @@ function PastorHome() {
   const { user, state } = useStore();
   if (!user) return null;
   const members = visibleMembers(user, state.members).filter((m) => m.status === "active");
-  const overdue = members.filter((m) => isOverdue(m));
-  const dueSoon = members.filter((m) => !isOverdue(m) && isDueSoon(m));
+  const overdue = members.filter((m) => isOverdue(m) && !m.scheduledVisitAt);
+  const dueSoon = members.filter((m) => !isOverdue(m) && isDueSoon(m) && !m.scheduledVisitAt);
   const extraCare = members.filter(
     (m) =>
       (m.memberType === "new" || m.memberType === "crisis" || m.memberType === "followup") &&
+      !m.scheduledVisitAt &&
       !overdue.some((x) => x.id === m.id) &&
       !dueSoon.some((x) => x.id === m.id),
   );
+  const booked = members
+    .filter((m) => m.scheduledVisitAt)
+    .sort((a, b) => new Date(a.scheduledVisitAt || 0).getTime() - new Date(b.scheduledVisitAt || 0).getTime());
   const first = overdue[0] || dueSoon[0] || extraCare[0] || members[0];
   const churchName = (id: string) => state.churches.find((c) => c.id === id)?.name || "Church";
 
@@ -53,8 +59,8 @@ function PastorHome() {
           <div className="text-xs uppercase tracking-[0.22em] text-cyan">Pastor field</div>
           <h1 className="mt-1 text-3xl font-semibold">Peace, {user.displayName.split(" ")[0]}.</h1>
           <p className="mt-2 max-w-2xl text-white/65">
-            Visit those who need care most. Confirm only when you are at the home. After the visit, record the
-            spiritual fruit.
+            Book a date on Visit schedule, WhatsApp the household, then confirm only when you are at the home. After
+            the visit, record the spiritual fruit.
           </p>
         </div>
         {first ? (
@@ -68,16 +74,21 @@ function PastorHome() {
         )}
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <Stat label="Assigned flock" value={members.length} />
         <Stat label="Overdue" value={overdue.length} warn={overdue.length > 0} />
         <Stat label="Due this week" value={dueSoon.length} />
+        <Stat label="Dates booked" value={booked.length} />
         <Stat label="New / crisis / follow-up" value={members.filter((m) => ["new", "crisis", "followup"].includes(m.memberType)).length} />
       </div>
 
+      <Queue title="Booked visits — they already have a date" items={booked} churchName={churchName} empty="No visit dates booked. Open the schedule, pick a day, then WhatsApp the home." booked />
       <Queue title="Overdue — go today" items={overdue} churchName={churchName} empty="No overdue visits. The flock is current." />
       <Queue title="Due this week" items={dueSoon} churchName={churchName} empty="Nothing due in the next seven days." />
       <Queue title="New, crisis and follow-up" items={extraCare} churchName={churchName} empty="No extra-care members waiting outside the due list." />
+      <div className="mt-6">
+        <FieldHowTo />
+      </div>
     </div>
   );
 }
@@ -219,11 +230,13 @@ function Queue({
   items,
   churchName,
   empty,
+  booked,
 }: {
   title: string;
   items: Member[];
   churchName: (id: string) => string;
   empty: string;
+  booked?: boolean;
 }) {
   return (
     <div className="glass mt-6 rounded-lg p-5">
@@ -236,13 +249,21 @@ function Queue({
               <div className="list-row-title">{fullName(m)}</div>
               <div className="list-row-meta">
                 {churchName(m.churchId)} · {m.suburb || m.address}
+                {m.scheduledVisitAt ? ` · booked ${formatLongDate(m.scheduledVisitAt)}` : ""}
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-1">
-              <StatusBadge status={m.memberType} />
-              <StatusBadge status={memberPriority(m)} />
-              <StatusBadge status={isOverdue(m) ? "overdue" : "due"} />
-              <span className="text-xs text-white/50">{dueLabel(m)}</span>
+              {booked ? <StatusBadge status="scheduled" /> : (
+                <>
+                  <StatusBadge status={m.memberType} />
+                  <StatusBadge status={memberPriority(m)} />
+                  <StatusBadge status={isOverdue(m) ? "overdue" : "due"} />
+                </>
+              )}
+              <span className="text-xs text-white/50">{booked ? formatDate(m.scheduledVisitAt) : dueLabel(m)}</span>
+              <Link href="/schedule" className="btn btn-ghost">
+                {booked ? "Change date" : "Book date"}
+              </Link>
               <Link href={`/go/${m.id}`} className="btn btn-primary">
                 Visit
               </Link>

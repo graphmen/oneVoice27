@@ -34,6 +34,7 @@ export default function VisitDetailPage() {
         <Row k="District" v={state.territories.find((t) => t.id === church?.districtId)?.name} />
         <Row k="Church" v={church?.name} />
         <Row k="Visit type" v={category?.name} />
+        <Row k="Booked for" v={formatDateTime(visit.scheduledAt)} />
         <Row k="Grade" v={`${visitGrade(visit)} — ${fruitLabel(visit) === "—" ? "no fruit recorded" : fruitLabel(visit)}`} />
         <Row k="Completed" v={formatDateTime(visit.completedAt)} />
         <Row k="Geofence entered" v={formatDateTime(visit.geofenceEnteredAt)} />

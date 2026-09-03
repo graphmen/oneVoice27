@@ -20,8 +20,8 @@ import type { Visit } from "@/lib/types";
 const VISIT_PAGE = 15;
 const GROUP_PAGE = 8;
 const GROUP_PREVIEW = 5;
-const GRADES: Array<VisitGrade | "all"> = ["all", "strong", "sound", "weak", "exception", "training"];
-const STATUSES = ["all", "completed", "exception_pending", "exception_approved", "geofence_entered"];
+const GRADES: Array<VisitGrade | "all"> = ["all", "strong", "sound", "weak", "exception", "training", "scheduled"];
+const STATUSES = ["all", "completed", "scheduled", "exception_pending", "exception_approved", "geofence_entered"];
 
 type GroupBy = "pastor" | "district" | "none";
 

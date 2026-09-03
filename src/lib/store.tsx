@@ -23,7 +23,7 @@ import type {
   Visit,
   VisitCategory,
 } from "./types";
-import { computeNextDue, uid } from "./utils";
+import { computeNextDue, formatLongDate, fullName, uid } from "./utils";
 
 type StoreContextValue = {
   ready: boolean;
@@ -41,6 +41,8 @@ type StoreContextValue = {
   deleteTerritory: (id: string) => void;
   upsertCategory: (category: VisitCategory) => void;
   recordVisit: (visit: Visit) => void;
+  scheduleVisit: (memberId: string, scheduledAt: string, pastorId: string) => void;
+  cancelScheduledVisit: (memberId: string) => void;
   reviewException: (visitId: string, approve: boolean, reviewerId: string) => void;
   markNotificationRead: (id: string) => void;
   updateSettings: (patch: Partial<AppState["settings"]>) => void;
@@ -386,26 +388,43 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const recordVisit = useCallback(
     (visit: Visit) => {
       setState((s) => {
-        const visits = s.visits.some((v) => v.id === visit.id)
+        const done = visit.status === "completed" || visit.status === "exception_approved";
+        const happened = done || visit.status === "exception_pending";
+        let visits = s.visits.some((v) => v.id === visit.id)
           ? s.visits.map((v) => (v.id === visit.id ? visit : v))
           : [visit, ...s.visits];
-        const members =
-          visit.status === "completed" || visit.status === "exception_approved"
-            ? s.members.map((m) =>
-                m.id === visit.memberId
-                  ? {
-                      ...m,
-                      lastVisitAt: visit.completedAt,
-                      nextVisitDue: computeNextDue(
-                        visit.completedAt,
-                        m.visitationFrequency,
-                        m.customFrequencyDays,
-                      ),
-                      memberType: m.memberType === "crisis" ? "regular" : m.memberType,
-                    }
-                  : m,
-              )
-            : s.members;
+        if (happened) {
+          visits = visits.filter(
+            (v) =>
+              !(
+                v.id !== visit.id &&
+                v.memberId === visit.memberId &&
+                v.pastorId === visit.pastorId &&
+                v.status === "scheduled"
+              ),
+          );
+        }
+        const members = happened
+          ? s.members.map((m) =>
+              m.id === visit.memberId
+                ? {
+                    ...m,
+                    scheduledVisitAt: undefined,
+                    ...(done
+                      ? {
+                          lastVisitAt: visit.completedAt,
+                          nextVisitDue: computeNextDue(
+                            visit.completedAt,
+                            m.visitationFrequency,
+                            m.customFrequencyDays,
+                          ),
+                          memberType: m.memberType === "crisis" ? "regular" : m.memberType,
+                        }
+                      : {}),
+                  }
+                : m,
+            )
+          : s.members;
         const note: AppNotification = {
           id: uid("nt"),
           userId: visit.pastorId,
@@ -429,6 +448,61 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         visit.id,
         { status: visit.status, verification: visit.locationVerification },
       );
+    },
+    [log],
+  );
+
+  const scheduleVisit = useCallback(
+    (memberId: string, scheduledAt: string, pastorId: string) => {
+      setState((s) => {
+        const member = s.members.find((m) => m.id === memberId);
+        if (!member) return s;
+        const existing = s.visits.find(
+          (v) => v.memberId === memberId && v.pastorId === pastorId && v.status === "scheduled",
+        );
+        const visit: Visit = {
+          id: existing?.id || uid("vis"),
+          memberId,
+          pastorId,
+          churchId: member.churchId,
+          categoryId: existing?.categoryId || "cat_pastoral",
+          status: "scheduled",
+          scheduledAt,
+          locationVerification: "unverified",
+          geofenceStatus: "unknown",
+          followUpRequired: false,
+          referralRequired: false,
+          createdAt: existing?.createdAt || new Date().toISOString(),
+        };
+        const visits = existing
+          ? s.visits.map((v) => (v.id === existing.id ? visit : v))
+          : [visit, ...s.visits];
+        const members = s.members.map((m) => (m.id === memberId ? { ...m, scheduledVisitAt: scheduledAt } : m));
+        const note: AppNotification = {
+          id: uid("nt"),
+          userId: pastorId,
+          title: "Visit booked",
+          body: `You booked ${fullName(member)} on ${formatLongDate(scheduledAt)}. Tell the household on WhatsApp or SMS — they do not have this app.`,
+          type: "reminder",
+          read: false,
+          createdAt: new Date().toISOString(),
+          href: `/members/${memberId}`,
+        };
+        return { ...s, visits, members, notifications: [note, ...s.notifications] };
+      });
+      log("visit.scheduled", "member", memberId, { scheduledAt, pastorId });
+    },
+    [log],
+  );
+
+  const cancelScheduledVisit = useCallback(
+    (memberId: string) => {
+      setState((s) => ({
+        ...s,
+        members: s.members.map((m) => (m.id === memberId ? { ...m, scheduledVisitAt: undefined } : m)),
+        visits: s.visits.filter((v) => !(v.memberId === memberId && v.status === "scheduled")),
+      }));
+      log("visit.schedule_cancelled", "member", memberId);
     },
     [log],
   );
@@ -457,6 +531,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
                       m.visitationFrequency,
                       m.customFrequencyDays,
                     ),
+                    scheduledVisitAt: undefined,
                   }
                 : m,
             )
@@ -513,6 +588,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       deleteTerritory,
       upsertCategory,
       recordVisit,
+      scheduleVisit,
+      cancelScheduledVisit,
       reviewException,
       markNotificationRead,
       updateSettings,
@@ -535,6 +612,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       deleteTerritory,
       upsertCategory,
       recordVisit,
+      scheduleVisit,
+      cancelScheduledVisit,
       reviewException,
       markNotificationRead,
       updateSettings,

@@ -112,6 +112,7 @@ export interface Member {
   customFrequencyDays?: number;
   lastVisitAt?: string;
   nextVisitDue: string;
+  scheduledVisitAt?: string;
   memberType: MemberType;
   adminNotes?: string;
   status: "active" | "inactive";

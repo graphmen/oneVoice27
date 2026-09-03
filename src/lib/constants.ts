@@ -39,9 +39,9 @@ export const PILLARS = [
 
 export const VISIT_FLOW = [
   "Pastor assigned to members",
-  "Schedule created from visitation frequency",
+  "Shepherd books a visit date",
+  "Household is told on WhatsApp or SMS",
   "Pastor travels to the registered home",
   "GPS geofence verifies physical presence",
-  "Pastor confirms the visit and its purpose",
   "A permanent, accountable record is kept",
 ];

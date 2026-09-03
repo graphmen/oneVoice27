@@ -173,9 +173,10 @@ export function dutyReason(row: DutyMetrics, duty = dutyStatus(row)) {
   return "Flock current · GPS-verified presence";
 }
 
-export type VisitGrade = "strong" | "sound" | "weak" | "exception" | "training";
+export type VisitGrade = "strong" | "sound" | "weak" | "exception" | "training" | "scheduled";
 
 export function visitGrade(visit: Visit): VisitGrade {
+  if (visit.status === "scheduled") return "scheduled";
   if (visit.trainingOverride) return "training";
   if (visit.status === "exception_pending" || visit.status === "exception_rejected") return "exception";
   const completed = isCompletedCare(visit);
@@ -192,6 +193,7 @@ export const VISIT_GRADE_LABEL: Record<VisitGrade, string> = {
   weak: "Weak",
   exception: "Exception",
   training: "Training",
+  scheduled: "Booked",
 };
 
 export const VISIT_GRADE_HINT: Record<VisitGrade, string> = {
@@ -200,6 +202,7 @@ export const VISIT_GRADE_HINT: Record<VisitGrade, string> = {
   weak: "Completed without GPS proof",
   exception: "Needs review or was rejected",
   training: "Training — not a field GPS lock",
+  scheduled: "Date booked — visit not yet confirmed at the home",
 };
 
 export function unassignedMembers(members: Member[]) {

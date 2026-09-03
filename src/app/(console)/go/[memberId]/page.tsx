@@ -12,6 +12,7 @@ import type { GpsFix, Visit } from "@/lib/types";
 import {
   canEditMember,
   fullName,
+  formatLongDate,
   readyVisitMessage,
   telHref,
   uid,
@@ -159,13 +160,17 @@ export default function GoVisitPage() {
       setGpsError("Please explain why this visit cannot be GPS-verified.");
       return;
     }
+    const existing = state.visits.find(
+      (v) => v.memberId === member.id && v.pastorId === user.id && v.status === "scheduled",
+    );
     const visit: Visit = {
-      id: uid("vis"),
+      id: existing?.id || uid("vis"),
       memberId: member.id,
       pastorId: user.id,
       churchId: member.churchId,
       categoryId,
       status: asException ? "exception_pending" : "completed",
+      scheduledAt: existing?.scheduledAt || member.scheduledVisitAt,
       geofenceEnteredAt: enteredAt || undefined,
       completedAt: new Date().toISOString(),
       lat: fix?.lat,
@@ -187,7 +192,7 @@ export default function GoVisitPage() {
       durationMinutes: Math.max(1, Math.round((Date.now() - (enteredAt ? Date.parse(enteredAt) : openedAt)) / 60_000)),
       exceptionReason: asException ? exceptionReason : undefined,
       trainingOverride: training || undefined,
-      createdAt: new Date().toISOString(),
+      createdAt: existing?.createdAt || new Date().toISOString(),
     };
     recordVisit(visit);
     router.push(`/visits/${visit.id}`);
@@ -201,6 +206,7 @@ export default function GoVisitPage() {
           <h1 className="text-2xl font-semibold sm:text-3xl">{fullName(member)}</h1>
           <p className="text-white/60">
             {member.address} · {church?.name}
+            {member.scheduledVisitAt ? ` · booked ${formatLongDate(member.scheduledVisitAt)}` : ""}
           </p>
           <p className="mt-2 text-sm text-cyan">
             Visit duration: {minutes} min {seconds.toString().padStart(2, "0")} s — stored automatically when you confirm.

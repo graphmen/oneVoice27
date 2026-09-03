@@ -7,6 +7,7 @@ import { canRegisterMembers, fullName, visibleMembers } from "@/lib/utils";
 export function FieldHowTo() {
   const { user, state } = useStore();
   if (!user) return null;
+  if (user.role !== "pastor") return null;
   const members = visibleMembers(user, state.members).filter((m) => m.status === "active");
   const train = members.find((m) => m.id === "mem_jane") || members[0];
   const registerHref = canRegisterMembers(user) ? "/territories?type=member" : "/members";
@@ -37,7 +38,17 @@ export function FieldHowTo() {
           </Link>
         </li>
         <li className="rounded-2xl bg-white/5 p-4">
-          <div className="font-semibold">3. Edit when a family moves</div>
+          <div className="font-semibold">3. Book a date and tell the household</div>
+          <p className="mt-1 text-white/65">
+            Visit schedule is not an appointment until you pick a day. Save the date, then tap Book & WhatsApp (or
+            SMS). Members do not have this app — they only know you are coming if you send that message.
+          </p>
+          <Link href="/schedule" className="btn btn-cyan mt-3 py-2 text-xs">
+            Book a visit date
+          </Link>
+        </li>
+        <li className="rounded-2xl bg-white/5 p-4">
+          <div className="font-semibold">4. Edit when a family moves</div>
           <p className="mt-1 text-white/65">
             Open Edit / pin home to move the pin by hand on the map, recapture GPS at the door, or change the assigned
             pastor. Administrators can reassign shepherds; pastors can update homes on their own flock.
@@ -47,7 +58,7 @@ export function FieldHowTo() {
           </Link>
         </li>
         <li className="rounded-2xl bg-white/5 p-4">
-          <div className="font-semibold">4. Train the geofence without driving</div>
+          <div className="font-semibold">5. Train the geofence without driving</div>
           <p className="mt-1 text-white/65">
             Open a visit{train ? ` as for ${fullName(train)}` : ""} and tap Stand at the door (training). Confirm
             unlocks, and the record is marked as training, not a field GPS lock. Master admin can turn that off in
@@ -60,7 +71,7 @@ export function FieldHowTo() {
           ) : null}
         </li>
         <li className="rounded-2xl bg-white/5 p-4">
-          <div className="font-semibold">5. Visit duration is stored automatically</div>
+          <div className="font-semibold">6. Visit duration is stored automatically</div>
           <p className="mt-1 text-white/65">
             Time on the visit screen is counted while you are there and saved on the visit record.
           </p>

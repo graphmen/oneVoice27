@@ -50,6 +50,7 @@ export function StatusBadge({
     sound: "Sound",
     weak: "Weak",
     exception: "Exception",
+    scheduled: "Booked",
     training: "Training",
     exception_pending: "Exception pending",
     geofence_entered: "In geofence",

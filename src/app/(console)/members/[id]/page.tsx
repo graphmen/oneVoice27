@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { BookVisit } from "@/components/BookVisit";
 import { MemberActions } from "@/components/MemberActions";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { StatusBadge } from "@/components/ui";
@@ -12,6 +13,7 @@ import {
   dueLabel,
   formatDate,
   formatDateTime,
+  formatLongDate,
   FREQUENCY_LABEL,
   fullName,
   isOverdue,
@@ -67,6 +69,7 @@ export default function MemberDetailPage() {
           <Row k="Frequency" v={FREQUENCY_LABEL[member.visitationFrequency]} />
           <Row k="Last visit" v={formatDate(member.lastVisitAt)} />
           <Row k="Next due" v={formatDate(member.nextVisitDue)} />
+          <Row k="Booked visit" v={member.scheduledVisitAt ? formatLongDate(member.scheduledVisitAt) : "Not booked"} />
           <Row k="Geofence" v={`${member.geofenceRadius} m`} />
           <Row k="Coordinates" v={`${member.lat.toFixed(5)}, ${member.lng.toFixed(5)}`} />
           {member.adminNotes && <Row k="Admin notes" v={member.adminNotes} />}
@@ -88,21 +91,30 @@ export default function MemberDetailPage() {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {user.role === "pastor" ? (
           <div className="glass rounded-lg p-5">
-            <div className="text-xs uppercase tracking-[0.18em] text-cyan">Ready pastoral message</div>
-            <p className="mt-2 text-white/80">
-              “{readyPastoralMessage(member.firstName, church?.name || "the church")}”
-            </p>
-            <p className="mt-2 text-sm text-white/50">
-              Call and WhatsApp above send this text. Edit the record if the family moved or the details are wrong.
-            </p>
+            <BookVisit member={member} />
+            <div className="mt-5 border-t border-white/8 pt-4">
+              <div className="text-xs uppercase tracking-[0.18em] text-cyan">Ready pastoral message</div>
+              <p className="mt-2 text-white/80">
+                “{readyPastoralMessage(member.firstName, church?.name || "the church")}”
+              </p>
+              <p className="mt-2 text-sm text-white/50">
+                Call and WhatsApp above send this general greeting. The booked-visit message above includes the date.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="glass rounded-lg p-5">
             <div className="text-xs uppercase tracking-[0.18em] text-cyan">Conference record</div>
             <p className="mt-2 text-white/80">
-              Assigned to {pastor?.displayName || "no shepherd yet"}. Conference does not call, message, or visit this
-              household. Use Edit record if the shepherd, address, or membership details are wrong.
+              Assigned to {pastor?.displayName || "no shepherd yet"}. Conference does not book visits, call, message, or
+              visit this household. The shepherd books a date and tells the family on WhatsApp or SMS — members do not
+              have this app.
             </p>
+            {member.scheduledVisitAt ? (
+              <p className="mt-3 text-sm text-cyan">Booked by the shepherd for {formatLongDate(member.scheduledVisitAt)}.</p>
+            ) : (
+              <p className="mt-3 text-sm text-white/50">No visit date booked yet.</p>
+            )}
           </div>
         )}
         <div className="glass rounded-lg p-5">
@@ -111,7 +123,7 @@ export default function MemberDetailPage() {
             {history.length === 0 && <p className="text-white/60">No visits recorded yet.</p>}
             {history.map((v) => (
               <Link key={v.id} href={`/visits/${v.id}`} className="flex justify-between rounded-lg bg-white/5 px-4 py-3">
-                <span>{formatDateTime(v.completedAt || v.createdAt)}</span>
+                <span>{formatDateTime(v.completedAt || v.scheduledAt || v.createdAt)}</span>
                 <span className="flex gap-2">
                   <StatusBadge status={v.status} />
                   <StatusBadge status={v.locationVerification} />

@@ -21,6 +21,36 @@ export function initials(name: string) {
     .join("");
 }
 
+export function formatLongDate(iso?: string) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function toDateInput(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
+export function fromDateInput(value: string) {
+  return new Date(`${value}T09:00:00`).toISOString();
+}
+
+export function todayInput() {
+  const d = new Date();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
 export function formatDate(iso?: string) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString(undefined, {
@@ -172,6 +202,10 @@ export function readyVisitMessage(firstName: string) {
   return `Peace ${firstName}, I am on my way for our pastoral visit.`;
 }
 
+export function appointmentMessage(firstName: string, pastorName: string, dateLabel: string) {
+  return `Peace ${firstName}, this is ${pastorName}. I will visit you on ${dateLabel} to pray with you. Please tell me if that day does not work.`;
+}
+
 export function canApproveExceptions(user: UserAccount) {
   return user.role === "master_admin" || user.role === "church_admin";
 }
@@ -211,6 +245,14 @@ export function telHref(phone?: string) {
   if (!phone) return undefined;
   const n = phone.replace(/[^\d+]/g, "");
   return n ? `tel:${n}` : undefined;
+}
+
+export function smsHref(phone?: string, text?: string) {
+  if (!phone) return undefined;
+  const n = phone.replace(/[^\d+]/g, "");
+  if (!n) return undefined;
+  const q = text ? `?body=${encodeURIComponent(text)}` : "";
+  return `sms:${n}${q}`;
 }
 
 export function waHref(phone?: string, text?: string) {
