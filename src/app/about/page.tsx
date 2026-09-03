@@ -4,10 +4,15 @@ import { PILLARS } from "@/lib/constants";
 
 export default function AboutPage() {
   return (
-    <div className="ov-bg min-h-screen px-5 py-10 text-white">
+    <div className="ov-bg min-h-dvh px-4 py-8 text-white sm:px-5 sm:py-10">
       <div className="mx-auto max-w-3xl">
-        <BrandMark />
-        <h1 className="mt-8 text-4xl font-semibold">The movement behind the system</h1>
+        <div className="sm:hidden">
+          <BrandMark compact />
+        </div>
+        <div className="hidden sm:block">
+          <BrandMark />
+        </div>
+        <h1 className="mt-8 text-3xl font-semibold sm:text-4xl">The movement behind the system</h1>
         <p className="mt-4 text-white/70">
           OneVoice27 is the global Seventh-day Adventist media-mission initiative leading to September 2027 — 2,000 years
           from Christ’s baptism and the beginning of His public ministry. The central message is Jesus Christ, Messiah
@@ -21,7 +26,7 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-        <p className="mt-8 font-serif text-2xl text-white/85">
+        <p className="mt-8 font-serif text-xl text-white/85 sm:text-2xl">
           “If Christians were to act in concert, moving forward as ONE, under the direction of ONE Power for the
           accomplishment of ONE purpose, they would move the world.”
         </p>

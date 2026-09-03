@@ -129,8 +129,8 @@ export function FilterChips<T extends string>({
   options: { id: T; label: string }[];
 }) {
   return (
-    <div className="tabs">
-      <span className="w-11 shrink-0 text-[10px] uppercase tracking-[0.12em] text-white/35">{label}</span>
+    <div className="tabs w-full sm:w-auto">
+      <span className="w-full text-[10px] uppercase tracking-[0.12em] text-white/35 sm:w-11 sm:shrink-0">{label}</span>
       {options.map((opt) => (
         <button
           key={opt.id}

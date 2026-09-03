@@ -65,8 +65,8 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-semibold">Reports</h1>
           <p className="mt-1 text-white/60">Church, pastor and organizational care — exportable for conference boards.</p>
         </div>
-        <div className="flex gap-2">
-          <select value={churchId} onChange={(e) => setChurchId(e.target.value)}>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+          <select className="w-full sm:w-auto" value={churchId} onChange={(e) => setChurchId(e.target.value)}>
             <option value="all">All churches</option>
             {churches.map((c) => (
               <option key={c.id} value={c.id}>
@@ -74,12 +74,14 @@ export default function ReportsPage() {
               </option>
             ))}
           </select>
-          <button className="btn btn-ghost" onClick={exportReport}>
-            Export CSV
-          </button>
-          <button className="btn btn-cyan" onClick={() => window.print()}>
-            Print / PDF
-          </button>
+          <div className="flex gap-2">
+            <button className="btn btn-ghost flex-1 sm:flex-none" onClick={exportReport}>
+              Export CSV
+            </button>
+            <button className="btn btn-cyan flex-1 sm:flex-none" onClick={() => window.print()}>
+              Print / PDF
+            </button>
+          </div>
         </div>
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">

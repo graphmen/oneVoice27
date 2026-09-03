@@ -108,7 +108,7 @@ export function HomePinPicker({ lat, lng, radius, onChange }: Props) {
           ))}
         </div>
       )}
-      <div className="h-72 overflow-hidden rounded-lg border border-white/10">
+      <div className="h-[min(40vh,18rem)] overflow-hidden rounded-lg border border-white/10 sm:h-72">
         <LeafletTerritoryMap
           territories={state.territories}
           churches={state.churches}

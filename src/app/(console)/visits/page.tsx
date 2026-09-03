@@ -265,7 +265,7 @@ export default function VisitsPage() {
         )}
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+      <div className="mt-2 grid gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-x-4">
         <FilterChips
           label="Grade"
           value={grade}

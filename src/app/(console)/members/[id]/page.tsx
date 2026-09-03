@@ -68,7 +68,7 @@ export default function MemberDetailPage() {
           <Row k="Coordinates" v={`${member.lat.toFixed(5)}, ${member.lng.toFixed(5)}`} />
           {member.adminNotes && <Row k="Admin notes" v={member.adminNotes} />}
         </div>
-        <div className="h-[min(68vh,calc(100dvh-14rem))] min-h-[420px] overflow-hidden rounded-lg border border-white/10">
+        <div className="h-[min(42vh,calc(100dvh-16rem))] min-h-[220px] overflow-hidden rounded-lg border border-white/10 sm:h-[min(68vh,calc(100dvh-14rem))] sm:min-h-[420px]">
           <LeafletTerritoryMap
             territories={state.territories}
             churches={state.churches}

@@ -56,8 +56,15 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom?: number } | null>(null);
   const [identify, setIdentify] = useState<{ lat: number; lng: number } | null>(null);
   const [hint, setHint] = useState("");
-  const [treeOpen, setTreeOpen] = useState(true);
-  const [infoOpen, setInfoOpen] = useState(true);
+  const [treeOpen, setTreeOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      setTreeOpen(true);
+      setInfoOpen(true);
+    }
+  }, []);
 
   const territories = state.territories || [];
   const selected = territories.find((t) => t.id === selectedId);
@@ -174,10 +181,10 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
         </div>
       )}
 
-      <div className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center px-3 pr-16">
+      <div className="pointer-events-none absolute inset-x-0 top-3 z-20 flex justify-center px-3 pr-14">
         <div className="pointer-events-auto gis-map-panel flex w-full max-w-3xl flex-wrap items-center gap-2 px-2 py-2">
           <input
-            className="gis-compact-input min-w-[160px] flex-1"
+            className="gis-compact-input min-w-0 w-full flex-1 basis-full sm:min-w-[160px] sm:basis-auto"
             placeholder="Search a place (Harare, Mutare…)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -222,19 +229,33 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
           <button className="btn btn-ghost py-1.5 text-xs" type="button" onClick={exportGeoJson}>
             Export
           </button>
-          {hint && <span className="max-w-[220px] truncate text-xs text-gold">{hint}</span>}
+          {hint && <span className="max-w-full truncate text-xs text-gold sm:max-w-[220px]">{hint}</span>}
+          <button
+            type="button"
+            className={`btn py-1.5 text-xs ${treeOpen ? "btn-cyan" : "btn-ghost"}`}
+            onClick={() => {
+              const opening = !treeOpen;
+              setTreeOpen(opening);
+              if (opening && window.innerWidth < 768) setInfoOpen(false);
+            }}
+          >
+            {treeOpen ? "Hide hierarchy" : "Hierarchy"}
+          </button>
+          <button
+            type="button"
+            className={`btn py-1.5 text-xs ${infoOpen ? "btn-cyan" : "btn-ghost"}`}
+            onClick={() => {
+              const opening = !infoOpen;
+              setInfoOpen(opening);
+              if (opening && window.innerWidth < 768) setTreeOpen(false);
+            }}
+          >
+            {infoOpen ? "Hide details" : "Details"}
+          </button>
         </div>
       </div>
-
-      <button
-        type="button"
-        className="gis-map-panel absolute left-3 top-[4.35rem] z-20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-cyan"
-        onClick={() => setTreeOpen((v) => !v)}
-      >
-        {treeOpen ? "Hide hierarchy" : "Hierarchy"}
-      </button>
       {treeOpen && (
-        <aside className="gis-map-panel absolute bottom-12 left-3 top-[6.6rem] z-20 flex w-[280px] flex-col overflow-hidden p-3">
+        <aside className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 top-auto z-20 flex max-h-[min(48vh,24rem)] flex-col overflow-hidden p-3 md:right-auto md:top-24 md:bottom-12 md:max-h-none md:w-[280px]">
           <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan">SDA hierarchy</div>
           <p className="mt-1 text-[11px] text-white/45">GC → SID → ZUC → EZC</p>
           <p className="mt-1 text-[11px] text-white/40">
@@ -249,6 +270,7 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
                 setSelectedId(id);
                 setMode("browse");
                 setVertices([]);
+                if (window.innerWidth < 768) setTreeOpen(false);
               }}
             />
             {canEdit && (
@@ -267,15 +289,8 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
         </aside>
       )}
 
-      <button
-        type="button"
-        className="gis-map-panel absolute right-14 top-[4.35rem] z-20 px-2.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-cyan md:right-3"
-        onClick={() => setInfoOpen((v) => !v)}
-      >
-        {infoOpen ? "Hide details" : "Details"}
-      </button>
       {infoOpen && (
-        <aside className="gis-map-panel absolute bottom-12 right-3 top-[6.6rem] z-20 w-[min(280px,calc(100vw-1.5rem))] overflow-auto p-3 scrollbar-thin">
+        <aside className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 top-auto z-20 max-h-[min(48vh,24rem)] overflow-auto p-3 scrollbar-thin md:left-auto md:top-24 md:bottom-12 md:max-h-none md:w-[min(280px,calc(100vw-1.5rem))]">
           {selected ? (
             <>
               <div className="text-xs uppercase tracking-[0.18em] text-white/45">{LEVEL_LABEL[selected.level]}</div>

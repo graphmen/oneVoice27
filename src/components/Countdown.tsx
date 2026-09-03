@@ -43,7 +43,7 @@ function TimeCard({
   return (
     <div className="glass rounded-3xl p-5">
       <div className="text-xs uppercase tracking-[0.18em] text-white/55">{label}</div>
-      <div className="mt-3 flex gap-4 text-center">
+      <div className="mt-3 flex justify-between gap-2 text-center sm:justify-start sm:gap-4">
         <Unit n={value?.days} l="Days" />
         <Unit n={value?.hours} l="Hours" />
         <Unit n={value?.mins} l="Mins" />
@@ -55,7 +55,7 @@ function TimeCard({
 function Unit({ n, l }: { n?: number; l: string }) {
   return (
     <div>
-      <div className="text-3xl font-semibold text-cyan">{n ?? "—"}</div>
+      <div className="text-2xl font-semibold text-cyan sm:text-3xl">{n ?? "—"}</div>
       <div className="text-[11px] uppercase tracking-widest text-white/50">{l}</div>
     </div>
   );

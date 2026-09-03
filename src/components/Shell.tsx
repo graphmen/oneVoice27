@@ -53,6 +53,18 @@ export function Shell({ children }: { children: ReactNode }) {
     if (!user) router.replace("/login");
   }, [ready, user, router]);
 
+  useEffect(() => {
+    setOpen(false);
+    setNotesOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   const items = useMemo(
     () => NAV.filter((n) => user && n.roles.includes(user.role)),
     [user],
@@ -71,24 +83,37 @@ export function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="ov-bg min-h-screen">
-      <div className="flex min-h-screen">
+    <div className="ov-bg min-h-dvh">
+      <div className="flex min-h-dvh">
+        {open && (
+          <button
+            type="button"
+            className="fixed inset-0 z-30 bg-black/55 lg:hidden"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+          />
+        )}
         <aside
           className={cx(
-            "fixed inset-y-0 left-0 z-40 w-[280px] border-r border-white/10 bg-[#12001c]/85 p-4 backdrop-blur-xl transition lg:static",
+            "fixed inset-y-0 left-0 z-40 flex w-[min(18rem,88vw)] flex-col border-r border-white/10 bg-[#12001c]/95 p-4 pl-[max(1rem,env(safe-area-inset-left))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-xl transition lg:static lg:w-[280px] lg:bg-[#12001c]/85",
             open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
-          <div className="flex items-center justify-between">
-            <BrandMark />
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 lg:hidden">
+              <BrandMark compact />
+            </div>
+            <div className="hidden min-w-0 lg:block">
+              <BrandMark />
+            </div>
             <button className="btn btn-ghost p-2 lg:hidden" onClick={() => setOpen(false)}>
               <IconClose />
             </button>
           </div>
-          <p className="mt-5 px-2 text-[0.7rem] uppercase tracking-[0.2em] text-white/40">
+          <p className="mt-4 px-2 text-[0.7rem] uppercase tracking-[0.2em] text-white/40">
             Pastoral visitation
           </p>
-          <nav className="mt-3 grid gap-1">
+          <nav className="mt-3 grid min-h-0 flex-1 gap-1 overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))] scrollbar-thin">
             {items.map((item) => {
               const active = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
@@ -97,7 +122,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cx(
-                    "flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm",
+                    "flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm lg:min-h-0 lg:py-1.5",
                     active ? "bg-magenta/20 text-white" : "text-white/70 hover:bg-white/5 hover:text-white",
                   )}
                 >
@@ -109,16 +134,16 @@ export function Shell({ children }: { children: ReactNode }) {
           </nav>
         </aside>
 
-        <div className={cx("flex min-w-0 flex-1 flex-col", mapPage && "h-screen overflow-hidden")}>
-          <header className="no-print sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/10 bg-[#12001c]/70 px-4 py-3 backdrop-blur-xl">
-            <button className="btn btn-ghost p-2 lg:hidden" onClick={() => setOpen(true)}>
+        <div className={cx("flex min-w-0 flex-1 flex-col", mapPage && "h-dvh overflow-hidden")}>
+          <header className="no-print sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-white/10 bg-[#12001c]/70 px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-xl sm:px-4 sm:py-3">
+            <button className="btn btn-ghost p-2 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
               <IconMenu />
             </button>
-            <div className="hidden text-sm text-white/60 lg:block">
+            <div className="hidden min-w-0 truncate text-sm text-white/60 lg:block">
               {ROLE_LABEL[user.role]} · {state.settings.conferenceName}
             </div>
-            <div className="ml-auto flex items-center gap-2">
-              <button className="btn btn-ghost relative px-3" onClick={() => setNotesOpen((v) => !v)}>
+            <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+              <button className="btn btn-ghost relative px-2 sm:px-3" onClick={() => setNotesOpen((v) => !v)} aria-label="Notifications">
                 <IconBell size={18} />
                 {unread > 0 && (
                   <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-magenta px-1 text-[10px]">
@@ -126,7 +151,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   </span>
                 )}
               </button>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1">
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-1.5 py-1 sm:px-2">
                 <div className="grid h-8 w-8 place-items-center rounded-full bg-magenta/30 text-xs font-bold">
                   {initials(user.displayName)}
                 </div>
@@ -136,7 +161,8 @@ export function Shell({ children }: { children: ReactNode }) {
                 </div>
               </div>
               <button
-                className="btn btn-ghost px-3"
+                className="btn btn-ghost px-2 sm:px-3"
+                aria-label="Log out"
                 onClick={() => {
                   logout();
                   router.push("/");
@@ -147,7 +173,7 @@ export function Shell({ children }: { children: ReactNode }) {
             </div>
           </header>
           {notesOpen && (
-            <div className="no-print mx-4 mt-3 glass rounded-3xl p-4">
+            <div className="no-print mx-3 mt-3 glass rounded-lg p-4 sm:mx-4">
               <div className="mb-2 text-sm font-semibold">Notifications</div>
               <div className="grid max-h-72 gap-2 overflow-auto scrollbar-thin">
                 {notes.length === 0 && <div className="text-sm text-white/60">No notifications yet.</div>}
@@ -159,7 +185,7 @@ export function Shell({ children }: { children: ReactNode }) {
                       markNotificationRead(n.id);
                       setNotesOpen(false);
                     }}
-                    className={cx("rounded-2xl p-3", n.read ? "bg-white/5" : "bg-magenta/15")}
+                    className={cx("rounded-lg p-3", n.read ? "bg-white/5" : "bg-magenta/15")}
                   >
                     <div className="text-sm font-medium">{n.title}</div>
                     <div className="text-xs text-white/65">{n.body}</div>
@@ -168,7 +194,14 @@ export function Shell({ children }: { children: ReactNode }) {
               </div>
             </div>
           )}
-          <main className={cx("flex-1", mapPage ? "min-h-0 overflow-hidden p-0" : "px-4 py-6 lg:px-8")}>
+          <main
+            className={cx(
+              "flex-1",
+              mapPage
+                ? "min-h-0 overflow-hidden p-0"
+                : "px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-4 sm:py-6 lg:px-8",
+            )}
+          >
             {children}
           </main>
         </div>

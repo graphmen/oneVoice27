@@ -31,7 +31,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="ov-bg grid min-h-screen place-items-center px-4 py-10">
+    <div className="ov-bg grid min-h-dvh place-items-center px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
       <div className="w-full max-w-md">
         <Link href="/" className="mb-6 inline-block">
           <BrandMark />
@@ -65,14 +65,14 @@ export default function LoginPage() {
               <button
                 key={d.email}
                 type="button"
-                className="btn btn-ghost justify-between"
+                className="btn btn-ghost h-auto min-h-11 w-full flex-col items-start gap-0.5 py-2 text-left sm:flex-row sm:items-center sm:justify-between"
                 onClick={() => {
                   setEmail(d.email);
                   setPassword(DEMO_PASSWORD);
                 }}
               >
                 <span>{d.label}</span>
-                <span className="text-cyan text-xs">{d.email}</span>
+                <span className="break-all text-xs text-cyan">{d.email}</span>
               </button>
             ))}
           </div>

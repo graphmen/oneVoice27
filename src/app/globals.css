@@ -42,7 +42,12 @@
 
 * { box-sizing: border-box; }
 
-html, body { min-height: 100%; }
+html, body {
+  min-height: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   background: var(--ov-bg);
@@ -150,6 +155,7 @@ input:focus, select:focus, textarea:focus {
   letter-spacing: 0.01em;
   line-height: 1.2;
   transition: 120ms ease;
+  touch-action: manipulation;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.82);
@@ -399,6 +405,56 @@ select.gis-compact-input,
 }
 .gis-tree-row.is-selected .gis-tree-meta {
   color: rgba(158, 236, 255, 0.78);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 639px) {
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  input[type="search"],
+  select,
+  textarea,
+  input.gis-compact-input,
+  select.gis-compact-input,
+  .gis-compact-input {
+    font-size: 16px;
+    padding: 0.55rem 0.7rem;
+  }
+  .btn,
+  .chip,
+  .tab {
+    min-height: 2.25rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 13px;
+  }
+  .list-row {
+    align-items: flex-start;
+    padding: 0.55rem 0.7rem;
+  }
+  .list-row-meta {
+    white-space: normal;
+  }
+  .tabs {
+    width: 100%;
+  }
+  h1.text-3xl,
+  h2.text-3xl {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .leaflet-bottom.leaflet-right {
+    margin-bottom: max(8px, env(safe-area-inset-bottom));
+  }
 }
 
 @media print {

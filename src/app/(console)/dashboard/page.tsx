@@ -184,59 +184,99 @@ function ConferenceMonitor() {
       )}
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="glass overflow-x-auto rounded-lg p-5">
+        <div className="glass rounded-lg p-4 sm:p-5">
           <h2 className="text-lg font-semibold">Duty assessment</h2>
           <p className="mt-1 text-sm text-white/50">
             Behind = overdue flock or no GPS-proven visits. Watch = exceptions or weak verification. Training is not
             counted as duty.
           </p>
-          <table className="mt-4 w-full text-left text-sm">
-            <thead className="text-xs uppercase tracking-widest text-white/45">
-              <tr>
-                <th className="pb-3">Shepherd</th>
-                <th>Duty</th>
-                <th>District</th>
-                <th>Assigned</th>
-                <th>Overdue</th>
-                <th>Coverage</th>
-                <th>Verified</th>
-                <th>Last field visit</th>
-                <th>Fruit</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.pastor.id} className="border-t border-white/8">
-                  <td className="py-3">
-                    <div>{row.pastor.displayName}</div>
-                    <div className="text-xs text-white/45">{row.churchName}</div>
-                  </td>
-                  <td>
-                    <StatusBadge status={row.duty} />
-                    <span className="sr-only">{DUTY_LABEL[row.duty]}</span>
-                  </td>
-                  <td className="text-white/60">{row.districtName}</td>
-                  <td>{row.assigned}</td>
-                  <td className={row.overdue ? "text-rose" : ""}>{row.overdue}</td>
-                  <td className={row.coverage < 70 ? "text-rose" : ""}>{row.coverage}%</td>
-                  <td>
-                    {row.verified}/{row.fieldVisits}
-                    {row.fieldVisits ? ` · ${row.verifiedPct}%` : ""}
-                  </td>
-                  <td className="text-white/60">{formatDate(row.lastVisitAt)}</td>
-                  <td className="text-white/60">
-                    {row.bibleStudy} studies · {row.baptismInterest} baptism
-                  </td>
-                  <td className="text-right">
-                    <Link href={`/members?pastor=${row.pastor.id}`} className="text-cyan">
-                      Flock
-                    </Link>
-                  </td>
+          <div className="mt-4 grid gap-3 md:hidden">
+            {rows.map((row) => (
+              <Link
+                key={row.pastor.id}
+                href={`/members?pastor=${row.pastor.id}`}
+                className="rounded-lg bg-white/5 p-3"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-medium">{row.pastor.displayName}</div>
+                    <div className="text-xs text-white/45">
+                      {row.districtName} · {row.churchName}
+                    </div>
+                  </div>
+                  <StatusBadge status={row.duty} />
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs text-white/65">
+                  <div>
+                    Overdue
+                    <div className={`mt-0.5 font-semibold ${row.overdue ? "text-rose" : "text-white"}`}>{row.overdue}</div>
+                  </div>
+                  <div>
+                    Coverage
+                    <div className={`mt-0.5 font-semibold ${row.coverage < 70 ? "text-rose" : "text-white"}`}>
+                      {row.coverage}%
+                    </div>
+                  </div>
+                  <div>
+                    Verified
+                    <div className="mt-0.5 font-semibold text-white">
+                      {row.fieldVisits ? `${row.verifiedPct}%` : "—"}
+                    </div>
+                  </div>
+                </div>
+                <div className="sr-only">{DUTY_LABEL[row.duty]}</div>
+              </Link>
+            ))}
+          </div>
+          <div className="table-scroll mt-4 hidden md:block">
+            <table className="w-full min-w-[760px] text-left text-sm">
+              <thead className="text-xs uppercase tracking-widest text-white/45">
+                <tr>
+                  <th className="pb-3">Shepherd</th>
+                  <th>Duty</th>
+                  <th>District</th>
+                  <th>Assigned</th>
+                  <th>Overdue</th>
+                  <th>Coverage</th>
+                  <th>Verified</th>
+                  <th>Last field visit</th>
+                  <th>Fruit</th>
+                  <th></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.pastor.id} className="border-t border-white/8">
+                    <td className="py-3">
+                      <div>{row.pastor.displayName}</div>
+                      <div className="text-xs text-white/45">{row.churchName}</div>
+                    </td>
+                    <td>
+                      <StatusBadge status={row.duty} />
+                      <span className="sr-only">{DUTY_LABEL[row.duty]}</span>
+                    </td>
+                    <td className="text-white/60">{row.districtName}</td>
+                    <td>{row.assigned}</td>
+                    <td className={row.overdue ? "text-rose" : ""}>{row.overdue}</td>
+                    <td className={row.coverage < 70 ? "text-rose" : ""}>{row.coverage}%</td>
+                    <td>
+                      {row.verified}/{row.fieldVisits}
+                      {row.fieldVisits ? ` · ${row.verifiedPct}%` : ""}
+                    </td>
+                    <td className="text-white/60">{formatDate(row.lastVisitAt)}</td>
+                    <td className="text-white/60">
+                      {row.bibleStudy} studies · {row.baptismInterest} baptism
+                    </td>
+                    <td className="text-right">
+                      <Link href={`/members?pastor=${row.pastor.id}`} className="text-cyan">
+                        Flock
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <article className="glass overflow-hidden rounded-lg">
           <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url(${verse.image})` }} />

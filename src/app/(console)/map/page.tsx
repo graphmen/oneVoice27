@@ -18,7 +18,7 @@ export default function MapPage() {
   const members = user ? visibleMembers(user, state.members).filter((m) => m.status === "active") : [];
   const [selected, setSelected] = useState(members[0]?.id);
   const [filter, setFilter] = useState("");
-  const [listOpen, setListOpen] = useState(true);
+  const [listOpen, setListOpen] = useState(false);
   const member = members.find((m) => m.id === selected) || members[0];
   const flyTo = useMemo(
     () => (member ? { lat: member.lat, lng: member.lng, zoom: 15 } : null),
@@ -57,7 +57,7 @@ export default function MapPage() {
         {listOpen ? "Hide members" : "Members"}
       </button>
       {listOpen && (
-        <aside className="gis-map-panel absolute bottom-20 left-3 top-[3.35rem] z-20 flex w-[220px] flex-col overflow-hidden p-2">
+        <aside className="gis-map-panel absolute bottom-24 left-3 right-3 top-auto z-20 flex max-h-[min(42vh,20rem)] flex-col overflow-hidden p-2 sm:right-auto sm:top-[3.35rem] sm:bottom-20 sm:max-h-none sm:w-[220px]">
           <input
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
@@ -71,7 +71,10 @@ export default function MapPage() {
                 <button
                   key={m.id}
                   type="button"
-                  onClick={() => setSelected(m.id)}
+                  onClick={() => {
+                    setSelected(m.id);
+                    if (typeof window !== "undefined" && window.innerWidth < 640) setListOpen(false);
+                  }}
                   className={`mb-0.5 w-full rounded-lg px-2 py-2 text-left ${
                     active ? "bg-magenta/20 shadow-[inset_2px_0_0_#9eecff]" : "hover:bg-white/5"
                   }`}
@@ -93,7 +96,7 @@ export default function MapPage() {
       )}
 
       {member && (
-        <div className="gis-map-panel absolute bottom-3 left-3 right-16 z-20 flex flex-wrap items-center gap-2 px-3 py-2">
+        <div className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-14 z-20 flex flex-col gap-2 px-3 py-2 sm:right-16 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium">{fullName(member)}</div>
             <div className="truncate text-[11px] text-white/50">
@@ -105,15 +108,17 @@ export default function MapPage() {
                 : "Outside a mapped church territory"}
             </div>
           </div>
-          <Link href={`/members/${member.id}`} className="btn btn-ghost py-1.5 text-xs">
-            Profile
-          </Link>
-          <Link href={`/members/${member.id}/edit`} className="btn btn-ghost py-1.5 text-xs">
-            Pin home
-          </Link>
-          <Link href={`/go/${member.id}`} className="btn btn-primary py-1.5 text-xs">
-            Visit
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/members/${member.id}`} className="btn btn-ghost py-1.5 text-xs">
+              Profile
+            </Link>
+            <Link href={`/members/${member.id}/edit`} className="btn btn-ghost py-1.5 text-xs">
+              Pin home
+            </Link>
+            <Link href={`/go/${member.id}`} className="btn btn-primary py-1.5 text-xs">
+              Visit
+            </Link>
+          </div>
         </div>
       )}
     </div>

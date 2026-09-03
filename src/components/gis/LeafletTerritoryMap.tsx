@@ -87,7 +87,7 @@ export default function LeafletTerritoryMap({
         attributionControl: true,
         preferCanvas: true,
       }).setView([-17.83, 31.05], 11);
-      L.control.zoom({ position: "bottomleft" }).addTo(map);
+      L.control.zoom({ position: "bottomright" }).addTo(map);
 
       const bases: Record<string, import("leaflet").TileLayer> = {};
       for (const spec of GOOGLE_BASES) {

@@ -203,7 +203,7 @@ function RegisterInner() {
               }
             }}
           />
-          <button className="btn btn-primary w-fit" disabled={typeof lat !== "number"}>
+          <button className="btn btn-primary w-full sm:w-fit" disabled={typeof lat !== "number"}>
             Save church
           </button>
         </form>
@@ -224,7 +224,7 @@ function RegisterInner() {
             Assigned to {district?.name || "the selected district"}
             {registeredChurch ? ` · ${registeredChurch.name}` : ""}. Demo password: {DEMO_PASSWORD}
           </p>
-          <button className="btn btn-primary w-fit">Save shepherd</button>
+          <button className="btn btn-primary w-full sm:w-fit">Save shepherd</button>
         </form>
       )}
 

@@ -8,10 +8,15 @@ export default function HomePage() {
   const verse = verseOfTheDay();
 
   return (
-    <div className="ov-bg wave-bottom min-h-screen text-white">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
-        <BrandMark />
-        <div className="flex items-center gap-3">
+    <div className="ov-bg wave-bottom min-h-dvh text-white">
+      <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-5 sm:py-5">
+        <div className="min-w-0 sm:hidden">
+          <BrandMark compact />
+        </div>
+        <div className="hidden min-w-0 sm:block">
+          <BrandMark />
+        </div>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link href="/about" className="hidden text-sm text-white/70 sm:inline">
             The movement
           </Link>
@@ -21,24 +26,24 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-5 pb-24">
-        <section className="grid items-center gap-10 py-10 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
+      <main className="mx-auto max-w-6xl px-4 pb-20 sm:px-5 sm:pb-24">
+        <section className="grid items-center gap-8 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10 lg:py-16">
           <div>
             <div className="badge bg-magenta/20 text-magenta">Seventh-day Adventist Church · SID</div>
-            <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+            <h1 className="mt-5 max-w-3xl text-[1.85rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
               {SYSTEM_NAME}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-white/75">{TAGLINE}</p>
+            <p className="mt-4 max-w-2xl text-base text-white/75 sm:text-lg">{TAGLINE}</p>
             <p className="mt-4 max-w-2xl text-white/65">
               Digital mission creates interest. Shepherds finish the work. SHEPHERD360 helps pastors visit assigned
               members with GPS-verified presence, confidential notes, and conference-level accountability — so every
               member is cared for on the road to September 2027.
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/login" className="btn btn-primary btn-lg">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
                 Open SHEPHERD360
               </Link>
-              <a href="https://onevoice27.org/" className="btn btn-ghost" target="_blank" rel="noreferrer">
+              <a href="https://onevoice27.org/" className="btn btn-ghost w-full sm:w-auto" target="_blank" rel="noreferrer">
                 onevoice27.org
               </a>
             </div>
@@ -78,7 +83,7 @@ export default function HomePage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="text-3xl font-semibold">How a verified visit works</h2>
+          <h2 className="text-2xl font-semibold sm:text-3xl">How a verified visit works</h2>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             {VISIT_FLOW.map((step, i) => (
               <div key={step} className="glass rounded-3xl p-5">
@@ -90,7 +95,7 @@ export default function HomePage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="text-3xl font-semibold">One Voice. Four pillars. One flock.</h2>
+          <h2 className="text-2xl font-semibold sm:text-3xl">One Voice. Four pillars. One flock.</h2>
           <p className="mt-3 max-w-3xl text-white/65">
             OneVoice27 embodies the Adventist Church’s 2025–2030 strategic plan. This system is the pastoral-care engine
             behind media evangelism: every Bible study request and every member can be shepherded in person.
@@ -105,9 +110,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-16 glass rounded-lg p-8">
+        <section className="mt-12 glass rounded-lg p-5 sm:mt-16 sm:p-8">
           <div className="text-sm uppercase tracking-[0.2em] text-magenta">Guiding philosophy</div>
-          <p className="mt-4 max-w-4xl font-serif text-2xl leading-snug text-white/90">
+          <p className="mt-4 max-w-4xl font-serif text-xl leading-snug text-white/90 sm:text-2xl">
             This is not a tool for counting houses. It helps the church answer: are our members being cared for,
             connected with, encouraged, and spiritually supported?
           </p>
@@ -115,7 +120,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-white/10 px-5 py-8 text-center text-sm text-white/50">
+      <footer className="border-t border-white/10 px-5 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-center text-sm text-white/50">
         SHEPHERD360 · {SYSTEM_NAME} · Southern Africa-Indian Ocean Division
       </footer>
     </div>

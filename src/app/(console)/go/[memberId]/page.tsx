@@ -175,7 +175,7 @@ export default function GoVisitPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-cyan">Field visitation</div>
-          <h1 className="text-3xl font-semibold">{fullName(member)}</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">{fullName(member)}</h1>
           <p className="text-white/60">
             {member.address} · {church?.name}
           </p>
@@ -183,18 +183,18 @@ export default function GoVisitPage() {
             Visit duration: {minutes} min {seconds.toString().padStart(2, "0")} s — stored automatically when you confirm.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           {call && (
-            <a className="btn btn-cyan" href={call}>
+            <a className="btn btn-cyan flex-1 sm:flex-none" href={call}>
               <IconPhone size={16} /> Call
             </a>
           )}
           {whatsapp && (
-            <a className="btn btn-cyan" href={whatsapp} target="_blank" rel="noreferrer">
+            <a className="btn btn-cyan flex-1 sm:flex-none" href={whatsapp} target="_blank" rel="noreferrer">
               <IconChat size={16} /> WhatsApp
             </a>
           )}
-          <a className="btn btn-ghost" href={mapsUrl(member.lat, member.lng, fullName(member))} target="_blank" rel="noreferrer">
+          <a className="btn btn-ghost flex-1 sm:flex-none" href={mapsUrl(member.lat, member.lng, fullName(member))} target="_blank" rel="noreferrer">
             <IconNav size={16} /> Navigate
           </a>
         </div>
@@ -206,7 +206,7 @@ export default function GoVisitPage() {
         </p>
       )}
 
-      <div className="relative mt-4 h-[min(72vh,calc(100dvh-11rem))] min-h-[520px] overflow-hidden rounded-lg border border-white/10">
+      <div className="relative mt-4 h-[min(52vh,calc(100dvh-16rem))] min-h-[240px] overflow-hidden rounded-lg border border-white/10 sm:h-[min(72vh,calc(100dvh-11rem))] sm:min-h-[420px]">
         <LeafletTerritoryMap
           territories={state.territories}
           churches={state.churches}
@@ -220,7 +220,7 @@ export default function GoVisitPage() {
           compactControl
           className="h-full w-full rounded-none"
         />
-        <div className="absolute left-3 top-3 z-20 w-[min(300px,calc(100%-5.5rem))]">
+        <div className="absolute left-3 right-14 top-3 z-20 sm:right-auto sm:w-[min(300px,calc(100%-5.5rem))]">
           <GeofenceRadar
             compact
             member={member}
@@ -238,7 +238,7 @@ export default function GoVisitPage() {
         Magenta pin is the home geofence. Cyan is your GPS. Location is only used while this visit screen is open.
       </p>
 
-      <form className="glass mt-6 rounded-lg p-6" onSubmit={(e) => e.preventDefault()}>
+      <form className="glass mt-6 rounded-lg p-4 sm:p-6" onSubmit={(e) => e.preventDefault()}>
         <label className="text-sm text-white/70">
           Visitation type
           <select className="mt-1" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
@@ -300,10 +300,10 @@ export default function GoVisitPage() {
           </label>
         )}
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary w-full sm:w-auto"
             disabled={!canConfirm}
             onClick={(e) => submit(e as unknown as FormEvent, false)}
           >
@@ -311,12 +311,12 @@ export default function GoVisitPage() {
           </button>
           <button
             type="button"
-            className="btn btn-ghost"
+            className="btn btn-ghost w-full sm:w-auto"
             onClick={() => setMode((m) => (m === "exception" ? "verify" : "exception"))}
           >
             Request manual verification
           </button>
-          <Link href={`/members/${member.id}`} className="btn btn-ghost">
+          <Link href={`/members/${member.id}`} className="btn btn-ghost w-full sm:w-auto">
             Cancel
           </Link>
         </div>
@@ -342,7 +342,7 @@ export default function GoVisitPage() {
                 placeholder="Hospital, member relocated, poor GPS, emergency…"
               />
             </label>
-            <button type="button" className="btn btn-cyan mt-3" onClick={(e) => submit(e as unknown as FormEvent, true)}>
+            <button type="button" className="btn btn-cyan mt-3 w-full sm:w-auto" onClick={(e) => submit(e as unknown as FormEvent, true)}>
               Submit exception for approval
             </button>
           </div>

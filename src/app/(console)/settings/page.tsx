@@ -78,7 +78,7 @@ export default function SettingsPage() {
             </span>
           </label>
         </div>
-        <button className="btn btn-primary w-fit">Save settings</button>
+        <button className="btn btn-primary w-full sm:w-fit">Save settings</button>
       </form>
 
       <div className="glass mt-6 rounded-lg p-6">

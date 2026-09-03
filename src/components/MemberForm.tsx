@@ -209,7 +209,7 @@ export function MemberForm({
         <textarea name="adminNotes" rows={3} className="mt-1" defaultValue={member?.adminNotes} />
       </label>
       {error && <p className="text-rose">{error}</p>}
-      <button className="btn btn-primary w-fit">{member ? "Save changes" : "Save member & geofence"}</button>
+      <button className="btn btn-primary w-full sm:w-fit">{member ? "Save changes" : "Save member & geofence"}</button>
     </form>
   );
 }
