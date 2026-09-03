@@ -63,6 +63,16 @@ function homePinIcon(
   });
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]!);
+}
+
+function mapPopupHtml(title: string, kicker: string) {
+  return `<div class="ov-popup"><div class="ov-popup-kicker">${escapeHtml(kicker)}</div><div class="ov-popup-title">${escapeHtml(title)}</div></div>`;
+}
+
+const POPUP_OPTS = { className: "ov-leaflet-popup", maxWidth: 280, minWidth: 168 };
+
 function googleUrl(lyrs: string) {
   return `https://{s}.google.com/vt/lyrs=${lyrs}&x={x}&y={y}&z={z}`;
 }
@@ -251,7 +261,7 @@ export default function LeafletTerritoryMap({
           weight: 2,
           fillColor: "#9eecff",
           fillOpacity: 1,
-        }).bindPopup(`<strong>${c.name}</strong><br/>Church sanctuary`);
+        }).bindPopup(mapPopupHtml(c.name, "Church sanctuary"), POPUP_OPTS);
         marker.on("click", (e) => {
           L.DomEvent.stopPropagation(e);
           if (c.territoryId) selectRef.current?.(c.territoryId);
@@ -266,7 +276,7 @@ export default function LeafletTerritoryMap({
             icon: homePinIcon(L, "flock"),
             keyboard: false,
             riseOnHover: true,
-          }).bindPopup(`${m.firstName} ${m.lastName}<br/>Member home`),
+          }).bindPopup(mapPopupHtml(`${m.firstName} ${m.lastName}`, "Member home"), POPUP_OPTS),
         );
       }
 
@@ -282,7 +292,7 @@ export default function LeafletTerritoryMap({
             weight: 2,
             fillColor: "#ffc24a",
             fillOpacity: 1,
-          }).bindPopup(`<strong>${u.displayName}</strong><br/>${u.title || "Pastor"}`),
+          }).bindPopup(mapPopupHtml(u.displayName, u.title || "Pastor"), POPUP_OPTS),
         );
       }
     })();

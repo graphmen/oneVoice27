@@ -288,13 +288,81 @@ input:focus, select:focus, textarea:focus {
   width: 18px;
   height: 18px;
 }
-.leaflet-tooltip, .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-  background: #1a0028;
-  color: #f6f3ff;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+.leaflet-container .leaflet-popup-content-wrapper {
+  background: linear-gradient(180deg, rgba(26, 0, 40, 0.97), rgba(12, 0, 20, 0.96)) !important;
+  color: var(--ov-text) !important;
+  border: 1px solid rgba(228, 0, 255, 0.38) !important;
+  border-radius: 8px !important;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(158, 236, 255, 0.1) !important;
+  padding: 0;
 }
-.leaflet-popup-content { margin: 12px 16px; }
+.leaflet-container .leaflet-popup-tip {
+  background: #14001f !important;
+  color: #14001f !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+.leaflet-container .leaflet-popup-content {
+  margin: 12px 34px 12px 14px !important;
+  font-family: var(--font-outfit), "Segoe UI", sans-serif !important;
+  color: var(--ov-text) !important;
+  line-height: 1.35;
+}
+.leaflet-container .leaflet-popup-close-button {
+  width: 26px !important;
+  height: 26px !important;
+  top: 6px !important;
+  right: 6px !important;
+  padding: 0 !important;
+  color: var(--ov-cyan) !important;
+  font: 18px/26px var(--font-outfit), sans-serif !important;
+  text-align: center !important;
+}
+.leaflet-container .leaflet-popup-close-button:hover {
+  color: var(--ov-magenta) !important;
+}
+.ov-popup {
+  min-width: 132px;
+  padding-left: 10px;
+  border-left: 2px solid var(--ov-magenta);
+}
+.ov-popup-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ov-cyan);
+}
+.ov-popup-title {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ov-text);
+}
+.leaflet-container .leaflet-tooltip {
+  background: rgba(18, 0, 28, 0.94) !important;
+  color: var(--ov-text) !important;
+  border: 1px solid rgba(158, 236, 255, 0.28) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+  font-family: var(--font-outfit), "Segoe UI", sans-serif !important;
+  font-size: 12px !important;
+  padding: 6px 8px !important;
+}
+.leaflet-tooltip-top:before {
+  border-top-color: rgba(18, 0, 28, 0.94) !important;
+}
+.leaflet-tooltip-bottom:before {
+  border-bottom-color: rgba(18, 0, 28, 0.94) !important;
+}
+.leaflet-tooltip-left:before {
+  border-left-color: rgba(18, 0, 28, 0.94) !important;
+}
+.leaflet-tooltip-right:before {
+  border-right-color: rgba(18, 0, 28, 0.94) !important;
+}
 .leaflet-control-zoom a {
   background: #1a0028 !important;
   color: #9eecff !important;

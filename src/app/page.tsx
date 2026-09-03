@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
 import { Countdown } from "@/components/Countdown";
-import { HASHTAGS, MOVEMENT, PILLARS, SYSTEM_NAME, TAGLINE, VISIT_FLOW } from "@/lib/constants";
+import {
+  CONFERENCE_NAME,
+  CONFERENCE_SHORT,
+  HASHTAGS,
+  MOVEMENT,
+  PILLARS,
+  SYSTEM_NAME,
+  TAGLINE,
+  VISIT_FLOW,
+} from "@/lib/constants";
 import { verseOfTheDay } from "@/lib/verses";
 
 export default function HomePage() {
@@ -29,7 +38,9 @@ export default function HomePage() {
       <main className="mx-auto max-w-6xl px-4 pb-20 sm:px-5 sm:pb-24">
         <section className="grid items-center gap-8 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10 lg:py-16">
           <div>
-            <div className="badge bg-magenta/20 text-magenta">Seventh-day Adventist Church · SID</div>
+            <div className="badge bg-magenta/20 text-magenta">
+              {CONFERENCE_NAME}, {CONFERENCE_SHORT}
+            </div>
             <h1 className="mt-5 max-w-3xl text-[1.85rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
               {SYSTEM_NAME}
             </h1>
@@ -121,7 +132,7 @@ export default function HomePage() {
       </main>
 
       <footer className="border-t border-white/10 px-5 py-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-center text-sm text-white/50">
-        SHEPHERD360 · {SYSTEM_NAME} · Southern Africa-Indian Ocean Division
+        SHEPHERD360 · {SYSTEM_NAME} · {CONFERENCE_NAME}
       </footer>
     </div>
   );

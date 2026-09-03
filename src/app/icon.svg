@@ -1,5 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#14001f"/>
-  <circle cx="16" cy="16" r="11" fill="none" stroke="#9eecff" stroke-width="2"/>
-  <path fill="#e400ff" d="M16 6.2c1.5 4.4 5.4 7.2 5.4 12.4 0 5.5-2.7 9.4-5.4 11.5-2.7-2.1-5.4-6-5.4-11.5 0-5.2 3.9-8 5.4-12.4z"/>
+  <rect width="32" height="32" fill="#000"/>
+  <defs>
+    <linearGradient id="ov" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f3b4ea"/>
+      <stop offset="1" stop-color="#9b3ef0"/>
+    </linearGradient>
+    <linearGradient id="n27" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7af3ea"/>
+      <stop offset="1" stop-color="#2cb8b2"/>
+    </linearGradient>
+  </defs>
+  <text
+    x="16.2"
+    y="14.2"
+    text-anchor="middle"
+    fill="url(#ov)"
+    font-family="Arial Black, Arial, Helvetica, sans-serif"
+    font-size="13.2"
+    font-style="italic"
+    font-weight="900"
+    letter-spacing="-0.8"
+  >OV</text>
+  <text
+    x="16.2"
+    y="27.4"
+    text-anchor="middle"
+    fill="url(#n27)"
+    font-family="Arial Black, Arial, Helvetica, sans-serif"
+    font-size="13.2"
+    font-style="italic"
+    font-weight="900"
+    letter-spacing="-0.8"
+  >27</text>
 </svg>

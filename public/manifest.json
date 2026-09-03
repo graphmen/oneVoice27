@@ -3,12 +3,13 @@
   "short_name": "SHEPHERD360",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#14001f",
+  "background_color": "#000000",
   "theme_color": "#14001f",
   "description": "Connecting Shepherds. Caring for Members.",
   "icons": [
     { "src": "/favicon.ico", "sizes": "32x32", "type": "image/x-icon" },
     { "src": "/icons/icon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/icons/icon.png", "sizes": "1024x1024", "type": "image/png" },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",

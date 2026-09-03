@@ -3,6 +3,8 @@ export const SYSTEM_NAME = "One Voice 27 Pastoral Visitation Management System";
 export const TAGLINE = "Connecting Shepherds. Caring for Members.";
 export const MOVEMENT = "ONE JESUS | ONE MISSION | ONE GLOBAL MOVEMENT";
 export const MISSION = "MISSION FOR ALL";
+export const CONFERENCE_NAME = "East Zimbabwe Conference";
+export const CONFERENCE_SHORT = "EZC";
 export const HASHTAGS = ["#ALLTHINGSNEW", "#ONEVOICE27", "#HOPESTARTSHERE"];
 
 export const ALL_THINGS_NEW = new Date("2026-09-05T11:00:00+02:00");
