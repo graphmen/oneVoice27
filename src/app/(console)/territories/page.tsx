@@ -1,29 +1,26 @@
 "use client";
 
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { GisPinPicker } from "@/components/gis/GisPinPicker";
+import { ChurchForm } from "@/components/ChurchForm";
 import { HierarchyPicker, type HierarchyPick } from "@/components/HierarchyPicker";
 import { MemberForm } from "@/components/MemberForm";
+import { ShepherdForm } from "@/components/ShepherdForm";
 import { useStore } from "@/lib/store";
-import { circlePolygon } from "@/lib/gis";
-import { DEMO_PASSWORD, EZC_CONFERENCE_ID } from "@/lib/constants";
+import { EZC_CONFERENCE_ID } from "@/lib/constants";
 import { demoLinks } from "@/lib/ezc-index";
-import type { Church, Role, Territory, UserAccount } from "@/lib/types";
-import { canEditGis, canRegisterMembers, uid } from "@/lib/utils";
+import { canEditGis, canRegisterMembers } from "@/lib/utils";
 
 type DeskTab = "church" | "shepherd" | "member";
 
 function RegisterInner() {
   const params = useSearchParams();
   const router = useRouter();
-  const { user, state, upsertChurch, upsertTerritory, upsertUser } = useStore();
+  const { user, state } = useStore();
   const requested = (params.get("type") as DeskTab) || "member";
   const [tab, setTab] = useState<DeskTab>(requested);
   const [done, setDone] = useState("");
   const [memberFormKey, setMemberFormKey] = useState(0);
-  const [lat, setLat] = useState<number | "">("");
-  const [lng, setLng] = useState<number | "">("");
   const [pick, setPick] = useState<HierarchyPick>({
     conferenceId: EZC_CONFERENCE_ID,
     districtId: params.get("district") || demoLinks.harareCentralDistrictId,
@@ -60,89 +57,6 @@ function RegisterInner() {
     router.replace(`/territories?${query.toString()}`);
   }
 
-  function saveChurch(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!user || !canPlaceChurch) return;
-    if (typeof lat !== "number" || typeof lng !== "number") return;
-    const fd = new FormData(e.currentTarget);
-    const churchId = uid("ch");
-    const existing = state.territories.find((t) => t.id === pick.churchTerritoryId && t.level === "church");
-    const territoryId = existing?.id || uid("ter");
-    const name = String(fd.get("name"));
-    const church: Church = {
-      id: churchId,
-      name,
-      regionId: state.regions[0]?.id || "reg_harare",
-      districtId: pick.districtId,
-      territoryId,
-      address: String(fd.get("address")),
-      city: String(fd.get("city")),
-      lat,
-      lng,
-    };
-    upsertChurch(church);
-    if (existing) {
-      upsertTerritory({ ...existing, churchId, name: existing.name || name, parentId: pick.districtId });
-    } else {
-      const territory: Territory = {
-        id: territoryId,
-        name,
-        level: "church",
-        parentId: pick.districtId,
-        churchId,
-        color: "#5dffb2",
-        assignedPastorIds: [],
-        geometry: circlePolygon(lat, lng, 1200),
-        notes: "Catchment started as a 1.2 km ring around the sanctuary. Draw the true boundary in GIS.",
-      };
-      upsertTerritory(territory);
-    }
-    setPick((cur) => ({ ...cur, churchId, churchTerritoryId: territoryId }));
-    const savedName = name;
-    const savedDistrict = district?.name || "this district";
-    const query = new URLSearchParams(params.toString());
-    query.set("type", "member");
-    setTab("member");
-    router.replace(`/territories?${query.toString()}`);
-    setLat("");
-    setLng("");
-    setDone(`${savedName} is registered in ${savedDistrict}. You can add a shepherd or members next.`);
-  }
-
-  function saveShepherd(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!user || !canPlaceChurch) return;
-    const fd = new FormData(e.currentTarget);
-    const churchId = pick.churchId || "";
-    const selectedTerritories = [pick.districtId, pick.churchTerritoryId].filter(Boolean) as string[];
-    const fromDistricts = state.territories.filter((t) => selectedTerritories.includes(t.id));
-    const churchIds = new Set<string>(churchId ? [churchId] : []);
-    for (const t of fromDistricts) {
-      if (t.churchId) churchIds.add(t.churchId);
-      state.churches.filter((c) => c.districtId === t.id).forEach((c) => churchIds.add(c.id));
-    }
-    const account: UserAccount = {
-      id: uid("usr"),
-      email: String(fd.get("email")),
-      password: DEMO_PASSWORD,
-      displayName: String(fd.get("displayName")),
-      role: String(fd.get("role")) as Role,
-      churchIds: [...churchIds],
-      territoryIds: selectedTerritories,
-      phone: String(fd.get("phone") || ""),
-      title: String(fd.get("title") || "Pastor"),
-      status: "active",
-    };
-    upsertUser(account);
-    for (const t of fromDistricts) {
-      if (!t.assignedPastorIds.includes(account.id)) {
-        upsertTerritory({ ...t, assignedPastorIds: [...t.assignedPastorIds, account.id] });
-      }
-    }
-    setDone(`${account.displayName} is registered over ${district?.name || "this district"}. Sign-in password: ${DEMO_PASSWORD}`);
-    e.currentTarget.reset();
-  }
-
   if (!user) return null;
 
   return (
@@ -150,7 +64,7 @@ function RegisterInner() {
       <h1 className="text-3xl font-semibold">Register</h1>
       <p className="mt-2 text-white/60">
         Choose the place in the SDA hierarchy, then save the church, shepherd or member here. GIS is only for
-        boundaries.
+        boundaries. Existing records can be edited or deleted from Churches, Shepherds, or Members.
       </p>
 
       <div className="glass mt-6 grid gap-4 rounded-lg p-5">
@@ -181,51 +95,41 @@ function RegisterInner() {
       {done && <p className="mt-4 text-sm text-ok">{done}</p>}
 
       {active === "church" && canPlaceChurch && (
-        <form className="glass mt-4 grid gap-3 rounded-lg p-5" onSubmit={saveChurch}>
+        <div className="mt-2">
           <h2 className="text-lg font-semibold">Register a church</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input name="name" placeholder="Church name" required defaultValue={mappedChurch?.name || ""} />
-            <input name="city" placeholder="City" required />
-            <input name="address" placeholder="Sanctuary address" className="sm:col-span-2" required />
-          </div>
-          <GisPinPicker
-            lat={lat}
-            lng={lng}
-            onChange={(coords) => {
-              setLat(coords.lat);
-              setLng(coords.lng);
-              if (coords.districtId) {
-                setPick((cur) => ({
-                  ...cur,
-                  districtId: coords.districtId || cur.districtId,
-                  churchTerritoryId: coords.territoryId || cur.churchTerritoryId,
-                }));
-              }
+          <ChurchForm
+            pick={pick}
+            onPickChange={setPick}
+            hidePlacement
+            defaultName={mappedChurch?.name}
+            onSaved={(church) => {
+              setPick((cur) => ({ ...cur, churchId: church.id, churchTerritoryId: church.territoryId }));
+              const query = new URLSearchParams(params.toString());
+              query.set("type", "member");
+              setTab("member");
+              router.replace(`/territories?${query.toString()}`);
+              setDone(
+                `${church.name} is registered in ${district?.name || "this district"}. You can add a shepherd or members next.`,
+              );
             }}
           />
-          <button className="btn btn-primary w-full sm:w-fit" disabled={typeof lat !== "number"}>
-            Save church
-          </button>
-        </form>
+        </div>
       )}
 
       {active === "shepherd" && canPlaceChurch && (
-        <form className="glass mt-4 grid gap-3 rounded-lg p-5 sm:grid-cols-2" onSubmit={saveShepherd}>
-          <h2 className="sm:col-span-2 text-lg font-semibold">Register a shepherd</h2>
-          <input name="displayName" placeholder="Full name" required />
-          <input name="email" type="email" placeholder="Email" required />
-          <input name="phone" placeholder="Phone" />
-          <input name="title" placeholder="Title" defaultValue="District Pastor" />
-          <select name="role" defaultValue="pastor" className="sm:col-span-2">
-            <option value="pastor">Pastor</option>
-            {user.role === "master_admin" && <option value="church_admin">Church administrator</option>}
-          </select>
-          <p className="sm:col-span-2 text-xs text-white/50">
-            Assigned to {district?.name || "the selected district"}
-            {registeredChurch ? ` · ${registeredChurch.name}` : ""}. Demo password: {DEMO_PASSWORD}
-          </p>
-          <button className="btn btn-primary w-full sm:w-fit">Save shepherd</button>
-        </form>
+        <div className="mt-2">
+          <h2 className="text-lg font-semibold">Register a shepherd</h2>
+          <ShepherdForm
+            pick={pick}
+            onPickChange={setPick}
+            hidePlacement
+            onSaved={(account) => {
+              setDone(
+                `${account.displayName} is registered over ${district?.name || "this district"}. They can sign in with the demo password unless you change it later.`,
+              );
+            }}
+          />
+        </div>
       )}
 
       {active === "member" && canPlaceMember && (

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { LEVEL_LABEL } from "@/lib/gis";
-import { canEditGis, ROLE_LABEL } from "@/lib/utils";
+import { canEditGis, canManageAccount, ROLE_LABEL } from "@/lib/utils";
 
 export default function PastorsPage() {
   const { user, state } = useStore();
@@ -20,7 +20,7 @@ export default function PastorsPage() {
         <div>
           <h1 className="text-3xl font-semibold">Shepherds</h1>
           <p className="mt-2 text-white/60">
-            Pastors already assigned to a district or church. New shepherds are registered from the Register desk.
+            Pastors and church officers already assigned. Open Edit to update details, placement, or remove an account.
           </p>
         </div>
         {canEditGis(user) && (
@@ -40,7 +40,8 @@ export default function PastorsPage() {
               <div className="min-w-0 flex-1">
                 <div className="list-row-title">{p.displayName}</div>
                 <div className="list-row-meta">
-                  {ROLE_LABEL[p.role]} · {p.email} · {p.phone} · {assigned} assigned
+                  {ROLE_LABEL[p.role]} · {p.status === "inactive" ? "Inactive · " : ""}
+                  {p.email} · {p.phone} · {assigned} assigned
                 </div>
                 <div className="mt-1 flex flex-wrap gap-1">
                   {territories.map((t) => (
@@ -51,6 +52,11 @@ export default function PastorsPage() {
                   {territories.length === 0 && <span className="text-xs text-gold">No hierarchy placement yet</span>}
                 </div>
               </div>
+              {canManageAccount(user, p) && (
+                <Link href={`/pastors/${p.id}/edit`} className="btn btn-ghost">
+                  Edit
+                </Link>
+              )}
             </div>
           );
         })}

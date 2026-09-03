@@ -29,7 +29,7 @@ export function MemberActions({
   const compact = size === "sm";
   const icon = compact ? 12 : 14;
   const canEdit = canEditMember(user, member);
-  const editLabel = field ? (compact ? "Edit" : "Edit / pin home") : compact ? "Assign / pin" : "Assign / pin home";
+  const editLabel = compact ? "Edit" : "Edit record";
 
   if (!field && !canEdit) return null;
 

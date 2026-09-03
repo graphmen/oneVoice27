@@ -95,25 +95,24 @@ export function Shell({ children }: { children: ReactNode }) {
         )}
         <aside
           className={cx(
-            "fixed inset-y-0 left-0 z-40 flex w-[min(18rem,88vw)] flex-col border-r border-white/10 bg-[#12001c]/95 p-4 pl-[max(1rem,env(safe-area-inset-left))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-xl transition lg:static lg:w-[280px] lg:bg-[#12001c]/85",
+            "fixed inset-y-0 left-0 z-40 flex h-dvh max-h-dvh w-[min(18rem,88vw)] flex-col overflow-hidden border-r border-white/10 bg-[#12001c]/95 backdrop-blur-xl transition lg:sticky lg:top-0 lg:w-[280px] lg:bg-[#12001c]/85 lg:self-start",
             open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
-          <div className="flex items-center justify-between gap-2">
-            <div className="min-w-0 lg:hidden">
-              <BrandMark compact />
+          <div className="shrink-0 border-b border-white/10 bg-[#12001c] px-4 pb-3 pl-[max(1rem,env(safe-area-inset-left))] pt-[max(1rem,env(safe-area-inset-top))]">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <BrandMark />
+              </div>
+              <button className="btn btn-ghost shrink-0 p-2 lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
+                <IconClose />
+              </button>
             </div>
-            <div className="hidden min-w-0 lg:block">
-              <BrandMark />
-            </div>
-            <button className="btn btn-ghost p-2 lg:hidden" onClick={() => setOpen(false)}>
-              <IconClose />
-            </button>
+            <p className="mt-3 px-2 text-[0.7rem] uppercase tracking-[0.2em] text-white/40">
+              Pastoral visitation
+            </p>
           </div>
-          <p className="mt-4 px-2 text-[0.7rem] uppercase tracking-[0.2em] text-white/40">
-            Pastoral visitation
-          </p>
-          <nav className="mt-3 grid min-h-0 flex-1 gap-1 overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))] scrollbar-thin">
+          <nav className="flex min-h-0 flex-1 flex-col justify-start gap-0.5 overflow-y-auto px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] pl-[max(1rem,env(safe-area-inset-left))] scrollbar-thin">
             {items.map((item) => {
               const active = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
@@ -122,7 +121,7 @@ export function Shell({ children }: { children: ReactNode }) {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cx(
-                    "flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm lg:min-h-0 lg:py-1.5",
+                    "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm",
                     active ? "bg-magenta/20 text-white" : "text-white/70 hover:bg-white/5 hover:text-white",
                   )}
                 >

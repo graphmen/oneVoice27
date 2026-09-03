@@ -1,4 +1,4 @@
-import type { Member, Priority, UserAccount, Visit, VisitFrequency } from "./types";
+import type { Church, Member, Priority, UserAccount, Visit, VisitFrequency } from "./types";
 
 export function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -136,6 +136,32 @@ export function canEditMember(user: UserAccount, member: Member) {
   if (user.role === "master_admin") return true;
   if (user.role === "church_admin") return user.churchIds.includes(member.churchId);
   return member.assignedPastorId === user.id;
+}
+
+export function canDeleteMember(user: UserAccount, member: Member) {
+  return canEditMember(user, member);
+}
+
+export function canManageChurch(user: UserAccount, church: Church) {
+  if (user.role === "master_admin") return true;
+  if (user.role === "church_admin") return user.churchIds.includes(church.id);
+  return false;
+}
+
+export function canManageAccount(user: UserAccount, account: UserAccount) {
+  if (account.role === "master_admin" && user.role !== "master_admin") return false;
+  if (user.id === account.id) return user.role === "master_admin" || user.role === "church_admin";
+  if (user.role === "master_admin") return true;
+  if (user.role === "church_admin") {
+    return account.churchIds.some((id) => user.churchIds.includes(id));
+  }
+  return false;
+}
+
+export function canDeleteAccount(user: UserAccount, account: UserAccount) {
+  if (user.id === account.id) return false;
+  if (account.role === "master_admin") return false;
+  return canManageAccount(user, account);
 }
 
 export function readyPastoralMessage(firstName: string, churchName: string) {

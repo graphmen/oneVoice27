@@ -34,7 +34,9 @@ type StoreContextValue = {
   upsertMember: (member: Member) => void;
   deleteMember: (id: string) => void;
   upsertUser: (account: UserAccount) => void;
+  deleteUser: (id: string) => void;
   upsertChurch: (church: Church) => void;
+  deleteChurch: (id: string) => void;
   upsertTerritory: (territory: Territory) => void;
   deleteTerritory: (id: string) => void;
   upsertCategory: (category: VisitCategory) => void;
@@ -268,7 +270,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const deleteMember = useCallback(
     (id: string) => {
-      setState((s) => ({ ...s, members: s.members.filter((m) => m.id !== id) }));
+      setState((s) => ({
+        ...s,
+        members: s.members.filter((m) => m.id !== id),
+        visits: s.visits.filter((v) => v.memberId !== id),
+        notifications: s.notifications.filter((n) => n.href !== `/members/${id}` && n.href !== `/go/${id}`),
+      }));
       log("member.delete", "member", id);
     },
     [log],
@@ -282,7 +289,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ? s.users.map((u) => (u.id === account.id ? account : u))
           : [account, ...s.users],
       }));
+      setUser((cur) => (cur?.id === account.id ? account : cur));
       log("user.upsert", "user", account.id, { role: account.role });
+    },
+    [log],
+  );
+
+  const deleteUser = useCallback(
+    (id: string) => {
+      setState((s) => ({
+        ...s,
+        users: s.users.filter((u) => u.id !== id),
+        members: s.members.map((m) => (m.assignedPastorId === id ? { ...m, assignedPastorId: undefined } : m)),
+        territories: s.territories.map((t) => ({
+          ...t,
+          assignedPastorIds: t.assignedPastorIds.filter((pid) => pid !== id),
+        })),
+      }));
+      log("user.delete", "user", id);
     },
     [log],
   );
@@ -296,6 +320,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           : [church, ...s.churches],
       }));
       log("church.upsert", "church", church.id);
+    },
+    [log],
+  );
+
+  const deleteChurch = useCallback(
+    (id: string) => {
+      setState((s) => {
+        const memberIds = new Set(s.members.filter((m) => m.churchId === id).map((m) => m.id));
+        return {
+          ...s,
+          churches: s.churches.filter((c) => c.id !== id),
+          members: s.members.filter((m) => m.churchId !== id),
+          visits: s.visits.filter((v) => v.churchId !== id && !memberIds.has(v.memberId)),
+          users: s.users.map((u) => ({ ...u, churchIds: u.churchIds.filter((cid) => cid !== id) })),
+          territories: s.territories.map((t) => (t.churchId === id ? { ...t, churchId: undefined } : t)),
+          notifications: s.notifications.filter(
+            (n) => ![...memberIds].some((mid) => n.href?.includes(mid)),
+          ),
+        };
+      });
+      setUser((cur) => (cur ? { ...cur, churchIds: cur.churchIds.filter((cid) => cid !== id) } : cur));
+      log("church.delete", "church", id);
     },
     [log],
   );
@@ -460,7 +506,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       upsertMember,
       deleteMember,
       upsertUser,
+      deleteUser,
       upsertChurch,
+      deleteChurch,
       upsertTerritory,
       deleteTerritory,
       upsertCategory,
@@ -480,7 +528,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       upsertMember,
       deleteMember,
       upsertUser,
+      deleteUser,
       upsertChurch,
+      deleteChurch,
       upsertTerritory,
       deleteTerritory,
       upsertCategory,

@@ -83,7 +83,7 @@ export function MemberForm({
       nextVisitDue: member?.nextVisitDue || computeNextDue(undefined, freq),
       memberType: String(fd.get("memberType")) as MemberType,
       adminNotes: String(fd.get("adminNotes") || ""),
-      status: "active",
+      status: member ? ((String(fd.get("status") || member.status) as Member["status"]) || member.status) : "active",
       createdAt: member?.createdAt || new Date().toISOString(),
     };
     upsertMember(next);
@@ -153,7 +153,7 @@ export function MemberForm({
         <input className="mt-1" name="address" required value={address} onChange={(e) => setAddress(e.target.value)} />
       </label>
       <Field name="suburb" label="Suburb / area" defaultValue={member?.suburb} />
-      {!hidePlacement && (
+      {!hidePlacement && assignPastor && (
         <div className="rounded-lg border border-white/10 bg-white/5 p-4">
           <div className="text-xs uppercase tracking-[0.18em] text-cyan">Place on the SDA hierarchy</div>
           <p className="mt-1 text-sm text-white/55">District and church this member belongs to.</p>
@@ -161,6 +161,11 @@ export function MemberForm({
             <HierarchyPicker value={pick} onChange={setPick} leaf="church" showGisChurches={false} />
           </div>
         </div>
+      )}
+      {!hidePlacement && !assignPastor && (
+        <p className="text-sm text-white/55">
+          Church stays {seedChurch?.name || "the assigned congregation"}. Conference officers move members between churches.
+        </p>
       )}
       <input type="hidden" name="churchId" value={pick.churchId || ""} />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -191,6 +196,15 @@ export function MemberForm({
             <option value="inactive">Inactive / digital interest</option>
           </select>
         </label>
+        {member && (
+          <label className="text-sm text-white/70">
+            Record status
+            <select name="status" className="mt-1" defaultValue={member.status}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </label>
+        )}
         <label className="text-sm text-white/70">
           Visitation frequency
           <select name="visitationFrequency" className="mt-1" defaultValue={member?.visitationFrequency || "quarterly"}>

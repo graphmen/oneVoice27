@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 import { ancestors } from "@/lib/gis";
-import { canEditGis } from "@/lib/utils";
+import { canEditGis, canManageChurch } from "@/lib/utils";
 
 export default function ChurchesPage() {
   const { user, state } = useStore();
@@ -17,7 +17,7 @@ export default function ChurchesPage() {
         <div>
           <h1 className="text-3xl font-semibold">Churches</h1>
           <p className="mt-2 text-white/60">
-            Congregations already on the books. New churches are registered from the Register desk.
+            Congregations already on the books. Open Edit to change the pin or details, or to remove a congregation.
           </p>
         </div>
         {canEditGis(user) && (
@@ -44,6 +44,11 @@ export default function ChurchesPage() {
                   {district ? ` → ${district.name}` : ""}
                 </div>
               </div>
+              {canManageChurch(user, c) && (
+                <Link href={`/churches/${c.id}/edit`} className="btn btn-ghost">
+                  Edit
+                </Link>
+              )}
             </div>
           );
         })}

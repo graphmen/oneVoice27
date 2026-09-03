@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { MemberActions } from "@/components/MemberActions";
+import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { StatusBadge } from "@/components/ui";
 import { useStore } from "@/lib/store";
 import {
+  canDeleteMember,
   dueLabel,
   formatDate,
   formatDateTime,
@@ -24,7 +26,8 @@ const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerrit
 
 export default function MemberDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { state, user } = useStore();
+  const router = useRouter();
+  const { state, user, deleteMember } = useStore();
   const member = state.members.find((m) => m.id === id);
   if (!user || !member) return <p>Member not found.</p>;
 
@@ -90,7 +93,7 @@ export default function MemberDetailPage() {
               “{readyPastoralMessage(member.firstName, church?.name || "the church")}”
             </p>
             <p className="mt-2 text-sm text-white/50">
-              Call and WhatsApp above send this text. Edit the home pin if the family moved.
+              Call and WhatsApp above send this text. Edit the record if the family moved or the details are wrong.
             </p>
           </div>
         ) : (
@@ -98,7 +101,7 @@ export default function MemberDetailPage() {
             <div className="text-xs uppercase tracking-[0.18em] text-cyan">Conference record</div>
             <p className="mt-2 text-white/80">
               Assigned to {pastor?.displayName || "no shepherd yet"}. Conference does not call, message, or visit this
-              household. Use Assign / pin home if the shepherd or address is wrong.
+              household. Use Edit record if the shepherd, address, or membership details are wrong.
             </p>
           </div>
         )}
@@ -120,6 +123,23 @@ export default function MemberDetailPage() {
           </div>
         </div>
       </div>
+      {user && canDeleteMember(user, member) && (
+        <div className="mt-6">
+          <ConfirmDelete
+            noun="member"
+            name={fullName(member)}
+            warning={
+              history.length
+                ? `This also removes ${history.length} visit record${history.length === 1 ? "" : "s"} for this household.`
+                : "This household will leave the flock list."
+            }
+            onConfirm={() => {
+              deleteMember(member.id);
+              router.push("/members");
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
