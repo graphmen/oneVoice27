@@ -12,7 +12,6 @@ import type { GpsFix, Visit } from "@/lib/types";
 import {
   canEditMember,
   fullName,
-  mapsUrl,
   readyVisitMessage,
   telHref,
   uid,
@@ -194,9 +193,9 @@ export default function GoVisitPage() {
               <IconChat size={16} /> WhatsApp
             </a>
           )}
-          <a className="btn btn-ghost flex-1 sm:flex-none" href={mapsUrl(member.lat, member.lng, fullName(member))} target="_blank" rel="noreferrer">
+          <Link href={`/go/${member.id}/navigate`} className="btn btn-ghost flex-1 sm:flex-none">
             <IconNav size={16} /> Navigate
-          </a>
+          </Link>
         </div>
       </div>
 

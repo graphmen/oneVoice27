@@ -41,6 +41,8 @@ export function watchGps(
         lng: pos.coords.longitude,
         accuracy: pos.coords.accuracy,
         timestamp: pos.timestamp,
+        heading: Number.isFinite(pos.coords.heading) ? pos.coords.heading : null,
+        speed: Number.isFinite(pos.coords.speed) ? pos.coords.speed : null,
       });
     },
     (err) => {
@@ -62,4 +64,41 @@ export function bearingDegrees(fromLat: number, fromLng: number, toLat: number, 
     Math.cos(toRad(fromLat)) * Math.sin(toRad(toLat)) -
     Math.sin(toRad(fromLat)) * Math.cos(toRad(toLat)) * Math.cos(toRad(toLng - fromLng));
   return (Math.atan2(y, x) * 180) / Math.PI;
+}
+
+export function formatMeters(m: number) {
+  if (m < 1000) return `${Math.max(1, Math.round(m))} m`;
+  return `${(m / 1000).toFixed(m >= 10000 ? 0 : 1)} km`;
+}
+
+export function formatDuration(seconds: number) {
+  const m = Math.max(1, Math.round(seconds / 60));
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  return `${h} h ${m % 60} min`;
+}
+
+export function nearestDistance(points: { lat: number; lng: number }[], here: { lat: number; lng: number }) {
+  let best = Infinity;
+  let index = 0;
+  for (let i = 0; i < points.length; i++) {
+    const d = haversineMeters(here.lat, here.lng, points[i].lat, points[i].lng);
+    if (d < best) {
+      best = d;
+      index = i;
+    }
+  }
+  return { distance: best, index };
+}
+
+export function remainingMeters(points: { lat: number; lng: number }[], here: { lat: number; lng: number }) {
+  if (points.length < 2) {
+    return points[0] ? haversineMeters(here.lat, here.lng, points[0].lat, points[0].lng) : 0;
+  }
+  const { index } = nearestDistance(points, here);
+  let rest = haversineMeters(here.lat, here.lng, points[index].lat, points[index].lng);
+  for (let i = index; i < points.length - 1; i++) {
+    rest += haversineMeters(points[i].lat, points[i].lng, points[i + 1].lat, points[i + 1].lng);
+  }
+  return rest;
 }

@@ -214,4 +214,6 @@ export type GpsFix = {
   lng: number;
   accuracy: number;
   timestamp: number;
+  heading?: number | null;
+  speed?: number | null;
 };

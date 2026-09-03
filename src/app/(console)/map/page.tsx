@@ -115,6 +115,9 @@ export default function MapPage() {
             <Link href={`/members/${member.id}/edit`} className="btn btn-ghost py-1.5 text-xs">
               Pin home
             </Link>
+            <Link href={`/go/${member.id}/navigate`} className="btn btn-ghost py-1.5 text-xs">
+              Navigate
+            </Link>
             <Link href={`/go/${member.id}`} className="btn btn-primary py-1.5 text-xs">
               Visit
             </Link>

@@ -72,7 +72,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   const notes = state.notifications.filter((n) => n.userId === user?.id);
   const unread = notes.filter((n) => !n.read).length;
-  const mapPage = pathname === "/gis" || pathname === "/map";
+  const mapPage = pathname === "/gis" || pathname === "/map" || pathname.endsWith("/navigate");
 
   if (!ready || !user) {
     return (

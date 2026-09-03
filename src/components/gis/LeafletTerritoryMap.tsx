@@ -24,6 +24,8 @@ type Props = {
   here?: { lat: number; lng: number } | null;
   hereAccuracy?: number;
   fitPoints?: { lat: number; lng: number }[] | null;
+  routeLine?: { lat: number; lng: number }[] | null;
+  follow?: { lat: number; lng: number; zoom?: number } | null;
   onSelect?: (id: string) => void;
   onMapClick?: (lat: number, lng: number) => void;
 };
@@ -59,6 +61,8 @@ export default function LeafletTerritoryMap({
   here,
   hereAccuracy,
   fitPoints,
+  routeLine,
+  follow,
   onSelect,
   onMapClick,
 }: Props) {
@@ -295,6 +299,21 @@ export default function LeafletTerritoryMap({
         }
       }
 
+      if (routeLine && routeLine.length > 1) {
+        overlayRef.current.draw.addLayer(
+          L.polyline(
+            routeLine.map((p) => [p.lat, p.lng] as [number, number]),
+            { color: "#e400ff", weight: 6, opacity: 0.35, lineCap: "round" },
+          ),
+        );
+        overlayRef.current.draw.addLayer(
+          L.polyline(
+            routeLine.map((p) => [p.lat, p.lng] as [number, number]),
+            { color: "#9eecff", weight: 4, opacity: 0.95, lineCap: "round" },
+          ),
+        );
+      }
+
       if (here) {
         if (hereAccuracy) {
           overlayRef.current.draw.addLayer(
@@ -316,7 +335,7 @@ export default function LeafletTerritoryMap({
             fillOpacity: 1,
           }).bindTooltip("You"),
         );
-        if (pin) {
+        if (pin && !(routeLine && routeLine.length > 1)) {
           overlayRef.current.draw.addLayer(
             L.polyline(
               [
@@ -333,7 +352,7 @@ export default function LeafletTerritoryMap({
     return () => {
       cancelled = true;
     };
-  }, [drawLatLngs, pin, pinRadius, pinLabel, here, hereAccuracy, ready]);
+  }, [drawLatLngs, pin, pinRadius, pinLabel, here, hereAccuracy, routeLine, ready]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -369,6 +388,13 @@ export default function LeafletTerritoryMap({
     if (!flyTo || !mapRef.current) return;
     mapRef.current.flyTo([flyTo.lat, flyTo.lng], flyTo.zoom ?? 14, { duration: 0.8 });
   }, [flyTo, ready, fitPoints]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !follow) return;
+    map.panTo([follow.lat, follow.lng], { animate: true, duration: 0.4 });
+    if (follow.zoom) map.setZoom(follow.zoom, { animate: true });
+  }, [follow, ready]);
 
   useEffect(() => {
     const map = mapRef.current;
