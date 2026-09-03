@@ -16,13 +16,18 @@ type Props = {
   onChange: (coords: { lat: number; lng: number; districtId?: string; territoryId?: string }) => void;
 };
 
+type View = { lat: number; lng: number; zoom: number };
+
 export function GisPinPicker({ lat, lng, onChange }: Props) {
   const { state } = useStore();
   const [query, setQuery] = useState("");
   const [hint, setHint] = useState("");
+  const [view, setView] = useState<View | null>(null);
   const hasPin = typeof lat === "number" && typeof lng === "number";
   const pin = hasPin ? { lat, lng } : null;
-  const flyTo = useMemo(() => (hasPin ? { lat, lng, zoom: 14 } : null), [hasPin, lat, lng]);
+  const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom?: number } | null>(
+    hasPin ? { lat: lat as number, lng: lng as number, zoom: 16 } : null,
+  );
 
   const stack = useMemo(
     () => (hasPin ? containingTerritories(state.territories, lat, lng) : []),
@@ -36,12 +41,14 @@ export function GisPinPicker({ lat, lng, onChange }: Props) {
       const res = await fetch(url, { headers: { Accept: "application/json" } });
       const data = (await res.json()) as { lat: string; lon: string }[];
       if (!data[0]) {
-        setHint("No match. Click the map instead.");
+        setHint("No match. Zoom the map and pin by hand.");
         return;
       }
-      drop(Number(data[0].lat), Number(data[0].lon));
+      const next = { lat: Number(data[0].lat), lng: Number(data[0].lon), zoom: 16 };
+      setFlyTo(next);
+      drop(next.lat, next.lng);
     } catch {
-      setHint("Search needs internet. Click the map to pin.");
+      setHint("Search needs internet. Zoom the map and pin by hand.");
     }
   }
 
@@ -61,14 +68,30 @@ export function GisPinPicker({ lat, lng, onChange }: Props) {
     );
   }
 
+  function pinFromView() {
+    if (!view) {
+      setHint("Wait for the map, then line the sanctuary up under the crosshair.");
+      return;
+    }
+    if (view.zoom < 16) {
+      setHint("Zoom in closer until you can see the site, then pin.");
+      return;
+    }
+    drop(view.lat, view.lng);
+  }
+
   function useGps() {
     if (!navigator.geolocation) {
       setHint("This device has no GPS.");
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => drop(pos.coords.latitude, pos.coords.longitude),
-      () => setHint("Allow location to pin this site."),
+      (pos) => {
+        const next = { lat: pos.coords.latitude, lng: pos.coords.longitude, zoom: 17 };
+        setFlyTo(next);
+        drop(next.lat, next.lng);
+      },
+      () => setHint("Allow location, or zoom the map and pin by hand instead."),
       { enableHighAccuracy: true, timeout: 20_000 },
     );
   }
@@ -89,7 +112,7 @@ export function GisPinPicker({ lat, lng, onChange }: Props) {
           Pin my GPS
         </button>
       </div>
-      <div className="h-[min(40vh,18rem)] overflow-hidden rounded-lg border border-white/10 sm:h-72">
+      <div className="relative h-[min(52vh,22rem)] overflow-hidden rounded-lg border border-white/10 sm:h-80">
         <LeafletTerritoryMap
           territories={state.territories}
           churches={state.churches}
@@ -97,9 +120,16 @@ export function GisPinPicker({ lat, lng, onChange }: Props) {
           pin={pin}
           flyTo={flyTo}
           compactControl
+          showCrosshair
+          baseLayer="hybrid"
           className="h-full w-full"
-          onMapClick={drop}
+          onViewChange={setView}
         />
+        <div className="pointer-events-none absolute inset-x-3 bottom-3 z-20 flex justify-center">
+          <button type="button" className="pointer-events-auto btn btn-primary" onClick={pinFromView}>
+            Pin this site
+          </button>
+        </div>
       </div>
       {hint && <p className="text-sm text-gold">{hint}</p>}
       {stack.length > 0 && (
@@ -110,3 +140,4 @@ export function GisPinPicker({ lat, lng, onChange }: Props) {
     </div>
   );
 }
+

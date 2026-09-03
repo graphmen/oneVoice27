@@ -86,14 +86,15 @@ export function shepherdMonitorRows(
       const coverage = flockCoverage(assigned).percent;
       const verifiedPct = field.length ? Math.round((verified.length / field.length) * 100) : 0;
       const crisisOverdue = overdue.filter((m) => m.memberType === "crisis" || m.memberType === "new").length;
-      const duty = dutyStatus({
+      const metrics = {
         assigned: assigned.length,
         overdue: overdue.length,
         coverage,
         fieldVisits: field.length,
         verifiedPct,
         pendingExceptions,
-      });
+      };
+      const duty = dutyStatus(metrics);
       return {
         pastor: p,
         assigned: assigned.length,
@@ -103,34 +104,23 @@ export function shepherdMonitorRows(
         verified: verified.length,
         verifiedPct,
         coverage,
+        prayed: fruit.prayed,
         bibleStudy: fruit.bibleStudy,
         baptismInterest: fruit.baptismInterest,
+        decisionMade: fruit.decisionMade,
         pendingExceptions,
         trainingCount,
         lastVisitAt,
         districtName: district?.name || "—",
         churchName: church?.name || "—",
         duty,
+        reason: dutyReason(metrics, duty),
       };
     })
     .sort((a, b) => dutyRank(a.duty) - dutyRank(b.duty) || b.overdue - a.overdue);
 }
 
 export type DutyStatus = "behind" | "watch" | "idle" | "current";
-
-function dutyStatus(row: {
-  assigned: number;
-  overdue: number;
-  coverage: number;
-  fieldVisits: number;
-  verifiedPct: number;
-  pendingExceptions: number;
-}): DutyStatus {
-  if (row.assigned === 0) return "idle";
-  if (row.overdue >= 3 || row.coverage < 70 || (row.assigned > 0 && row.fieldVisits === 0)) return "behind";
-  if (row.overdue > 0 || row.pendingExceptions > 0 || (row.fieldVisits > 0 && row.verifiedPct < 60)) return "watch";
-  return "current";
-}
 
 function dutyRank(duty: DutyStatus) {
   return { behind: 0, watch: 1, idle: 2, current: 3 }[duty];
@@ -142,6 +132,46 @@ export const DUTY_LABEL: Record<DutyStatus, string> = {
   idle: "No flock",
   current: "Current",
 };
+
+export const DUTY_HINT: Record<DutyStatus, string> = {
+  behind: "Three or more households overdue, coverage under 70%, or no GPS field visit yet.",
+  watch: "Some overdue care, a pending exception, or fewer than 60% of field visits GPS-verified.",
+  idle: "No members assigned. Conference must place a flock on this shepherd.",
+  current: "Assigned flock is current. Field visits are GPS-verified. No pending exceptions.",
+};
+
+type DutyMetrics = {
+  assigned: number;
+  overdue: number;
+  coverage: number;
+  fieldVisits: number;
+  verifiedPct: number;
+  pendingExceptions: number;
+};
+
+function dutyStatus(row: DutyMetrics): DutyStatus {
+  if (row.assigned === 0) return "idle";
+  if (row.overdue >= 3 || row.coverage < 70 || (row.assigned > 0 && row.fieldVisits === 0)) return "behind";
+  if (row.overdue > 0 || row.pendingExceptions > 0 || (row.fieldVisits > 0 && row.verifiedPct < 60)) return "watch";
+  return "current";
+}
+
+export function dutyReason(row: DutyMetrics, duty = dutyStatus(row)) {
+  if (duty === "idle") return "No members assigned";
+  if (duty === "behind") {
+    if (row.fieldVisits === 0) return "No GPS field visits recorded";
+    if (row.overdue >= 3) return `${row.overdue} households overdue`;
+    if (row.coverage < 70) return `Only ${row.coverage}% of the flock is current`;
+  }
+  if (duty === "watch") {
+    if (row.pendingExceptions > 0) {
+      return `${row.pendingExceptions} visit exception${row.pendingExceptions === 1 ? "" : "s"} awaiting review`;
+    }
+    if (row.fieldVisits > 0 && row.verifiedPct < 60) return `Only ${row.verifiedPct}% of visits GPS-verified`;
+    if (row.overdue > 0) return `${row.overdue} household${row.overdue === 1 ? "" : "s"} still overdue`;
+  }
+  return "Flock current · GPS-verified presence";
+}
 
 export type VisitGrade = "strong" | "sound" | "weak" | "exception" | "training";
 

@@ -19,8 +19,8 @@ export function FieldHowTo() {
         <li className="rounded-2xl bg-white/5 p-4">
           <div className="font-semibold">1. Pin the home</div>
           <p className="mt-1 text-white/65">
-            Register or edit a member, search the street, or stand at the door and tap Pin my GPS. That pin is the
-            geofence.
+            Register or edit a member, zoom the map onto the house, and tap Pin this house. You do not need to be there.
+            Pin my GPS is only if you are standing at the door. That pin is the geofence.
           </p>
           <Link href={registerHref} className="btn btn-cyan mt-3 py-2 text-xs">
             Register / pin a home
@@ -39,8 +39,8 @@ export function FieldHowTo() {
         <li className="rounded-2xl bg-white/5 p-4">
           <div className="font-semibold">3. Edit when a family moves</div>
           <p className="mt-1 text-white/65">
-            Open Edit / pin home to recapture GPS or change the assigned pastor. Administrators can reassign shepherds;
-            pastors can update homes on their own flock.
+            Open Edit / pin home to move the pin by hand on the map, recapture GPS at the door, or change the assigned
+            pastor. Administrators can reassign shepherds; pastors can update homes on their own flock.
           </p>
           <Link href="/members" className="btn btn-ghost mt-3 py-2 text-xs">
             Find a member to edit

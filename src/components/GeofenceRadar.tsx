@@ -10,6 +10,7 @@ export function GeofenceRadar({
   training,
   onTrain,
   onPinHome,
+  onHandPin,
   durationLabel,
   compact = false,
 }: {
@@ -18,6 +19,7 @@ export function GeofenceRadar({
   training?: boolean;
   onTrain?: () => void;
   onPinHome?: () => void;
+  onHandPin?: () => void;
   durationLabel?: string;
   compact?: boolean;
 }) {
@@ -91,6 +93,11 @@ export function GeofenceRadar({
           disabled={!fix}
         >
           Pin this home from my GPS
+        </button>
+      )}
+      {onHandPin && (
+        <button type="button" className={cx("btn btn-ghost mt-2 w-full", compact && "py-2 text-xs")} onClick={onHandPin}>
+          Move pin by hand
         </button>
       )}
       {training && (

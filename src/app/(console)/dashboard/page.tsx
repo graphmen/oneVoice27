@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { StatusBadge } from "@/components/ui";
+import { EvaluationLegend, ShepherdPerformanceMatrix } from "@/components/ShepherdMatrix";
 import { useStore } from "@/lib/store";
 import {
-  DUTY_LABEL,
   flockCoverage,
   fruitCounts,
   shepherdMonitorRows,
@@ -94,6 +94,8 @@ function ConferenceMonitor() {
   const rows = shepherdMonitorRows(user, members, visits, state.churches, state.territories, state.users);
   const behind = rows.filter((r) => r.duty === "behind");
   const watch = rows.filter((r) => r.duty === "watch");
+  const current = rows.filter((r) => r.duty === "current");
+  const idle = rows.filter((r) => r.duty === "idle");
   const unassigned = unassignedMembers(members);
   const verse = verseOfTheDay();
 
@@ -102,10 +104,10 @@ function ConferenceMonitor() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-xs uppercase tracking-[0.22em] text-cyan">Conference monitor</div>
-          <h1 className="mt-1 text-3xl font-semibold">Shepherd performance</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Monitoring & evaluation</h1>
           <p className="mt-2 max-w-3xl text-white/65">
-            Assess how pastors are covering their assigned flock in {state.settings.conferenceName}. Conference does not
-            schedule visits — it watches duty, presence, and fruit, then manages the shepherds.
+            Conference does not visit members. It rates each shepherd on three questions: is the assigned flock current
+            (coverage), was the pastor physically at the home (GPS presence), and did the visit record spiritual fruit?
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -118,19 +120,22 @@ function ConferenceMonitor() {
         </div>
       </div>
 
+      <EvaluationLegend />
+
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <Stat label="Shepherds" value={rows.length} />
-        <Stat label="Behind on duty" value={behind.length} warn={behind.length > 0} hint="Overdue flock or no field visits" />
-        <Stat label="Needs watch" value={watch.length} hint="Some overdue, exceptions, or weak GPS proof" />
-        <Stat label="Unassigned members" value={unassigned.length} warn={unassigned.length > 0} hint="No named shepherd" />
-        <Stat label="Exceptions to review" value={pendingEx.length} warn={pendingEx.length > 0} />
+        <Stat label="Behind" value={behind.length} warn={behind.length > 0} hint="Need conference action" />
+        <Stat label="Watch" value={watch.length} hint="Keep under review" />
+        <Stat label="Current" value={current.length} hint="Flock current · GPS proof" />
+        <Stat label="No flock" value={idle.length} warn={idle.length > 0} hint="Assign members to these shepherds" />
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Flock coverage" value={`${coverage.percent}%`} hint={`${coverage.overdue} overdue souls`} warn={coverage.percent < 80} compact />
         <Stat label="GPS-verified visits" value={verified.length} hint={`${verifiedRate(visits)}% of field visits`} compact />
         <Stat label="Bible studies" value={fruit.bibleStudy} compact />
         <Stat label="Baptism interest" value={fruit.baptismInterest} compact />
+        <Stat label="Unassigned members" value={unassigned.length} warn={unassigned.length > 0} hint="No named shepherd" compact />
       </div>
 
       {(behind.length > 0 || watch.length > 0) && (
@@ -145,11 +150,11 @@ function ConferenceMonitor() {
                 <div>
                   <div className="font-medium">{row.pastor.displayName}</div>
                   <div className="text-xs text-white/55">
-                    {row.districtName} · {row.churchName} · {row.overdue} overdue of {row.assigned}
+                    {row.districtName} · {row.churchName}
                     {row.crisisOverdue ? ` · ${row.crisisOverdue} new/crisis overdue` : ""}
-                    {row.pendingExceptions ? ` · ${row.pendingExceptions} exception` : ""}
-                    {row.fieldVisits === 0 ? " · no field visits recorded" : ` · last field visit ${formatDate(row.lastVisitAt)}`}
+                    {row.lastVisitAt ? ` · last field visit ${formatDate(row.lastVisitAt)}` : ""}
                   </div>
+                  <div className="mt-1 text-sm text-white/75">{row.reason}</div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={row.duty} />
@@ -183,115 +188,28 @@ function ConferenceMonitor() {
         </div>
       )}
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="glass rounded-lg p-4 sm:p-5">
-          <h2 className="text-lg font-semibold">Duty assessment</h2>
-          <p className="mt-1 text-sm text-white/50">
-            Behind = overdue flock or no GPS-proven visits. Watch = exceptions or weak verification. Training is not
-            counted as duty.
-          </p>
-          <div className="mt-4 grid gap-3 md:hidden">
-            {rows.map((row) => (
-              <Link
-                key={row.pastor.id}
-                href={`/members?pastor=${row.pastor.id}`}
-                className="rounded-lg bg-white/5 p-3"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="font-medium">{row.pastor.displayName}</div>
-                    <div className="text-xs text-white/45">
-                      {row.districtName} · {row.churchName}
-                    </div>
-                  </div>
-                  <StatusBadge status={row.duty} />
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs text-white/65">
-                  <div>
-                    Overdue
-                    <div className={`mt-0.5 font-semibold ${row.overdue ? "text-rose" : "text-white"}`}>{row.overdue}</div>
-                  </div>
-                  <div>
-                    Coverage
-                    <div className={`mt-0.5 font-semibold ${row.coverage < 70 ? "text-rose" : "text-white"}`}>
-                      {row.coverage}%
-                    </div>
-                  </div>
-                  <div>
-                    Verified
-                    <div className="mt-0.5 font-semibold text-white">
-                      {row.fieldVisits ? `${row.verifiedPct}%` : "—"}
-                    </div>
-                  </div>
-                </div>
-                <div className="sr-only">{DUTY_LABEL[row.duty]}</div>
-              </Link>
-            ))}
-          </div>
-          <div className="table-scroll mt-4 hidden md:block">
-            <table className="w-full min-w-[760px] text-left text-sm">
-              <thead className="text-xs uppercase tracking-widest text-white/45">
-                <tr>
-                  <th className="pb-3">Shepherd</th>
-                  <th>Duty</th>
-                  <th>District</th>
-                  <th>Assigned</th>
-                  <th>Overdue</th>
-                  <th>Coverage</th>
-                  <th>Verified</th>
-                  <th>Last field visit</th>
-                  <th>Fruit</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.pastor.id} className="border-t border-white/8">
-                    <td className="py-3">
-                      <div>{row.pastor.displayName}</div>
-                      <div className="text-xs text-white/45">{row.churchName}</div>
-                    </td>
-                    <td>
-                      <StatusBadge status={row.duty} />
-                      <span className="sr-only">{DUTY_LABEL[row.duty]}</span>
-                    </td>
-                    <td className="text-white/60">{row.districtName}</td>
-                    <td>{row.assigned}</td>
-                    <td className={row.overdue ? "text-rose" : ""}>{row.overdue}</td>
-                    <td className={row.coverage < 70 ? "text-rose" : ""}>{row.coverage}%</td>
-                    <td>
-                      {row.verified}/{row.fieldVisits}
-                      {row.fieldVisits ? ` · ${row.verifiedPct}%` : ""}
-                    </td>
-                    <td className="text-white/60">{formatDate(row.lastVisitAt)}</td>
-                    <td className="text-white/60">
-                      {row.bibleStudy} studies · {row.baptismInterest} baptism
-                    </td>
-                    <td className="text-right">
-                      <Link href={`/members?pastor=${row.pastor.id}`} className="text-cyan">
-                        Flock
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <article className="glass overflow-hidden rounded-lg">
-          <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url(${verse.image})` }} />
-          <div className="p-4">
-            <div className="text-xs uppercase tracking-[0.18em] text-gold">Word for officers</div>
-            <p className="mt-2 font-serif leading-snug">“{verse.text}”</p>
-            <div className="mt-2 text-sm text-cyan">{verse.reference}</div>
-            {pendingEx.length > 0 && (
-              <Link href="/exceptions" className="btn btn-ghost mt-4 w-full py-2 text-xs">
-                Review {pendingEx.length} exception{pendingEx.length === 1 ? "" : "s"}
-              </Link>
-            )}
-          </div>
-        </article>
+      <div className="glass mt-6 rounded-lg p-4 sm:p-5">
+        <h2 className="text-lg font-semibold">Pastor performance matrix</h2>
+        <p className="mt-1 text-sm text-white/50">
+          Sorted Behind first, then Watch, No flock, Current. Training visits are excluded from GPS proof and fruit. Open
+          Flock to reassign members — conference does not schedule the visit.
+        </p>
+        <ShepherdPerformanceMatrix rows={rows} />
       </div>
+
+      <article className="glass mt-6 overflow-hidden rounded-lg sm:flex">
+        <div className="h-28 shrink-0 bg-cover bg-center sm:h-auto sm:w-56" style={{ backgroundImage: `url(${verse.image})` }} />
+        <div className="p-4">
+          <div className="text-xs uppercase tracking-[0.18em] text-gold">Word for officers</div>
+          <p className="mt-2 font-serif leading-snug">“{verse.text}”</p>
+          <div className="mt-2 text-sm text-cyan">{verse.reference}</div>
+          {pendingEx.length > 0 && (
+            <Link href="/exceptions" className="btn btn-ghost mt-4 py-2 text-xs">
+              Review {pendingEx.length} exception{pendingEx.length === 1 ? "" : "s"}
+            </Link>
+          )}
+        </div>
+      </article>
     </div>
   );
 }

@@ -26,7 +26,7 @@ export default function EditMemberPage() {
       <h1 className="text-3xl font-semibold">Edit {fullName(member)}</h1>
       <p className="mt-2 text-white/60">
         {user.role === "pastor"
-          ? "Update this household, recapture the home pin if the family moved, or remove the record if it was added in error."
+          ? "Update this household, zoom the map onto the house and pin it by hand if the family moved, or remove the record if it was added in error."
           : "Assign a shepherd, keep the home pin accurate, or remove this record. Pastors contact the household."}
       </p>
       <MemberForm member={member} />

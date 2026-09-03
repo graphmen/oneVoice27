@@ -41,9 +41,22 @@ export function StatusBadge({
     weak: "bg-gold/15 text-gold",
     exception: "bg-rose/20 text-rose",
   };
+  const LABELS: Record<string, string> = {
+    behind: "Behind",
+    watch: "Watch",
+    current: "Current",
+    idle: "No flock",
+    strong: "Strong",
+    sound: "Sound",
+    weak: "Weak",
+    exception: "Exception",
+    training: "Training",
+    exception_pending: "Exception pending",
+    geofence_entered: "In geofence",
+  };
   return (
     <span className={cx("badge", map[status] || "bg-white/10 text-white/80", className)}>
-      {status.replaceAll("_", " ")}
+      {LABELS[status] || status.replaceAll("_", " ")}
     </span>
   );
 }

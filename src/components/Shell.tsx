@@ -26,7 +26,7 @@ import { useStore } from "@/lib/store";
 import { cx, initials, ROLE_LABEL } from "@/lib/utils";
 
 const NAV = [
-  { href: "/dashboard", label: "Monitor", pastorLabel: "Today's flock", icon: IconHome, roles: ["master_admin", "church_admin", "pastor"] },
+  { href: "/dashboard", label: "M&E", pastorLabel: "Today's flock", icon: IconHome, roles: ["master_admin", "church_admin", "pastor"] },
   { href: "/schedule", label: "Visit schedule", icon: IconCalendar, roles: ["pastor"] },
   { href: "/pastors", label: "Shepherds", icon: IconUsers, roles: ["master_admin", "church_admin"] },
   { href: "/exceptions", label: "Exceptions", icon: IconShield, roles: ["master_admin", "church_admin", "pastor"] },

@@ -96,13 +96,15 @@ export function MemberForm({
       <div className="rounded-lg border border-cyan/30 bg-cyan/5 p-4">
         <div className="text-xs uppercase tracking-[0.18em] text-cyan">Pin the home — this is the geofence</div>
         <p className="mt-2 text-sm text-white/70">
-          Search the street, or stand at the door and tap Pin my GPS. Confirmations later use this pin.
+          Zoom the map onto the house and tap Pin this house — you do not need to be there. Pin my GPS is only if you
+          are standing at the door. Later visit confirmations use this pin.
         </p>
         <div className="mt-4">
           <HomePinPicker
             lat={lat}
             lng={lng}
             radius={radius}
+            startAt={seedChurch ? { lat: seedChurch.lat, lng: seedChurch.lng, zoom: 14 } : undefined}
             onChange={(coords) => {
               setLat(coords.lat);
               setLng(coords.lng);

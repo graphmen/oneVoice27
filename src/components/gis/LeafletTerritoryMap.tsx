@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { Church, Member, Territory, TerritoryLevel, UserAccount } from "@/lib/types";
 import { geometryBBox, geometryCentroid, LEVEL_LABEL, LEVEL_WEIGHT } from "@/lib/gis";
+import { cx } from "@/lib/utils";
 import "leaflet/dist/leaflet.css";
 
 export type MapMode = "browse" | "draw" | "pin";
+export type MapBaseLayer = "streets" | "satellite" | "hybrid";
 
 type Props = {
   territories: Territory[];
@@ -26,8 +28,11 @@ type Props = {
   fitPoints?: { lat: number; lng: number }[] | null;
   routeLine?: { lat: number; lng: number }[] | null;
   follow?: { lat: number; lng: number; zoom?: number } | null;
+  showCrosshair?: boolean;
+  baseLayer?: MapBaseLayer;
   onSelect?: (id: string) => void;
   onMapClick?: (lat: number, lng: number) => void;
+  onViewChange?: (view: { lat: number; lng: number; zoom: number }) => void;
 };
 
 const GOOGLE_BASES = [
@@ -39,6 +44,24 @@ const GOOGLE_BASES = [
 const OVERLAY_LEVELS: TerritoryLevel[] = ["division", "union", "conference", "district", "church"];
 
 type OverlayKey = TerritoryLevel | "churchPins" | "pastors" | "homes" | "draw";
+
+const HOME_GLYPH = `<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M12 3.1 3.2 11.2h2.3V20h5.1v-5.2h2.8V20h5.1v-8.8h2.3L12 3.1z"/></svg>`;
+
+function homePinIcon(
+  L: typeof import("leaflet"),
+  tone: "flock" | "active" = "flock",
+) {
+  const size = tone === "active" ? 34 : 28;
+  const height = size + 8;
+  return L.divIcon({
+    className: `map-home-pin map-home-pin--${tone}`,
+    iconSize: [size, height],
+    iconAnchor: [size / 2, height - 2],
+    popupAnchor: [0, -height + 8],
+    tooltipAnchor: [0, -height + 8],
+    html: `<span class="map-home-pin-mark">${HOME_GLYPH}</span>`,
+  });
+}
 
 function googleUrl(lyrs: string) {
   return `https://{s}.google.com/vt/lyrs=${lyrs}&x={x}&y={y}&z={z}`;
@@ -63,8 +86,11 @@ export default function LeafletTerritoryMap({
   fitPoints,
   routeLine,
   follow,
+  showCrosshair = false,
+  baseLayer = "streets",
   onSelect,
   onMapClick,
+  onViewChange,
 }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
@@ -72,10 +98,12 @@ export default function LeafletTerritoryMap({
   const clickRef = useRef(onMapClick);
   const selectRef = useRef(onSelect);
   const modeRef = useRef(mode);
+  const viewRef = useRef(onViewChange);
   const [ready, setReady] = useState(0);
   clickRef.current = onMapClick;
   selectRef.current = onSelect;
   modeRef.current = mode;
+  viewRef.current = onViewChange;
 
   useEffect(() => {
     let cancelled = false;
@@ -101,7 +129,9 @@ export default function LeafletTerritoryMap({
           subdomains: ["mt0", "mt1", "mt2", "mt3"],
         });
       }
-      bases["Google Streets"].addTo(map);
+      const preferred =
+        baseLayer === "satellite" ? "Google Satellite" : baseLayer === "hybrid" ? "Google Hybrid" : "Google Streets";
+      (bases[preferred] || bases["Google Streets"]).addTo(map);
 
       const groups: Partial<Record<OverlayKey, import("leaflet").LayerGroup>> = {
         division: L.layerGroup(),
@@ -137,12 +167,29 @@ export default function LeafletTerritoryMap({
         })
         .addTo(map);
 
+      let dragged = false;
+      const publishView = () => {
+        const c = map.getCenter();
+        viewRef.current?.({ lat: c.lat, lng: c.lng, zoom: map.getZoom() });
+      };
+      map.on("dragstart", () => {
+        dragged = true;
+      });
       map.on("click", (e: import("leaflet").LeafletMouseEvent) => {
+        if (dragged) {
+          dragged = false;
+          return;
+        }
         clickRef.current?.(e.latlng.lat, e.latlng.lng);
       });
+      map.on("moveend", publishView);
+      map.on("zoomend", publishView);
 
       mapRef.current = map;
-      setTimeout(() => map.invalidateSize(), 80);
+      setTimeout(() => {
+        map.invalidateSize();
+        publishView();
+      }, 80);
       setTimeout(() => map.invalidateSize(), 400);
       setReady((n) => n + 1);
     })();
@@ -153,7 +200,7 @@ export default function LeafletTerritoryMap({
       mapRef.current = null;
       overlayRef.current = {};
     };
-  }, [compactControl]);
+  }, [compactControl, baseLayer]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -213,14 +260,13 @@ export default function LeafletTerritoryMap({
       }
 
       for (const m of members) {
+        if (pin && Math.abs(m.lat - pin.lat) < 1e-5 && Math.abs(m.lng - pin.lng) < 1e-5) continue;
         overlayRef.current.homes?.addLayer(
-          L.circleMarker([m.lat, m.lng], {
-            radius: 5,
-            color: "#14001f",
-            weight: 1,
-            fillColor: "#e400ff",
-            fillOpacity: 0.95,
-          }).bindPopup(`${m.firstName} ${m.lastName}<br/>Member home pin`),
+          L.marker([m.lat, m.lng], {
+            icon: homePinIcon(L, "flock"),
+            keyboard: false,
+            riseOnHover: true,
+          }).bindPopup(`${m.firstName} ${m.lastName}<br/>Member home`),
         );
       }
 
@@ -244,7 +290,7 @@ export default function LeafletTerritoryMap({
     return () => {
       cancelled = true;
     };
-  }, [territories, churches, members, users, selectedId, ready, compactControl]);
+  }, [territories, churches, members, users, selectedId, ready, compactControl, pin]);
 
   useEffect(() => {
     const groups = overlayRef.current;
@@ -277,15 +323,6 @@ export default function LeafletTerritoryMap({
       }
 
       if (pin) {
-        overlayRef.current.draw.addLayer(
-          L.circleMarker([pin.lat, pin.lng], {
-            radius: 10,
-            color: "#fff",
-            weight: 2,
-            fillColor: "#ff5d7a",
-            fillOpacity: 1,
-          }).bindTooltip(pinLabel),
-        );
         if (pinRadius) {
           overlayRef.current.draw.addLayer(
             L.circle([pin.lat, pin.lng], {
@@ -297,6 +334,13 @@ export default function LeafletTerritoryMap({
             }),
           );
         }
+        overlayRef.current.draw.addLayer(
+          L.marker([pin.lat, pin.lng], {
+            icon: homePinIcon(L, "active"),
+            keyboard: false,
+            zIndexOffset: 800,
+          }).bindTooltip(pinLabel),
+        );
       }
 
       if (routeLine && routeLine.length > 1) {
@@ -402,5 +446,16 @@ export default function LeafletTerritoryMap({
     map.getContainer().style.cursor = mode === "browse" ? "" : "crosshair";
   }, [mode, ready]);
 
-  return <div ref={host} className={className || "h-full min-h-[420px] w-full rounded-lg"} />;
+  return (
+    <div className={cx("relative isolate", className || "h-full min-h-[420px] w-full rounded-lg")}>
+      <div ref={host} className="absolute inset-0 z-0 h-full w-full rounded-[inherit]" />
+      {showCrosshair && (
+        <div className="map-crosshair" aria-hidden>
+          <span className="map-crosshair-x" />
+          <span className="map-crosshair-y" />
+          <span className="map-crosshair-dot" />
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,9 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EvaluationLegend, ShepherdPerformanceMatrix } from "@/components/ShepherdMatrix";
 import { StatCard } from "@/components/ui";
 import { useStore } from "@/lib/store";
-import { fieldCareVisits, fruitCounts, verifiedFieldVisits, verifiedRate } from "@/lib/care";
+import {
+  DUTY_LABEL,
+  fieldCareVisits,
+  fruitCounts,
+  shepherdMonitorRows,
+  verifiedFieldVisits,
+  verifiedRate,
+} from "@/lib/care";
 import { downloadCsv, fullName, isOverdue, visibleMembers, visibleVisits } from "@/lib/utils";
 
 export default function ReportsPage() {
@@ -20,6 +28,9 @@ export default function ReportsPage() {
   const training = visits.filter((v) => v.trainingOverride && (v.status === "completed" || v.status === "exception_approved"));
   const fruit = fruitCounts(visits);
   const overdue = members.filter((m) => isOverdue(m));
+  const rows = shepherdMonitorRows(user, members, visits, state.churches, state.territories, state.users).filter(
+    (row) => churchId === "all" || row.pastor.churchIds.includes(churchId),
+  );
 
   const byCategory = useMemo(() => {
     return state.categories.map((c) => ({
@@ -31,7 +42,7 @@ export default function ReportsPage() {
   const churches = state.churches.filter((c) => user.role === "master_admin" || user.churchIds.includes(c.id));
 
   function exportReport() {
-    downloadCsv("shepherd360-church-report.csv", [
+    downloadCsv("shepherd360-pastor-performance.csv", [
       ["Metric", "Value"],
       ["Members", String(members.length)],
       ["Field visits (training excluded)", String(completed.length)],
@@ -43,18 +54,42 @@ export default function ReportsPage() {
       ["Decisions", String(fruit.decisionMade)],
       ["Overdue", String(overdue.length)],
       [],
-      ["Pastor", "Assigned", "Completed", "Overdue"],
-      ...state.users
-        .filter((u) => u.role === "pastor")
-        .map((p) => {
-          const assigned = members.filter((m) => m.assignedPastorId === p.id);
-          return [
-            p.displayName,
-            String(assigned.length),
-            String(fieldCareVisits(visits.filter((v) => v.pastorId === p.id)).length),
-            String(assigned.filter((m) => isOverdue(m)).length),
-          ];
-        }),
+      [
+        "Pastor",
+        "Rating",
+        "Why",
+        "District",
+        "Church",
+        "Assigned",
+        "Overdue",
+        "Coverage %",
+        "GPS verified visits",
+        "Field visits",
+        "Verified %",
+        "Bible studies",
+        "Baptism interest",
+        "Decisions",
+        "Prayed",
+        "Last field visit",
+      ],
+      ...rows.map((row) => [
+        row.pastor.displayName,
+        DUTY_LABEL[row.duty],
+        row.reason,
+        row.districtName,
+        row.churchName,
+        String(row.assigned),
+        String(row.overdue),
+        String(row.coverage),
+        String(row.verified),
+        String(row.fieldVisits),
+        String(row.verifiedPct),
+        String(row.bibleStudy),
+        String(row.baptismInterest),
+        String(row.decisionMade),
+        String(row.prayed),
+        row.lastVisitAt || "",
+      ]),
     ]);
   }
 
@@ -63,7 +98,10 @@ export default function ReportsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold">Reports</h1>
-          <p className="mt-1 text-white/60">Church, pastor and organizational care — exportable for conference boards.</p>
+          <p className="mt-1 text-white/60">
+            Board-ready monitoring: flock coverage, GPS presence, and soul-winning fruit by shepherd. Training visits are
+            excluded from field counts.
+          </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <select className="w-full sm:w-auto" value={churchId} onChange={(e) => setChurchId(e.target.value)}>
@@ -90,6 +128,14 @@ export default function ReportsPage() {
         <StatCard label="GPS verified" value={verified.length} tone="magenta" hint={`${verifiedRate(visits)}% of field visits`} />
         <StatCard label="Bible studies" value={fruit.bibleStudy} tone="cyan" />
         <StatCard label="Overdue care" value={overdue.length} tone="rose" />
+      </div>
+      <div className="glass mt-6 rounded-lg p-4 sm:p-5">
+        <h2 className="text-lg font-semibold">Pastor performance matrix</h2>
+        <p className="mt-1 text-sm text-white/50">
+          Same ratings as Monitor. Export CSV for the conference board. Print this page for a paper copy.
+        </p>
+        <EvaluationLegend />
+        <ShepherdPerformanceMatrix rows={rows} />
       </div>
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <div className="glass rounded-lg p-5">

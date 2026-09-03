@@ -31,6 +31,8 @@ export default function GoVisitPage() {
   const [fix, setFix] = useState<GpsFix | null>(null);
   const [gpsError, setGpsError] = useState("");
   const [pinHint, setPinHint] = useState("");
+  const [handPin, setHandPin] = useState(false);
+  const [view, setView] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
   const [enteredAt, setEnteredAt] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [confidential, setConfidential] = useState("");
@@ -63,13 +65,13 @@ export default function GoVisitPage() {
   const geo = useMemo(() => (fix && member ? insideGeofence(fix, member) : null), [fix, member]);
   const hasFix = Boolean(fix);
   const fitPoints = useMemo(() => {
-    if (!member) return [];
+    if (handPin || !member) return [];
     const pts = [{ lat: member.lat, lng: member.lng }];
     if (fix) pts.push({ lat: fix.lat, lng: fix.lng });
     return pts;
     // First GPS lock, training, or a changed home pin should reframe the map — not every GPS tick.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [member?.lat, member?.lng, hasFix, training]);
+  }, [member?.lat, member?.lng, hasFix, training, handPin]);
 
   useEffect(() => {
     if (geo?.inside && !enteredAt) setEnteredAt(new Date().toISOString());
@@ -81,7 +83,7 @@ export default function GoVisitPage() {
       <p className="text-white/70">
         Visiting belongs to the assigned shepherd. Conference officers watch coverage on{" "}
         <Link href="/dashboard" className="text-cyan">
-          Monitor
+          M&E
         </Link>
         .
       </p>
@@ -109,6 +111,28 @@ export default function GoVisitPage() {
       timestamp: Date.now(),
     });
     if (!enteredAt) setEnteredAt(new Date().toISOString());
+  }
+
+  function pinHomeByHand() {
+    if (!user || !member || !view) {
+      setPinHint("Zoom the map so the house sits under the crosshair, then pin.");
+      return;
+    }
+    if (!canEditMember(user, member)) {
+      setPinHint("Ask an administrator if this home pin should change.");
+      return;
+    }
+    if (view.zoom < 17) {
+      setPinHint("Zoom in closer until you can see the house roof, then pin.");
+      return;
+    }
+    upsertMember({
+      ...member,
+      lat: Number(view.lat.toFixed(6)),
+      lng: Number(view.lng.toFixed(6)),
+    });
+    setPinHint("Home pin moved to the house on the map. This does not confirm the visit.");
+    setHandPin(false);
   }
 
   function pinHomeFromGps() {
@@ -209,27 +233,50 @@ export default function GoVisitPage() {
         <LeafletTerritoryMap
           territories={state.territories}
           churches={state.churches}
-          mode="browse"
+          mode={handPin ? "pin" : "browse"}
           pin={{ lat: member.lat, lng: member.lng }}
           pinRadius={member.geofenceRadius}
           pinLabel={`${fullName(member)} · home`}
-          here={fix ? { lat: fix.lat, lng: fix.lng } : null}
-          hereAccuracy={fix?.accuracy}
+          here={handPin ? null : fix ? { lat: fix.lat, lng: fix.lng } : null}
+          hereAccuracy={handPin ? undefined : fix?.accuracy}
           fitPoints={fitPoints}
           compactControl
+          showCrosshair={handPin}
+          baseLayer="hybrid"
           className="h-full w-full rounded-none"
+          onViewChange={setView}
         />
-        <div className="absolute left-3 right-14 top-3 z-20 sm:right-auto sm:w-[min(300px,calc(100%-5.5rem))]">
-          <GeofenceRadar
-            compact
-            member={member}
-            fix={fix}
-            training={training}
-            onTrain={state.settings.allowTrainingLocation !== false ? standAtDoor : undefined}
-            onPinHome={canEditMember(user, member) ? pinHomeFromGps : undefined}
-            durationLabel={`${minutes} min`}
-          />
-        </div>
+        {handPin ? (
+          <div className="absolute inset-x-3 bottom-3 z-20 sm:left-1/2 sm:right-auto sm:w-[min(360px,calc(100%-1.5rem))] sm:-translate-x-1/2">
+            <div className="gis-map-panel p-3">
+              <p className="text-sm text-white/80">
+                Zoom onto the house and line it up under the crosshair. You do not need to be there. This only moves the
+                geofence — it does not confirm the visit.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button type="button" className="btn btn-primary flex-1 py-2 text-xs" onClick={pinHomeByHand}>
+                  Pin this house
+                </button>
+                <button type="button" className="btn btn-ghost py-2 text-xs" onClick={() => setHandPin(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="absolute left-3 right-14 top-3 z-20 sm:right-auto sm:w-[min(300px,calc(100%-5.5rem))]">
+            <GeofenceRadar
+              compact
+              member={member}
+              fix={fix}
+              training={training}
+              onTrain={state.settings.allowTrainingLocation !== false ? standAtDoor : undefined}
+              onPinHome={canEditMember(user, member) ? pinHomeFromGps : undefined}
+              onHandPin={canEditMember(user, member) ? () => setHandPin(true) : undefined}
+              durationLabel={`${minutes} min`}
+            />
+          </div>
+        )}
       </div>
       {pinHint && <p className="mt-3 text-sm text-ok">{pinHint}</p>}
       {gpsError && <p className="mt-3 text-sm text-gold">{gpsError} You may still request a manual exception.</p>}

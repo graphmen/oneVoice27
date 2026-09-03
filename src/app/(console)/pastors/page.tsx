@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { StatusBadge } from "@/components/ui";
+import { shepherdMonitorRows } from "@/lib/care";
 import { useStore } from "@/lib/store";
 import { LEVEL_LABEL } from "@/lib/gis";
-import { canEditGis, canManageAccount, ROLE_LABEL } from "@/lib/utils";
+import { canEditGis, canManageAccount, ROLE_LABEL, visibleMembers, visibleVisits } from "@/lib/utils";
 
 export default function PastorsPage() {
   const { user, state } = useStore();
@@ -13,6 +15,16 @@ export default function PastorsPage() {
     if (user.role === "master_admin") return true;
     return u.churchIds.some((id) => user.churchIds.includes(id));
   });
+  const performance = Object.fromEntries(
+    shepherdMonitorRows(
+      user,
+      visibleMembers(user, state.members),
+      visibleVisits(user, state.visits, state.members),
+      state.churches,
+      state.territories,
+      state.users,
+    ).map((row) => [row.pastor.id, row]),
+  );
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -20,7 +32,8 @@ export default function PastorsPage() {
         <div>
           <h1 className="text-3xl font-semibold">Shepherds</h1>
           <p className="mt-2 text-white/60">
-            Pastors and church officers already assigned. Open Edit to update details, placement, or remove an account.
+            Pastors and church officers already assigned. Ratings use the same conference matrix as Monitor and Reports.
+            Open Edit to update details, placement, or remove an account.
           </p>
         </div>
         {canEditGis(user) && (
@@ -35,13 +48,18 @@ export default function PastorsPage() {
           const territories = state.territories.filter(
             (t) => p.territoryIds?.includes(t.id) || t.assignedPastorIds.includes(p.id),
           );
+          const row = performance[p.id];
           return (
             <div key={p.id} className="list-row">
               <div className="min-w-0 flex-1">
-                <div className="list-row-title">{p.displayName}</div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="list-row-title">{p.displayName}</div>
+                  {row && <StatusBadge status={row.duty} />}
+                </div>
                 <div className="list-row-meta">
                   {ROLE_LABEL[p.role]} · {p.status === "inactive" ? "Inactive · " : ""}
                   {p.email} · {p.phone} · {assigned} assigned
+                  {row ? ` · ${row.coverage}% coverage · ${row.reason}` : ""}
                 </div>
                 <div className="mt-1 flex flex-wrap gap-1">
                   {territories.map((t) => (
@@ -52,11 +70,18 @@ export default function PastorsPage() {
                   {territories.length === 0 && <span className="text-xs text-gold">No hierarchy placement yet</span>}
                 </div>
               </div>
-              {canManageAccount(user, p) && (
-                <Link href={`/pastors/${p.id}/edit`} className="btn btn-ghost">
-                  Edit
-                </Link>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {row && (
+                  <Link href={`/members?pastor=${p.id}`} className="btn btn-ghost">
+                    Flock
+                  </Link>
+                )}
+                {canManageAccount(user, p) && (
+                  <Link href={`/pastors/${p.id}/edit`} className="btn btn-ghost">
+                    Edit
+                  </Link>
+                )}
+              </div>
             </div>
           );
         })}

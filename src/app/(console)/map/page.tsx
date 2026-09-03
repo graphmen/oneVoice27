@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { StatusBadge } from "@/components/ui";
 import { useStore } from "@/lib/store";
 import { containingTerritories, LEVEL_LABEL } from "@/lib/gis";
-import { dueLabel, fullName, isOverdue, memberPriority, visibleMembers } from "@/lib/utils";
+import { canEditMember, dueLabel, fullName, isOverdue, memberPriority, visibleMembers } from "@/lib/utils";
 
 const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerritoryMap"), {
   ssr: false,
@@ -14,16 +14,20 @@ const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerrit
 });
 
 export default function MapPage() {
-  const { user, state } = useStore();
+  const { user, state, upsertMember } = useStore();
   const members = user ? visibleMembers(user, state.members).filter((m) => m.status === "active") : [];
   const [selected, setSelected] = useState(members[0]?.id);
   const [filter, setFilter] = useState("");
   const [listOpen, setListOpen] = useState(false);
+  const [handPin, setHandPin] = useState(false);
+  const [lockCamera, setLockCamera] = useState(false);
+  const [view, setView] = useState<{ lat: number; lng: number; zoom: number } | null>(null);
+  const [pinHint, setPinHint] = useState("");
   const member = members.find((m) => m.id === selected) || members[0];
-  const flyTo = useMemo(
-    () => (member ? { lat: member.lat, lng: member.lng, zoom: 15 } : null),
-    [member],
-  );
+  const flyTo = useMemo(() => {
+    if (handPin || lockCamera) return null;
+    return member ? { lat: member.lat, lng: member.lng, zoom: 16 } : null;
+  }, [member, handPin, lockCamera]);
   const stack = useMemo(
     () => (member ? containingTerritories(state.territories, member.lat, member.lng) : []),
     [member, state.territories],
@@ -35,6 +39,27 @@ export default function MapPage() {
   }, [members, filter]);
   if (!user) return null;
 
+  const canPin = Boolean(member && canEditMember(user, member));
+
+  function dropHandPin() {
+    if (!member || !view) {
+      setPinHint("Zoom so the house sits under the crosshair, then pin.");
+      return;
+    }
+    if (view.zoom < 17) {
+      setPinHint("Zoom in closer until you can see the house roof, then pin.");
+      return;
+    }
+    upsertMember({
+      ...member,
+      lat: Number(view.lat.toFixed(6)),
+      lng: Number(view.lng.toFixed(6)),
+    });
+    setPinHint(`Pinned ${fullName(member)} on the house under the crosshair.`);
+    setHandPin(false);
+    setLockCamera(true);
+  }
+
   return (
     <div className="gis-stage relative h-full min-h-0 overflow-hidden">
       <LeafletTerritoryMap
@@ -43,10 +68,14 @@ export default function MapPage() {
         members={members}
         users={state.users}
         selectedId={stack.find((t) => t.level === "church")?.id || stack.find((t) => t.level === "district")?.id}
-        mode="browse"
+        mode={handPin ? "pin" : "browse"}
         pin={member ? { lat: member.lat, lng: member.lng } : null}
+        pinRadius={member?.geofenceRadius}
         flyTo={flyTo}
+        showCrosshair={handPin}
+        baseLayer="hybrid"
         className="absolute inset-0 h-full w-full rounded-none"
+        onViewChange={setView}
       />
 
       <button
@@ -73,6 +102,9 @@ export default function MapPage() {
                   type="button"
                   onClick={() => {
                     setSelected(m.id);
+                    setHandPin(false);
+                    setLockCamera(false);
+                    setPinHint("");
                     if (typeof window !== "undefined" && window.innerWidth < 640) setListOpen(false);
                   }}
                   className={`mb-0.5 w-full rounded-lg px-2 py-2 text-left ${
@@ -96,32 +128,72 @@ export default function MapPage() {
       )}
 
       {member && (
-        <div className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-14 z-20 flex flex-col gap-2 px-3 py-2 sm:right-16 sm:flex-row sm:flex-wrap sm:items-center">
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium">{fullName(member)}</div>
-            <div className="truncate text-[11px] text-white/50">
-              {stack.length
-                ? stack
-                    .filter((t) => t.level !== "general_conference")
-                    .map((t) => `${LEVEL_LABEL[t.level]} · ${t.shortName || t.name}`)
-                    .join(" → ")
-                : "Outside a mapped church territory"}
+        <div className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-14 z-20 flex flex-col gap-2 px-3 py-2 sm:right-16">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-medium">{fullName(member)}</div>
+              <div className="truncate text-[11px] text-white/50">
+                {stack.length
+                  ? stack
+                      .filter((t) => t.level !== "general_conference")
+                      .map((t) => `${LEVEL_LABEL[t.level]} · ${t.shortName || t.name}`)
+                      .join(" → ")
+                  : "Outside a mapped church territory"}
+              </div>
             </div>
+            {!handPin && (
+              <div className="flex flex-wrap gap-2">
+                <Link href={`/members/${member.id}`} className="btn btn-ghost py-1.5 text-xs">
+                  Profile
+                </Link>
+                {canPin && (
+                  <button
+                    type="button"
+                    className="btn btn-cyan py-1.5 text-xs"
+                    onClick={() => {
+                      setPinHint("Zoom onto the house, then Pin this house. You do not need to be there.");
+                      setHandPin(true);
+                      setListOpen(false);
+                    }}
+                  >
+                    Hand pin
+                  </button>
+                )}
+                <Link href={`/members/${member.id}/edit`} className="btn btn-ghost py-1.5 text-xs">
+                  Edit
+                </Link>
+                <Link href={`/go/${member.id}/navigate`} className="btn btn-ghost py-1.5 text-xs">
+                  Navigate
+                </Link>
+                <Link href={`/go/${member.id}`} className="btn btn-primary py-1.5 text-xs">
+                  Visit
+                </Link>
+              </div>
+            )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link href={`/members/${member.id}`} className="btn btn-ghost py-1.5 text-xs">
-              Profile
-            </Link>
-            <Link href={`/members/${member.id}/edit`} className="btn btn-ghost py-1.5 text-xs">
-              Pin home
-            </Link>
-            <Link href={`/go/${member.id}/navigate`} className="btn btn-ghost py-1.5 text-xs">
-              Navigate
-            </Link>
-            <Link href={`/go/${member.id}`} className="btn btn-primary py-1.5 text-xs">
-              Visit
-            </Link>
-          </div>
+          {handPin && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs text-white/70">
+                Line the house up under the crosshair. You do not need to be at the home.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn btn-primary py-1.5 text-xs" onClick={dropHandPin}>
+                  Pin this house
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost py-1.5 text-xs"
+                  onClick={() => {
+                    setHandPin(false);
+                    setPinHint("");
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+          {pinHint && <p className="text-xs text-gold">{pinHint}</p>}
         </div>
       )}
     </div>
