@@ -5,8 +5,11 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  query,
   setDoc,
+  where,
   writeBatch,
+  type QueryConstraint,
   type Unsubscribe,
 } from "firebase/firestore";
 import { createDemoState } from "./demo-data";
@@ -97,23 +100,121 @@ async function readAll<T>(col: string): Promise<T[]> {
   return snap.docs.map((d) => d.data() as T);
 }
 
-export async function pullLiveState(): Promise<Partial<AppState>> {
-  const [users, churches, members, visits, categories, notifications, audit, regions] = await Promise.all([
-    readAll<UserAccount>("users"),
-    readAll<Church>("churches"),
-    readAll<Member>("members"),
-    readAll<Visit>("visits"),
-    readAll<VisitCategory>("categories"),
-    readAll<AppNotification>("notifications"),
-    readAll<AuditLog>("auditLogs"),
-    readAll<Region>("regions"),
-  ]);
+async function safeRead<T>(label: string, task: () => Promise<T[]>): Promise<T[] | undefined> {
+  try {
+    return await task();
+  } catch (err) {
+    console.warn(`SHEPHERD360 live read ${label}`, err);
+    return undefined;
+  }
+}
+
+function chunkIds(ids: string[], size = 10) {
+  const out: string[][] = [];
+  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
+  return out;
+}
+
+function uniqueByKey<T extends { id?: string; email?: string }>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const row of rows) {
+    const key = row.id || row.email;
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
+
+async function readQuery<T>(col: string, ...constraints: QueryConstraint[]): Promise<T[]> {
   const fb = getFirebase();
+  if (!fb) return [];
+  const snap = await getDocs(query(collection(fb.db, col), ...constraints));
+  return snap.docs.map((d) => d.data() as T);
+}
+
+async function readIn<T extends { id?: string; email?: string }>(col: string, field: string, values: string[]) {
+  if (!values.length) return [] as T[];
+  const parts = await Promise.all(chunkIds(values).map((ids) => readQuery<T>(col, where(field, "in", ids))));
+  return uniqueByKey(parts.flat());
+}
+
+async function readContainsAny<T extends { id?: string; email?: string }>(
+  col: string,
+  field: string,
+  values: string[],
+) {
+  if (!values.length) return [] as T[];
+  const parts = await Promise.all(
+    chunkIds(values).map((ids) => readQuery<T>(col, where(field, "array-contains-any", ids))),
+  );
+  return uniqueByKey(parts.flat());
+}
+
+async function readOwnUser(viewer: UserAccount): Promise<UserAccount[]> {
+  const fb = getFirebase();
+  if (!fb) return [viewer];
+  const snap = await getDoc(doc(fb.db, "users", emailDocId(viewer.email)));
+  return snap.exists() ? [snap.data() as UserAccount] : [viewer];
+}
+
+export async function pullLiveState(viewer?: UserAccount | null): Promise<Partial<AppState>> {
+  const fb = getFirebase();
+  const churchIds = viewer?.churchIds || [];
+  const [churches, categories, regions] = await Promise.all([
+    safeRead<Church>("churches", () => readAll("churches")),
+    safeRead<VisitCategory>("categories", () => readAll("categories")),
+    safeRead<Region>("regions", () => readAll("regions")),
+  ]);
+
+  let users: UserAccount[] | undefined;
+  let members: Member[] | undefined;
+  let visits: Visit[] | undefined;
+  let notifications: AppNotification[] | undefined;
+  let audit: AuditLog[] | undefined;
+
+  if (!viewer || viewer.role === "master_admin") {
+    users = await safeRead("users", () => readAll<UserAccount>("users"));
+    members = await safeRead("members", () => readAll<Member>("members"));
+    visits = await safeRead("visits", () => readAll<Visit>("visits"));
+    audit = await safeRead("auditLogs", () => readAll<AuditLog>("auditLogs"));
+  } else if (viewer.role === "church_admin") {
+    const [own, shared] = await Promise.all([
+      readOwnUser(viewer),
+      safeRead("users", () => readContainsAny<UserAccount>("users", "churchIds", churchIds)),
+    ]);
+    users = uniqueByKey([...own, ...(shared || [])]);
+    members = await safeRead("members", () => readIn<Member>("members", "churchId", churchIds));
+    visits = await safeRead("visits", () => readIn<Visit>("visits", "churchId", churchIds));
+  } else {
+    const [own, shared] = await Promise.all([
+      readOwnUser(viewer),
+      safeRead("users", () => readContainsAny<UserAccount>("users", "churchIds", churchIds)),
+    ]);
+    users = uniqueByKey([...own, ...(shared || [])]);
+    members = await safeRead("members", () =>
+      readQuery<Member>("members", where("assignedPastorId", "==", viewer.id)),
+    );
+    visits = await safeRead("visits", () => readQuery<Visit>("visits", where("pastorId", "==", viewer.id)));
+  }
+
+  if (viewer) {
+    notifications = await safeRead("notifications", () =>
+      readQuery<AppNotification>("notifications", where("userId", "==", viewer.id)),
+    );
+  }
+
   let settings: AppSettings | undefined;
   if (fb) {
-    const settingsSnap = await getDoc(doc(fb.db, "settings", "global"));
-    if (settingsSnap.exists()) settings = settingsSnap.data() as AppSettings;
+    try {
+      const settingsSnap = await getDoc(doc(fb.db, "settings", "global"));
+      if (settingsSnap.exists()) settings = settingsSnap.data() as AppSettings;
+    } catch (err) {
+      console.warn("SHEPHERD360 live read settings", err);
+    }
   }
+
   return {
     users,
     churches,
@@ -121,39 +222,101 @@ export async function pullLiveState(): Promise<Partial<AppState>> {
     visits,
     categories,
     notifications,
-    audit: audit.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 400),
-    regions: regions.length ? regions : undefined,
+    audit: audit?.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 400),
+    regions: regions?.length ? regions : undefined,
     settings,
   };
 }
 
-export function subscribeLive(onChange: (patch: Partial<AppState>) => void): Unsubscribe {
+function listenQuery<T>(
+  col: string,
+  onRows: (rows: T[]) => void,
+  ...constraints: QueryConstraint[]
+): Unsubscribe {
   const fb = getFirebase();
   if (!fb) return () => undefined;
-  const unsubs = [
-    onSnapshot(collection(fb.db, "users"), (snap) =>
-      onChange({ users: snap.docs.map((d) => d.data() as UserAccount) }),
+  const source = constraints.length
+    ? query(collection(fb.db, col), ...constraints)
+    : collection(fb.db, col);
+  return onSnapshot(
+    source,
+    (snap) => onRows(snap.docs.map((d) => d.data() as T)),
+    (err) => console.warn(`SHEPHERD360 live ${col}`, err),
+  );
+}
+
+function listenChunks<T extends { id?: string; email?: string }>(
+  col: string,
+  field: string,
+  values: string[],
+  op: "in" | "array-contains-any",
+  onRows: (rows: T[]) => void,
+): Unsubscribe {
+  if (!values.length) {
+    onRows([]);
+    return () => undefined;
+  }
+  const groups = chunkIds(values);
+  const buckets: T[][] = groups.map(() => []);
+  const unsubs = groups.map((ids, index) =>
+    listenQuery<T>(
+      col,
+      (rows) => {
+        buckets[index] = rows;
+        onRows(uniqueByKey(buckets.flat()));
+      },
+      where(field, op, ids),
     ),
-    onSnapshot(collection(fb.db, "churches"), (snap) =>
-      onChange({ churches: snap.docs.map((d) => d.data() as Church) }),
+  );
+  return () => unsubs.forEach((unsub) => unsub());
+}
+
+export function subscribeLive(viewer: UserAccount, onChange: (patch: Partial<AppState>) => void): Unsubscribe {
+  const fb = getFirebase();
+  if (!fb) return () => undefined;
+  const churchIds = viewer.churchIds || [];
+  const unsubs: Unsubscribe[] = [
+    listenQuery<Church>("churches", (churches) => onChange({ churches })),
+    listenQuery<VisitCategory>("categories", (categories) => onChange({ categories })),
+    onSnapshot(
+      doc(fb.db, "settings", "global"),
+      (snap) => {
+        if (snap.exists()) onChange({ settings: snap.data() as AppSettings });
+      },
+      (err) => console.warn("SHEPHERD360 live settings", err),
     ),
-    onSnapshot(collection(fb.db, "members"), (snap) =>
-      onChange({ members: snap.docs.map((d) => d.data() as Member) }),
+    listenQuery<AppNotification>(
+      "notifications",
+      (notifications) => onChange({ notifications }),
+      where("userId", "==", viewer.id),
     ),
-    onSnapshot(collection(fb.db, "visits"), (snap) =>
-      onChange({ visits: snap.docs.map((d) => d.data() as Visit) }),
-    ),
-    onSnapshot(collection(fb.db, "categories"), (snap) =>
-      onChange({ categories: snap.docs.map((d) => d.data() as VisitCategory) }),
-    ),
-    onSnapshot(collection(fb.db, "notifications"), (snap) =>
-      onChange({ notifications: snap.docs.map((d) => d.data() as AppNotification) }),
-    ),
-    onSnapshot(doc(fb.db, "settings", "global"), (snap) => {
-      if (snap.exists()) onChange({ settings: snap.data() as AppSettings });
-    }),
   ];
-  return () => unsubs.forEach((u) => u());
+
+  if (viewer.role === "master_admin") {
+    unsubs.push(
+      listenQuery<UserAccount>("users", (users) => onChange({ users })),
+      listenQuery<Member>("members", (members) => onChange({ members })),
+      listenQuery<Visit>("visits", (visits) => onChange({ visits })),
+    );
+  } else if (viewer.role === "church_admin") {
+    unsubs.push(
+      listenChunks<UserAccount>("users", "churchIds", churchIds, "array-contains-any", (users) =>
+        onChange({ users: uniqueByKey([viewer, ...users]) }),
+      ),
+      listenChunks<Member>("members", "churchId", churchIds, "in", (members) => onChange({ members })),
+      listenChunks<Visit>("visits", "churchId", churchIds, "in", (visits) => onChange({ visits })),
+    );
+  } else {
+    unsubs.push(
+      listenChunks<UserAccount>("users", "churchIds", churchIds, "array-contains-any", (users) =>
+        onChange({ users: uniqueByKey([viewer, ...users]) }),
+      ),
+      listenQuery<Member>("members", (members) => onChange({ members }), where("assignedPastorId", "==", viewer.id)),
+      listenQuery<Visit>("visits", (visits) => onChange({ visits }), where("pastorId", "==", viewer.id)),
+    );
+  }
+
+  return () => unsubs.forEach((unsub) => unsub());
 }
 
 async function writeChunk(col: string, rows: Array<{ id: string; data: Record<string, unknown> }>) {

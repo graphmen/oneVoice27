@@ -22,9 +22,13 @@ export function ShepherdForm({
   hidePlacement?: boolean;
   onSaved?: (account: UserAccount) => void;
 }) {
-  const { user, state, upsertUser, upsertTerritory } = useStore();
+  const { user, state, live, registerStaff, requestPasswordReset, upsertTerritory } = useStore();
   const router = useRouter();
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [resetNote, setResetNote] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [done, setDone] = useState<{ name: string; email: string } | null>(null);
   const [localPick, setLocalPick] = useState<HierarchyPick>({
     conferenceId: EZC_CONFERENCE_ID,
     districtId: account?.territoryIds?.find((id) => state.territories.find((t) => t.id === id && t.level === "district"))
@@ -48,10 +52,10 @@ export function ShepherdForm({
       if (t.churchId) churchIds.add(t.churchId);
       state.churches.filter((c) => c.districtId === t.id).forEach((c) => churchIds.add(c.id));
     }
-    return { churchIds: [...churchIds], selectedTerritories, fromDistricts };
+    return { churchIds: [...churchIds], selectedTerritories };
   }
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email")).trim().toLowerCase();
@@ -60,12 +64,16 @@ export function ShepherdForm({
       setError("That email is already registered.");
       return;
     }
-    const { churchIds, selectedTerritories } = churchIdsFromPick();
     const password = String(fd.get("password") || "").trim();
+    if (!account && live && password.length < 6) {
+      setError("Set a sign-in password of at least 6 characters. Give it to them in person or by WhatsApp.");
+      return;
+    }
+    const { churchIds, selectedTerritories } = churchIdsFromPick();
     const next: UserAccount = {
       id: account?.id || uid("usr"),
       email,
-      password: password || account?.password || DEMO_PASSWORD,
+      password: password || (!live ? DEMO_PASSWORD : undefined),
       displayName: String(fd.get("displayName")),
       role: String(fd.get("role")) as Role,
       churchIds,
@@ -74,7 +82,14 @@ export function ShepherdForm({
       title: String(fd.get("title") || "Pastor"),
       status: (String(fd.get("status") || account?.status || "active") as "active" | "inactive") || "active",
     };
-    upsertUser(next);
+    setBusy(true);
+    setError("");
+    const result = await registerStaff(next);
+    setBusy(false);
+    if (!result.ok) {
+      setError(result.error || "Could not register this account.");
+      return;
+    }
     const previous = new Set(account?.territoryIds || []);
     for (const t of state.territories) {
       const shouldHave = selectedTerritories.includes(t.id);
@@ -85,8 +100,37 @@ export function ShepherdForm({
         upsertTerritory({ ...t, assignedPastorIds: t.assignedPastorIds.filter((id) => id !== next.id) });
       }
     }
-    if (onSaved) onSaved(next);
-    else router.push("/pastors");
+    if (onSaved) {
+      onSaved(next);
+      return;
+    }
+    if (account) {
+      router.push("/pastors");
+      return;
+    }
+    setDone({ name: next.displayName, email: next.email });
+  }
+
+  if (done) {
+    return (
+      <div className="glass mt-4 rounded-lg p-5">
+        <div className="text-xs uppercase tracking-[0.18em] text-cyan">They can sign in now</div>
+        <h2 className="mt-1 text-lg font-semibold">{done.name} is on the directory</h2>
+        <p className="mt-2 text-sm text-white/70">
+          Give them this email and the password you just set. They open SHEPHERD360, sign in, and see only their
+          assigned flock.
+        </p>
+        <p className="mt-3 rounded-lg bg-white/5 px-4 py-3 font-medium">{done.email}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" className="btn btn-primary" onClick={() => router.push("/pastors")}>
+            Back to shepherds
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={() => setDone(null)}>
+            Register another
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -100,12 +144,12 @@ export function ShepherdForm({
         </div>
       )}
       <input name="displayName" placeholder="Full name" required defaultValue={account?.displayName} />
-      <input name="email" type="email" placeholder="Email" required defaultValue={account?.email} />
+      <input name="email" type="email" placeholder="Email they will sign in with" required defaultValue={account?.email} />
       <input name="phone" placeholder="Phone" defaultValue={account?.phone} />
       <input name="title" placeholder="Title" defaultValue={account?.title || "District Pastor"} />
-      <select name="role" defaultValue={account?.role || "pastor"} className={account ? "" : "sm:col-span-2"}>
+      <select name="role" defaultValue={account?.role || "pastor"}>
         <option value="pastor">Pastor</option>
-        {user.role === "master_admin" && <option value="church_admin">Church administrator</option>}
+        {user.role !== "pastor" && <option value="church_admin">Church administrator</option>}
       </select>
       {account && (
         <select name="status" defaultValue={account.status}>
@@ -113,19 +157,55 @@ export function ShepherdForm({
           <option value="inactive">Inactive</option>
         </select>
       )}
-      {account && (
-        <label className="sm:col-span-2 text-sm text-white/70">
-          New password (leave blank to keep current)
-          <input className="mt-1" name="password" type="password" autoComplete="new-password" />
-        </label>
-      )}
+      <label className={`text-sm text-white/70 ${account ? "sm:col-span-2" : ""}`}>
+        {account
+          ? "Create a login if they do not have one yet (leave blank to keep the current sign-in)"
+          : "Sign-in password"}
+        <input
+          className="mt-1"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={account ? undefined : 6}
+          required={!account && live}
+          placeholder={live ? "At least 6 characters" : DEMO_PASSWORD}
+        />
+      </label>
       <p className="sm:col-span-2 text-xs text-white/50">
         Assigned to {district?.name || "the selected district"}
-        {registeredChurch ? ` · ${registeredChurch.name}` : ""}.
-        {!account ? ` Sign-in password: ${DEMO_PASSWORD}` : ""}
+        {registeredChurch ? ` · ${registeredChurch.name}` : ""}.{" "}
+        {live
+          ? "They sign in on the web with this email and password. Church members do not get an account."
+          : `Local demo password: ${DEMO_PASSWORD}`}
       </p>
       {error && <p className="sm:col-span-2 text-sm text-rose">{error}</p>}
-      <button className="btn btn-primary w-full sm:w-fit">{account ? "Save shepherd" : "Register shepherd"}</button>
+      {resetNote && <p className="sm:col-span-2 text-sm text-ok">{resetNote}</p>}
+      <div className="sm:col-span-2 flex flex-wrap gap-2">
+        <button className="btn btn-primary w-full sm:w-fit" disabled={busy}>
+          {busy ? "Saving…" : account ? "Save shepherd" : "Register and create login"}
+        </button>
+        {account && live && (
+          <button
+            type="button"
+            className="btn btn-ghost w-full sm:w-fit"
+            disabled={busy || resetting}
+            onClick={async () => {
+              setResetting(true);
+              setError("");
+              setResetNote("");
+              const result = await requestPasswordReset(account.email);
+              setResetting(false);
+              if (!result.ok) {
+                setError(result.error || "Could not send a reset email.");
+                return;
+              }
+              setResetNote(`Firebase sent a reset link to ${account.email}. They open that inbox and choose a new password.`);
+            }}
+          >
+            {resetting ? "Sending reset…" : "Email a password reset"}
+          </button>
+        )}
+      </div>
     </form>
   );
 }

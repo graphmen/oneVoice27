@@ -14,17 +14,20 @@ const DEMOS = [
 ];
 
 export default function LoginPage() {
-  const { login, ready, live } = useStore();
+  const { login, ready, live, requestPasswordReset } = useStore();
   const router = useRouter();
   const [email, setEmail] = useState(DEMOS[2].email);
   const [password, setPassword] = useState(DEMO_PASSWORD);
   const [error, setError] = useState("");
+  const [resetNote, setResetNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     setError("");
+    setResetNote("");
     const result = await login(email, password);
     setBusy(false);
     if (!result.ok) {
@@ -32,6 +35,23 @@ export default function LoginPage() {
       return;
     }
     router.push("/dashboard");
+  }
+
+  async function onForgotPassword() {
+    if (!email.trim()) {
+      setError("Enter the email you sign in with, then request a reset.");
+      return;
+    }
+    setResetting(true);
+    setError("");
+    setResetNote("");
+    const result = await requestPasswordReset(email);
+    setResetting(false);
+    if (!result.ok) {
+      setError(result.error || "Could not send a reset email.");
+      return;
+    }
+    setResetNote("If that email has a login, Firebase sent a reset link. Open the inbox and choose a new password.");
   }
 
   return (
@@ -44,7 +64,10 @@ export default function LoginPage() {
           <h1 className="text-2xl font-semibold">Sign in to SHEPHERD360</h1>
           <p className="mt-2 text-sm text-white/65">
             Pastors, church administrators and conference leaders use role-based access. Location is never collected at
-            login. {live ? "This session uses the live conference directory." : "This device is on the local demo store until Firebase keys are set."}
+            login.{" "}
+            {live
+              ? "If conference or a church clerk registered you, use the email and password they gave you."
+              : "This device is on the local demo store until Firebase keys are set."}
           </p>
           <label className="mt-5 block text-sm text-white/70">Email</label>
           <input className="mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -57,9 +80,24 @@ export default function LoginPage() {
             required
           />
           {error && <p className="mt-3 text-sm text-rose">{error}</p>}
+          {resetNote && <p className="mt-3 text-sm text-ok">{resetNote}</p>}
           <button className="btn btn-primary btn-lg mt-5 w-full" disabled={!ready || busy}>
             {busy ? "Signing in…" : "Enter the field"}
           </button>
+          {live ? (
+            <button
+              type="button"
+              className="btn btn-ghost mt-2 w-full"
+              disabled={!ready || busy || resetting}
+              onClick={onForgotPassword}
+            >
+              {resetting ? "Sending reset email…" : "Forgot password"}
+            </button>
+          ) : (
+            <p className="mt-3 text-xs text-white/50">
+              Local demo has no email reset. Ask conference to set a new password on the shepherd record.
+            </p>
+          )}
         </form>
         <div className="mt-4 glass rounded-lg p-4 text-sm">
           <div className="text-xs uppercase tracking-[0.18em] text-white/45">Demo access</div>

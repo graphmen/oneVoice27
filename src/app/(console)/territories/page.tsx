@@ -125,7 +125,7 @@ function RegisterInner() {
             hidePlacement
             onSaved={(account) => {
               setDone(
-                `${account.displayName} is registered over ${district?.name || "this district"}. They can sign in with the demo password unless you change it later.`,
+                `${account.displayName} is registered over ${district?.name || "this district"}. Give them their email and the password you set — they can sign in on the web now.`,
               );
             }}
           />

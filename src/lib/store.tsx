@@ -12,7 +12,7 @@ import {
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { SESSION_KEY, STATE_KEY, GIS_DATASET } from "./constants";
 import { createDemoState } from "./demo-data";
-import { getFirebase, isFirebaseConfigured } from "./firebase";
+import { createStaffLogin, getFirebase, isFirebaseConfigured, sendStaffPasswordReset } from "./firebase";
 import {
   ensureUserProfile,
   liveDelete,
@@ -55,6 +55,8 @@ type StoreContextValue = {
   upsertMember: (member: Member) => void;
   deleteMember: (id: string) => void;
   upsertUser: (account: UserAccount) => void;
+  registerStaff: (account: UserAccount) => Promise<{ ok: boolean; error?: string; createdLogin?: boolean }>;
+  requestPasswordReset: (email: string) => Promise<{ ok: boolean; error?: string }>;
   deleteUser: (id: string) => void;
   upsertChurch: (church: Church) => void;
   deleteChurch: (id: string) => void;
@@ -238,7 +240,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         const profile = await ensureUserProfile(fbUser.email);
         if (profile?.role === "master_admin") await seedLiveCatalogRemote();
-        const pulled = await pullLiveState();
+        const pulled = await pullLiveState(profile);
         if (cancelled) return;
         setState((s) => mergeLive(s, pulled));
         if (profile && profile.status === "active") {
@@ -262,7 +264,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!ready || !isFirebaseConfigured || !user) return;
-    return subscribeLive((patch) => {
+    return subscribeLive(user, (patch) => {
       setState((s) => ({
         ...s,
         ...patch,
@@ -407,6 +409,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     [log],
   );
+
+  const registerStaff = useCallback(
+    async (account: UserAccount) => {
+      const password = account.password?.trim();
+      if (isFirebaseConfigured) {
+        let createdLogin = false;
+        if (password) {
+          if (password.length < 6) {
+            return { ok: false, error: "Set a sign-in password of at least 6 characters." };
+          }
+          const authResult = await createStaffLogin(account.email, password);
+          if (!authResult.ok) return { ok: false, error: authResult.error };
+          createdLogin = authResult.created;
+        }
+        const profile = { ...account, password: undefined };
+        upsertUser(profile);
+        try {
+          await liveSetUser(profile);
+        } catch {
+          return {
+            ok: false,
+            error: "Their login exists, but the directory write failed. Check placement and try again.",
+          };
+        }
+        return { ok: true, createdLogin };
+      }
+      upsertUser(account);
+      return { ok: true, createdLogin: false };
+    },
+    [upsertUser],
+  );
+
+  const requestPasswordReset = useCallback(async (email: string) => {
+    return sendStaffPasswordReset(email);
+  }, []);
 
   const deleteUser = useCallback(
     (id: string) => {
@@ -744,11 +781,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const seedLiveCatalog = useCallback(async () => {
     const result = await seedLiveCatalogRemote();
     if (result.ok) {
-      const pulled = await pullLiveState();
+      const pulled = await pullLiveState(user);
       setState((s) => mergeLive(s, pulled));
     }
     return result;
-  }, []);
+  }, [user]);
 
   const resetDemo = useCallback(() => {
     const fresh = createDemoState();
@@ -776,6 +813,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       upsertMember,
       deleteMember,
       upsertUser,
+      registerStaff,
+      requestPasswordReset,
       deleteUser,
       upsertChurch,
       deleteChurch,
@@ -802,6 +841,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       upsertMember,
       deleteMember,
       upsertUser,
+      registerStaff,
+      requestPasswordReset,
       deleteUser,
       upsertChurch,
       deleteChurch,

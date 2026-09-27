@@ -1,5 +1,11 @@
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  sendPasswordResetEmail,
+  signOut,
+  type Auth,
+} from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
 const config = {
@@ -36,4 +42,58 @@ export function getFirebase() {
     db = getFirestore(app);
   }
   return { app, auth: auth!, db: db! };
+}
+
+function clientOptions() {
+  return {
+    apiKey: config.apiKey as string,
+    authDomain: config.authDomain,
+    projectId: config.projectId,
+    storageBucket: config.storageBucket,
+    messagingSenderId: config.messagingSenderId,
+    appId: config.appId as string,
+  };
+}
+
+/** Creates a Firebase Auth login without signing the clerk out. */
+export async function createStaffLogin(email: string, password: string) {
+  if (!isFirebaseConfigured) return { ok: true as const, created: false };
+  const name = "staffInvite";
+  const secondary = getApps().find((item) => item.name === name) || initializeApp(clientOptions(), name);
+  const inviteAuth = getAuth(secondary);
+  try {
+    await createUserWithEmailAndPassword(inviteAuth, email.trim().toLowerCase(), password);
+    await signOut(inviteAuth);
+    return { ok: true as const, created: true };
+  } catch (err) {
+    await signOut(inviteAuth).catch(() => undefined);
+    const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+    if (code === "auth/email-already-in-use") return { ok: true as const, created: false };
+    if (code === "auth/weak-password") {
+      return { ok: false as const, error: "Password must be at least 6 characters." };
+    }
+    if (code === "auth/invalid-email") return { ok: false as const, error: "That email is not valid." };
+    return { ok: false as const, error: "Could not create their sign-in. Check the email and try again." };
+  }
+}
+
+/** Sends Firebase's reset email. The person must be able to open that inbox. */
+export async function sendStaffPasswordReset(email: string) {
+  if (!isFirebaseConfigured) {
+    return { ok: false as const, error: "Password reset needs the live directory." };
+  }
+  const fb = getFirebase();
+  if (!fb) return { ok: false as const, error: "Firebase is not ready." };
+  try {
+    await sendPasswordResetEmail(fb.auth, email.trim().toLowerCase());
+    return { ok: true as const };
+  } catch (err) {
+    const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+    if (code === "auth/invalid-email") return { ok: false as const, error: "That email is not valid." };
+    if (code === "auth/too-many-requests") {
+      return { ok: false as const, error: "Too many reset attempts. Wait a few minutes and try again." };
+    }
+    if (code === "auth/user-not-found") return { ok: true as const };
+    return { ok: false as const, error: "Could not send the reset email. Try again." };
+  }
 }

@@ -32,8 +32,8 @@ export default function PastorsPage() {
         <div>
           <h1 className="text-3xl font-semibold">Shepherds</h1>
           <p className="mt-2 text-white/60">
-            Pastors and church officers already assigned. Ratings use the same conference matrix as Monitor and Reports.
-            Open Edit to update details, placement, or remove an account.
+            Pastors and church officers already assigned. Registering a shepherd creates their web sign-in the same day.
+            Members of the flock do not get an account. Open Edit to update details, placement, or remove an account.
           </p>
         </div>
         {canEditGis(user) && (
