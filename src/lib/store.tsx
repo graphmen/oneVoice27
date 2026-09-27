@@ -123,9 +123,16 @@ function migrateState(parsed: AppState, fresh: AppState): AppState {
       seen.add(t.id);
       const seed = bySeed.get(t.id);
       if (!seed) return { ...t, parentId: remapLegacyTerritoryId(t.parentId) };
+      const officialOrg =
+        seed.level === "general_conference" ||
+        seed.level === "division" ||
+        seed.level === "union" ||
+        seed.level === "conference";
       return {
         ...seed,
         ...t,
+        name: officialOrg ? seed.name : t.name,
+        shortName: officialOrg ? seed.shortName : t.shortName,
         officialSource: seed.officialSource,
         sourceFeatureIndex: seed.sourceFeatureIndex,
         pin: t.pin || seed.pin,

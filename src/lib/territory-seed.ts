@@ -47,7 +47,7 @@ export function seedTerritories(): Territory[] {
       parentId: ezcIndex.division.id,
       color: "#c9b8ff",
       assignedPastorIds: [],
-      notes: "Organisational level only. No ZUC polygon was supplied in the boundaries folder.",
+      notes: "Organisational level only. No ZEUC polygon was supplied in the boundaries folder.",
     },
     {
       id: ezcIndex.conference.id,

@@ -257,7 +257,7 @@ export function GisWorkbench({ initialId }: { compactMembers?: boolean; initialI
       {treeOpen && (
         <aside className="gis-map-panel absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 top-auto z-20 flex max-h-[min(48vh,24rem)] flex-col overflow-hidden p-3 md:right-auto md:top-24 md:bottom-12 md:max-h-none md:w-[280px]">
           <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan">SDA hierarchy</div>
-          <p className="mt-1 text-[11px] text-white/45">GC → SID → ZUC → EZC</p>
+          <p className="mt-1 text-[11px] text-white/45">GC → SID → ZEUC → EZC</p>
           <p className="mt-1 text-[11px] text-white/40">
             {ezcIndex.counts.churches} churches · {ezcIndex.counts.harareDistricts + ezcIndex.counts.coverageDistricts}{" "}
             districts
