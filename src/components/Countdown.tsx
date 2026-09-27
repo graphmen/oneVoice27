@@ -1,6 +1,6 @@
 "use client";
 
-import { ALL_THINGS_NEW, HARVEST_MONTH } from "@/lib/constants";
+import { HARVEST_MONTH } from "@/lib/constants";
 import { useEffect, useState } from "react";
 
 function parts(target: Date) {
@@ -12,41 +12,22 @@ function parts(target: Date) {
 }
 
 export function Countdown() {
-  const [atn, setAtn] = useState<{ days: number; hours: number; mins: number } | null>(null);
   const [harvest, setHarvest] = useState<{ days: number; hours: number; mins: number } | null>(null);
 
   useEffect(() => {
-    const tick = () => {
-      setAtn(parts(ALL_THINGS_NEW));
-      setHarvest(parts(HARVEST_MONTH));
-    };
+    const tick = () => setHarvest(parts(HARVEST_MONTH));
     tick();
     const t = setInterval(tick, 30_000);
     return () => clearInterval(t);
   }, []);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      <TimeCard label="#AllThingsNew · 5 Sep 2026" value={atn} />
-      <TimeCard label="Global harvest · Sep 2027" value={harvest} />
-    </div>
-  );
-}
-
-function TimeCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: { days: number; hours: number; mins: number } | null;
-}) {
-  return (
     <div className="glass rounded-3xl p-5">
-      <div className="text-xs uppercase tracking-[0.18em] text-white/55">{label}</div>
+      <div className="text-xs uppercase tracking-[0.18em] text-white/55">Global harvest · Sep 2027</div>
       <div className="mt-3 flex justify-between gap-2 text-center sm:justify-start sm:gap-4">
-        <Unit n={value?.days} l="Days" />
-        <Unit n={value?.hours} l="Hours" />
-        <Unit n={value?.mins} l="Mins" />
+        <Unit n={harvest?.days} l="Days" />
+        <Unit n={harvest?.hours} l="Hours" />
+        <Unit n={harvest?.mins} l="Mins" />
       </div>
     </div>
   );

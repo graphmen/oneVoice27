@@ -7,7 +7,6 @@ export const CONFERENCE_NAME = "East Zimbabwe Conference";
 export const CONFERENCE_SHORT = "EZC";
 export const HASHTAGS = ["#ALLTHINGSNEW", "#ONEVOICE27", "#HOPESTARTSHERE"];
 
-export const ALL_THINGS_NEW = new Date("2026-09-05T11:00:00+02:00");
 export const HARVEST_MONTH = new Date("2027-09-01T00:00:00+02:00");
 
 export const SESSION_KEY = "ov27_session";
