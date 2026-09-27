@@ -1,0 +1,1687 @@
+{
+  "version": "ezc_field_gps_v1",
+  "source": "church.xlsx field GPS captured for East Zimbabwe Conference",
+  "count": 168,
+  "churches": [
+    {
+      "id": "ch_eastdale_west_seventh_day_adventist_church",
+      "name": "Eastdale West Seventh-day Adventist Church",
+      "lat": -17.843565,
+      "lng": 31.227793,
+      "districtId": "hdist_dama_falls",
+      "territoryId": "ct_ed684ccb-d9a1-47ff-ab49-a56a01b1240d",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_hunyani_main_church",
+      "name": "Hunyani main church",
+      "lat": -17.986816,
+      "lng": 31.044397,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_93821e86-f267-4295-8f8a-f3fc8197ab27",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_jekwa_church_juru_district",
+      "name": "Jekwa church. Juru district",
+      "lat": -17.740953,
+      "lng": 32.07848,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_harare_city_centre_sda_church",
+      "name": "Harare City Centre SDA Church",
+      "lat": -17.821001,
+      "lng": 31.042303,
+      "districtId": "hdist_city_centre",
+      "territoryId": "ct_0e420f25-e1e0-47d1-ba76-ba4cdbff9585",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_harare_city_east_church",
+      "name": "Harare City East Church",
+      "lat": -17.826132,
+      "lng": 31.058217,
+      "districtId": "hdist_harare_mulitcultural",
+      "territoryId": "ct_73882f36-0607-46ac-8ec9-47f8a456d2c0",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_boulder_sda_church",
+      "name": "Boulder SDA Church",
+      "lat": -17.817308,
+      "lng": 31.065481,
+      "districtId": "hdist_harare_mulivultural",
+      "territoryId": null,
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eastern_fountain_sda_church",
+      "name": "Eastern Fountain sda church",
+      "lat": -17.90675,
+      "lng": 31.285561,
+      "districtId": "hdist_ruwa_city",
+      "territoryId": null,
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_overspill_north",
+      "name": "Overspill North",
+      "lat": -17.878374,
+      "lng": 31.160091,
+      "districtId": "hdist_overspill",
+      "territoryId": "ct_82cbcbde-fc8c-4b26-8cba-351eb340e7fb",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_overspill_east",
+      "name": "Overspill East",
+      "lat": -17.883362,
+      "lng": 31.172955,
+      "districtId": "hdist_overspill",
+      "territoryId": "ct_9a8447bd-7788-4774-9129-b05869a1ab18",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eyecourt_main",
+      "name": "Eyecourt main",
+      "lat": -17.975168,
+      "lng": 31.03472,
+      "districtId": "hdist_retreat",
+      "territoryId": "ct_883902e4-acec-46a6-a6de-fbe63b44e780",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_unit_f_bethel",
+      "name": "Unit F Bethel",
+      "lat": -18.017632,
+      "lng": 31.098166,
+      "districtId": "hdist_chitungwiza_east",
+      "territoryId": "ct_4151c0a2-2cfd-4028-ba8f-2ca61ab6c1dd",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_makomo_main_church",
+      "name": "Makomo Main Church",
+      "lat": -17.883644,
+      "lng": 31.131641,
+      "districtId": "hdist_overspill",
+      "territoryId": "ct_32410076-758f-4ec0-a81e-62418a4be653",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_western_creek",
+      "name": "Western Creek",
+      "lat": -17.821659,
+      "lng": 31.219347,
+      "districtId": "hdist_dama_falls",
+      "territoryId": "ct_55e2fea1-b27a-4fe2-ac04-599cff3c7744",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_batanai_sda_church",
+      "name": "Batanai SDA church",
+      "lat": -18.283567,
+      "lng": 31.877453,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_seke_north_east_sda",
+      "name": "Seke North East SDA",
+      "lat": -18.022667,
+      "lng": 31.113272,
+      "districtId": "hdist_chitungwiza_east",
+      "territoryId": "ct_8f3d7cd6-516e-42b3-86a8-bfe203d3284e",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_springvale_sda",
+      "name": "Springvale SDA",
+      "lat": -17.886675,
+      "lng": 31.245886,
+      "districtId": "hdist_zimre",
+      "territoryId": "ct_0ca602e4-f3fa-4125-b69a-9e72c575d057",
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nyanyadzi_church",
+      "name": "Nyanyadzi church",
+      "lat": -19.764786,
+      "lng": 32.424969,
+      "districtId": "dist_chimanimani",
+      "territoryId": null,
+      "city": "Chimanimani",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eastview_multicultural_church",
+      "name": "Eastview Multicultural church",
+      "lat": -17.8367,
+      "lng": 31.227226,
+      "districtId": "hdist_dama_falls",
+      "territoryId": "ct_8fa9687f-f9af-4a4d-bec4-46b6675dcbe1",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_southlands_east_sda",
+      "name": "Southlands east SDA",
+      "lat": -17.956257,
+      "lng": 31.015375,
+      "districtId": "hdist_retreat",
+      "territoryId": "ct_f2a4b8d0-5b0b-4d41-947f-a6460eb715de",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chiropa_church",
+      "name": "Chiropa church",
+      "lat": -18.187568,
+      "lng": 32.254317,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_b15fa7aa-9ef1-4286-8cb6-bd9a57ad6699",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_newlands_sda",
+      "name": "Newlands SDA",
+      "lat": -17.817064,
+      "lng": 31.079254,
+      "districtId": "hdist_newlands",
+      "territoryId": "ct_47b64e39-ffc0-43b2-93b7-eb8f49a25928",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chipinda_sda",
+      "name": "Chipinda SDA",
+      "lat": -17.694021,
+      "lng": 31.933371,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chipinge_church",
+      "name": "Chipinge Church",
+      "lat": -20.194244,
+      "lng": 32.643482,
+      "districtId": "dist_chipinge_urban",
+      "territoryId": "ct_e028ac4d-bcb8-4153-847a-b58e0c3710ee",
+      "city": "Chipinge Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mahusekwa",
+      "name": "Mahusekwa",
+      "lat": -18.301413,
+      "lng": 31.188292,
+      "districtId": "dist_seke",
+      "territoryId": "ct_56a36740-9a94-406d-9405-9d0d2203caf4",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_southlea_park_central_sda_church",
+      "name": "Southlea Park Central SDA Church",
+      "lat": -17.974747,
+      "lng": 30.980125,
+      "districtId": "hdist_harare_south",
+      "territoryId": "ct_2ac02769-308f-4a38-9ca4-9a73cd8ce6d3",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_prospect_central_church",
+      "name": "Prospect Central church",
+      "lat": -17.883783,
+      "lng": 31.04561,
+      "districtId": "hdist_ardbernnie",
+      "territoryId": "ct_0d227068-a952-4324-9a54-ec4ce583fc3f",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_southview_sda_church",
+      "name": "SouthView SDA Church",
+      "lat": -18.022549,
+      "lng": 31.065977,
+      "districtId": "hdist_harare_south",
+      "territoryId": "ct_be5f1f8f-4af3-4143-b3e0-eab10900c1a5",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_overspill_south_church",
+      "name": "Overspill South Church",
+      "lat": -17.899054,
+      "lng": 31.151558,
+      "districtId": "hdist_overspill",
+      "territoryId": "ct_78b818bb-34bb-4353-a845-9fb53a0ddabc",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zengeza_3_church",
+      "name": "Zengeza 3 church",
+      "lat": -18.01199,
+      "lng": 31.059172,
+      "districtId": "hdist_zengeza",
+      "territoryId": "ct_9e5caaf1-00b7-46ee-ba9c-1d900f5e8fd9",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_waterfalls_west_sda",
+      "name": "Waterfalls West SDA",
+      "lat": -17.921249,
+      "lng": 31.005766,
+      "districtId": "hdist_waterfalls",
+      "territoryId": "ct_ab4cb121-868a-4762-86d5-a22af8213744",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_ardbennie_sda",
+      "name": "Ardbennie SDA",
+      "lat": -17.877548,
+      "lng": 31.038729,
+      "districtId": "hdist_ardbernnie",
+      "territoryId": "ct_99fbe342-05e3-4f15-bb2f-db28045fa8a9",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_arcadia_seventh_day_adventist",
+      "name": "Arcadia Seventh-day Adventist",
+      "lat": -17.84558,
+      "lng": 31.059175,
+      "districtId": "hdist_chiremba_north",
+      "territoryId": "ct_53cad659-c3dd-4e99-b3f5-7dc4e74445b8",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chikurubi_church",
+      "name": "Chikurubi Church",
+      "lat": -17.796208,
+      "lng": 31.1959,
+      "districtId": "hdist_manresa",
+      "territoryId": "ct_2e21689a-552b-49cd-8ab0-1d9c2fd81f7a",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_matika_church",
+      "name": "Matika church",
+      "lat": -19.1061,
+      "lng": 32.687069,
+      "districtId": "dist_mutare_urban",
+      "territoryId": null,
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_murambinda_south_church",
+      "name": "Murambinda South Church",
+      "lat": -19.288839,
+      "lng": 31.635923,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_34545f06-a8f4-4709-a85b-9b5c1bd4abf3",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_dema_church",
+      "name": "Dema Church",
+      "lat": -18.058723,
+      "lng": 31.202904,
+      "districtId": "dist_goromonzi",
+      "territoryId": "ct_974ef06d-d637-4d60-a6b3-873a0d9e20fa",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_paidamoyo",
+      "name": "Paidamoyo",
+      "lat": -20.109426,
+      "lng": 32.804901,
+      "districtId": "dist_chipinge",
+      "territoryId": "ct_57878bd3-7e99-4df5-9a83-fce55665c420",
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_murambinda_central_church",
+      "name": "Murambinda Central Church",
+      "lat": -19.27928,
+      "lng": 31.648722,
+      "districtId": "dist_buhera",
+      "territoryId": null,
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_sda_church_odzi",
+      "name": "SDA Church Odzi",
+      "lat": -18.959848,
+      "lng": 32.386803,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_da7c07d4-2590-45e0-8041-63b2b188f702",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_kwarire_sda_church",
+      "name": "Kwarire SDA Church",
+      "lat": -19.264397,
+      "lng": 31.749254,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_a0c7d7fd-517c-4b8a-8711-1384f99e32f0",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eastdale_east_church",
+      "name": "Eastdale East Church",
+      "lat": -17.831213,
+      "lng": 31.244791,
+      "districtId": "hdist_dama_falls",
+      "territoryId": "ct_39f32cd1-e200-4035-9ecb-100b31c03a77",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_munamba_church_sda",
+      "name": "Munamba Church SDA",
+      "lat": -17.889784,
+      "lng": 31.569097,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chitakatira_sda",
+      "name": "Chitakatira SDA",
+      "lat": -19.138107,
+      "lng": 32.680206,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_07f9e01b-732a-4927-b0f5-f8cdf9673bdf",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_goromonzi_west_church",
+      "name": "Goromonzi West church",
+      "lat": -17.833168,
+      "lng": 31.320307,
+      "districtId": "dist_goromonzi",
+      "territoryId": "ct_8578cc55-14ed-444d-a5ae-81b9f48fae82",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zengeza_central",
+      "name": "Zengeza Central",
+      "lat": -18.001506,
+      "lng": 31.064289,
+      "districtId": "hdist_zengeza",
+      "territoryId": "ct_eddc8de2-ab39-45c1-ab5f-33b54e6e9234",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_retreat_east_church",
+      "name": "Retreat East church",
+      "lat": -17.906071,
+      "lng": 31.060785,
+      "districtId": "hdist_chiremba_west",
+      "territoryId": "ct_66bfadbf-3241-489e-8381-71077e71db5e",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eastern_heights",
+      "name": "Eastern Heights",
+      "lat": -17.824047,
+      "lng": 31.254774,
+      "districtId": "hdist_dama_falls",
+      "territoryId": "ct_22d54102-5039-488b-9e50-43115a87e3c3",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mukwada_sda_church",
+      "name": "Mukwada SDA church",
+      "lat": -19.51144,
+      "lng": 32.348316,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_abeb5d9d-c14a-45d0-a144-b49e193cc71d",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_living_hope_church",
+      "name": "Living Hope Church",
+      "lat": -17.871042,
+      "lng": 31.126827,
+      "districtId": "hdist_chiremba_south",
+      "territoryId": "ct_d60ab8cb-e3ca-4282-a575-a482e04f457c",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_makomo_east_church",
+      "name": "Makomo East church",
+      "lat": -17.894225,
+      "lng": 31.142021,
+      "districtId": "hdist_harare_central",
+      "territoryId": "ct_7dec1451-3b0f-4af6-b36f-ab7a2621f191",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_rusape_north_sda_church",
+      "name": "Rusape North SDA church",
+      "lat": -18.541195,
+      "lng": 32.118622,
+      "districtId": "dist_rusape",
+      "territoryId": "ct_ab7b32d5-be27-41bb-91d4-ee677a528f59",
+      "city": "Rusape",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_rusape_east",
+      "name": "Rusape East",
+      "lat": -18.544731,
+      "lng": 32.119663,
+      "districtId": "dist_rusape",
+      "territoryId": "ct_b2e5f5d0-5d2e-4645-b6c9-0cb59b44c562",
+      "city": "Rusape",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_southdown_church",
+      "name": "Southdown church",
+      "lat": -20.265625,
+      "lng": 32.832176,
+      "districtId": "dist_chipinge",
+      "territoryId": "ct_2c00d66a-26b6-40b4-94f9-b2be9ce83736",
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_stopover_church",
+      "name": "Stopover church",
+      "lat": -17.903757,
+      "lng": 31.166922,
+      "districtId": "hdist_overspill",
+      "territoryId": null,
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_prospect_main_sda",
+      "name": "Prospect Main SDA",
+      "lat": -17.896647,
+      "lng": 31.05056,
+      "districtId": "hdist_harare_central",
+      "territoryId": "ct_1abb393c-dfe8-45ec-8f20-cefbb18be518",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mount_pisgah_ruwa",
+      "name": "Mount Pisgah Ruwa",
+      "lat": -17.897465,
+      "lng": 31.251459,
+      "districtId": "hdist_ruwa_city",
+      "territoryId": null,
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_unit_a_extension",
+      "name": "Unit A Extension",
+      "lat": -18.011126,
+      "lng": 31.091782,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_ec5befbf-5851-419b-95c3-8ab31f19c863",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_southlands_main",
+      "name": "Southlands Main",
+      "lat": -17.953844,
+      "lng": 31.008369,
+      "districtId": "hdist_harare_south",
+      "territoryId": "ct_038f1d6e-4011-4648-83d5-87f428461fd4",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_makaravatwe_church",
+      "name": "Makaravatwe church",
+      "lat": -17.682459,
+      "lng": 31.853598,
+      "districtId": "dist_murehwa",
+      "territoryId": "ct_fd23ef0d-0251-46a5-8589-40e43a68e26c",
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mutiwegora",
+      "name": "Mutiwegora",
+      "lat": -17.947895,
+      "lng": 32.229107,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_7f0c6aee-09d4-4c70-b553-4cf9ace50642",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_greendale_church",
+      "name": "Greendale Church",
+      "lat": -17.819552,
+      "lng": 31.131493,
+      "districtId": "hdist_glenara_south",
+      "territoryId": "ct_32043af9-4c73-4838-a934-4b91953d9fbd",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_the_central_church",
+      "name": "The Central church",
+      "lat": -17.646074,
+      "lng": 31.779913,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_medium",
+      "name": "Medium",
+      "lat": -20.202427,
+      "lng": 32.625816,
+      "districtId": "dist_chipinge_urban",
+      "territoryId": "ct_c7edea34-58da-4e7e-9bde-a7e59f6c54a2",
+      "city": "Chipinge Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_northview_central_church_seke",
+      "name": "Northview Central Church Seke",
+      "lat": -18.019615,
+      "lng": 31.14885,
+      "districtId": "dist_seke",
+      "territoryId": "ct_17841146-1b05-4601-98af-36589777aaa3",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_stoneridge_west_church",
+      "name": "Stoneridge West Church",
+      "lat": -17.979561,
+      "lng": 31.014152,
+      "districtId": "dist_seke",
+      "territoryId": "ct_9ec930cc-f91a-4a3d-83a4-39c1958135ec",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_manresa_church",
+      "name": "Manresa Church",
+      "lat": -17.807892,
+      "lng": 31.188458,
+      "districtId": "hdist_manresa",
+      "territoryId": null,
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mabvuwo_church",
+      "name": "Mabvuwo church",
+      "lat": -18.674002,
+      "lng": 32.028008,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_1867d0f0-656b-4c4a-9ac3-1d41ef8a2408",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_stoneridge_south",
+      "name": "Stoneridge South",
+      "lat": -17.990894,
+      "lng": 31.00984,
+      "districtId": "hdist_stone_ridge",
+      "territoryId": "ct_fa8e4086-d326-47fa-8db3-5860a70dbf74",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_muzokomba_church",
+      "name": "Muzokomba church",
+      "lat": -19.584978,
+      "lng": 31.966057,
+      "districtId": "dist_buhera",
+      "territoryId": null,
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_jori_church",
+      "name": "Jori church",
+      "lat": -19.688082,
+      "lng": 32.120777,
+      "districtId": "dist_buhera",
+      "territoryId": null,
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_maturikidze_church",
+      "name": "Maturikidze Church",
+      "lat": -18.20994,
+      "lng": 32.090084,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_1407dfe6-1e98-410b-8f06-d1f8ffba7bd6",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nyamukamani_church",
+      "name": "Nyamukamani church",
+      "lat": -18.09273,
+      "lng": 32.161755,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_055144cd-5d49-422f-bb1e-95f9881ea73a",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mayo_church",
+      "name": "Mayo Church",
+      "lat": -17.869958,
+      "lng": 32.26273,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_a6586c1f-2e7b-444e-a96f-6eaf10793833",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_tsikada_church",
+      "name": "Tsikada Church",
+      "lat": -17.979605,
+      "lng": 32.482437,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_f974107c-96cd-4691-935d-817b296884b0",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mukwasi_adventist_church",
+      "name": "Mukwasi Adventist Church",
+      "lat": -19.197054,
+      "lng": 31.940024,
+      "districtId": "dist_buhera",
+      "territoryId": null,
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_overspill_central",
+      "name": "Overspill Central",
+      "lat": -17.883858,
+      "lng": 31.157041,
+      "districtId": "hdist_overspill",
+      "territoryId": "ct_acd0f6d3-e853-4d81-9ffd-e4088b411fe4",
+      "city": "Epworth",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zengeza_1_west",
+      "name": "Zengeza 1 west",
+      "lat": -17.998522,
+      "lng": 31.049099,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_a18530dc-9cdf-4552-9202-fd6e21527970",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_saurombe_church",
+      "name": "Saurombe church",
+      "lat": 37.389805,
+      "lng": -122.081413,
+      "districtId": "dist_chimanimani",
+      "territoryId": "ct_882f819d-bf98-4862-861e-88c84a11a79e",
+      "city": "Chimanimani",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_victory_park_west",
+      "name": "Victory park west",
+      "lat": -17.906752,
+      "lng": 31.200295,
+      "districtId": "hdist_chiremba_central",
+      "territoryId": "ct_2ab63871-8d63-438f-9ec4-9c0fbe9cce81",
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_valleyhill_sda_church",
+      "name": "Valleyhill SDA Church",
+      "lat": -17.767643,
+      "lng": 31.26936,
+      "districtId": "dist_goromonzi",
+      "territoryId": "ct_57809bfa-d45c-42e4-8ea5-45f397c10cdd",
+      "city": "Goromonzi",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_murambinda_east_sda_church",
+      "name": "Murambinda East SDA Church",
+      "lat": -19.293758,
+      "lng": 31.678913,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_cd85232e-d324-41c2-9050-11f0c5c95556",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zengeza_south_sda_church",
+      "name": "Zengeza south SDA church",
+      "lat": -18.012894,
+      "lng": 31.0462,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_b22f6a84-a8de-401c-a271-42c73f9a5675",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_lakeside_church",
+      "name": "Lakeside church",
+      "lat": -18.007246,
+      "lng": 31.114964,
+      "districtId": "hdist_chitungwiza_east",
+      "territoryId": null,
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_unit_o_central_church",
+      "name": "Unit O Central Church",
+      "lat": -18.024122,
+      "lng": 31.119804,
+      "districtId": "hdist_chitungwiza_east",
+      "territoryId": "ct_78ce7868-07cf-4489-bf62-533d0384c8f6",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_manyame_park_church",
+      "name": "Manyame Park Church",
+      "lat": -17.988422,
+      "lng": 31.033033,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_9ed064d7-ab46-40bc-98cd-2796e81918ea",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_magaya_church",
+      "name": "Magaya Church",
+      "lat": -17.626343,
+      "lng": 31.943199,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_dumba_church",
+      "name": "Dumba church",
+      "lat": -18.943356,
+      "lng": 32.033161,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_71c7e05a-4b35-452e-a89f-a4fd7b409f08",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_kingsway_church",
+      "name": "Kingsway Church",
+      "lat": -18.972551,
+      "lng": 32.687508,
+      "districtId": "dist_mutare_urban",
+      "territoryId": "ct_74fdb96c-87e9-476c-8989-d713ece989bd",
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_unnamed_congregation",
+      "name": "Unnamed congregation",
+      "lat": -18.00149,
+      "lng": 31.045582,
+      "districtId": "dist_chitungwiza",
+      "territoryId": null,
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_windsor_south_church",
+      "name": "Windsor South Church",
+      "lat": -17.892359,
+      "lng": 31.21422,
+      "districtId": "hdist_chiremba_central",
+      "territoryId": "ct_a2c6fcc8-b207-4c8c-8ed5-6ac04ebdfec1",
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mutare_sanctuary",
+      "name": "Mutare Sanctuary",
+      "lat": -18.964153,
+      "lng": 32.6833,
+      "districtId": "dist_mutare_urban",
+      "territoryId": null,
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mugomba_church",
+      "name": "Mugomba church",
+      "lat": -18.842856,
+      "lng": 32.08942,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_8dfa8cbe-5819-4c20-84c7-00912b635c98",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chikombe_church",
+      "name": "Chikombe church",
+      "lat": -18.81032,
+      "lng": 32.127003,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_043eb3a5-ef86-40d9-b546-f17abefc4c9c",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_seke_east_church",
+      "name": "Seke East church",
+      "lat": -18.028759,
+      "lng": 31.102419,
+      "districtId": "dist_chitungwiza",
+      "territoryId": "ct_04f2ec62-0f12-4f42-8b30-b7b5e31a5a74",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zimunya",
+      "name": "Zimunya",
+      "lat": -19.101077,
+      "lng": 32.621037,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_67d6fdc2-567a-4190-b0f1-383fa7b6b9d8",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mutsvangwa_church",
+      "name": "Mutsvangwa Church",
+      "lat": -20.077189,
+      "lng": 32.914009,
+      "districtId": "dist_chimanimani",
+      "territoryId": "ct_59731f79-33c6-43eb-aa14-7fdfa05a0208",
+      "city": "Chimanimani",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_handina_church",
+      "name": "Handina church",
+      "lat": -18.825945,
+      "lng": 32.093277,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_4d5fa1d4-fc97-42d1-a091-674257fab30c",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_shangwa_church",
+      "name": "Shangwa Church",
+      "lat": -18.519571,
+      "lng": 30.999632,
+      "districtId": "dist_seke",
+      "territoryId": "ct_dfcc6c06-3673-442e-a0f0-4b91095de91f",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_jekwa_church",
+      "name": "Jekwa church",
+      "lat": -17.740953,
+      "lng": 32.07848,
+      "districtId": "dist_murehwa",
+      "territoryId": "ct_53f643ee-ff4c-4542-927e-5aba198be1f4",
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_timire_park_main_church",
+      "name": "Timire Park Main Church",
+      "lat": -17.919292,
+      "lng": 31.22962,
+      "districtId": "hdist_ruwa_city",
+      "territoryId": null,
+      "city": "Ruwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_waterfalls_south_sda",
+      "name": "Waterfalls South SDA",
+      "lat": -17.937189,
+      "lng": 31.020801,
+      "districtId": "hdist_retreat",
+      "territoryId": "ct_09064a0c-5cad-4f12-b945-28a0963d7388",
+      "city": "Harare Rural",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_sanctuary_church",
+      "name": "Sanctuary Church",
+      "lat": -18.964153,
+      "lng": 32.6833,
+      "districtId": "dist_mutare_urban",
+      "territoryId": null,
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_usanga_church",
+      "name": "Usanga Church",
+      "lat": -20.191204,
+      "lng": 32.60981,
+      "districtId": "dist_chipinge_urban",
+      "territoryId": null,
+      "city": "Chipinge Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chivhu_church",
+      "name": "Chivhu Church",
+      "lat": -19.004118,
+      "lng": 30.896223,
+      "districtId": "dist_chikomba",
+      "territoryId": null,
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_manzvire_church",
+      "name": "Manzvire Church",
+      "lat": -20.674355,
+      "lng": 32.34491,
+      "districtId": "dist_chipinge",
+      "territoryId": null,
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_kwayedza_church",
+      "name": "Kwayedza church",
+      "lat": -19.225034,
+      "lng": 31.403862,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_896bd550-ef88-4aea-8efc-5b6e0fb3466b",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_birchenough_bridge_sda_church",
+      "name": "Birchenough Bridge SDA church",
+      "lat": -19.962439,
+      "lng": 32.357803,
+      "districtId": "dist_chipinge",
+      "territoryId": "ct_97b01c74-006c-4c86-ab75-c0d258dd3c10",
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_fern_valley_church",
+      "name": "Fern Valley church",
+      "lat": -19.040676,
+      "lng": 32.658981,
+      "districtId": "dist_mutare_urban",
+      "territoryId": "ct_12981928-ce9b-49b0-93d6-9b50a5674623",
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mutare_central_church",
+      "name": "Mutare Central Church",
+      "lat": -18.966759,
+      "lng": 32.67189,
+      "districtId": "dist_mutare_urban",
+      "territoryId": "ct_158829cd-9e95-414c-a346-68cb594edea7",
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_matika_church_2",
+      "name": "Matika Church",
+      "lat": -19.1061,
+      "lng": 32.687069,
+      "districtId": "dist_mutare_urban",
+      "territoryId": null,
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_anderson_church",
+      "name": "Anderson Church",
+      "lat": -18.985495,
+      "lng": 31.92326,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chitakatira_church",
+      "name": "Chitakatira Church",
+      "lat": -19.138107,
+      "lng": 32.680206,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_07f9e01b-732a-4927-b0f5-f8cdf9673bdf",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zunidza_church",
+      "name": "Zunidza church",
+      "lat": -18.817808,
+      "lng": 32.12262,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_4a339125-7ce8-4648-a454-4d0c7b9aafc3",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mandara",
+      "name": "Mandara",
+      "lat": -17.797388,
+      "lng": 31.150618,
+      "districtId": "hdist_glenara_south",
+      "territoryId": "ct_073c1207-064b-456f-a170-787014167e9b",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mt_moria",
+      "name": "Mt Moria",
+      "lat": -18.72109,
+      "lng": 32.005324,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_hwedza_east_church",
+      "name": "Hwedza East Church",
+      "lat": -18.623708,
+      "lng": 31.573977,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_gunda",
+      "name": "Gunda",
+      "lat": -18.778791,
+      "lng": 31.830769,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_ba4c58ec-2e42-4a12-8472-fb852dd8405d",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_jenya_church",
+      "name": "Jenya Church",
+      "lat": -18.531368,
+      "lng": 31.416655,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_6cff1031-ed9a-4f1d-8a70-3575747ee45b",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_ngurumbiri_church",
+      "name": "Ngurumbiri Church",
+      "lat": -18.7945,
+      "lng": 31.837439,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_seventh_day_adventist_silverbow",
+      "name": "Seventh Day Adventist Silverbow",
+      "lat": -18.522488,
+      "lng": 32.132526,
+      "districtId": "dist_rusape",
+      "territoryId": "ct_0a9fe49b-5f93-4012-b460-fd1d8e4e7d78",
+      "city": "Rusape",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chirimamhunga_church",
+      "name": "Chirimamhunga church",
+      "lat": -18.128567,
+      "lng": 31.162115,
+      "districtId": "dist_seke",
+      "territoryId": "ct_f1fd7858-9862-454e-939e-4cfb5c075298",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_marondera_central_sda",
+      "name": "Marondera Central SDA",
+      "lat": -18.202161,
+      "lng": 31.530859,
+      "districtId": "dist_marondera_urban",
+      "territoryId": "ct_7096f148-6436-4b21-9d02-ab0bd3fb0f0c",
+      "city": "Marondera Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_northview_east",
+      "name": "Northview East",
+      "lat": -18.025246,
+      "lng": 31.169631,
+      "districtId": "dist_seke",
+      "territoryId": null,
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_northview_south_sda_church",
+      "name": "NorthView South SDA church",
+      "lat": -18.027975,
+      "lng": 31.14518,
+      "districtId": "dist_seke",
+      "territoryId": "ct_46bea4d2-681e-46a9-aff1-0fa3279b4723",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_northvieaw_west",
+      "name": "Northvieaw West",
+      "lat": -18.051767,
+      "lng": 31.133114,
+      "districtId": "dist_seke",
+      "territoryId": null,
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_dema_central_church",
+      "name": "Dema Central church",
+      "lat": -18.089001,
+      "lng": 31.225119,
+      "districtId": "dist_seke",
+      "territoryId": null,
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_natview_sda",
+      "name": "Natview SDA",
+      "lat": -18.991417,
+      "lng": 32.609551,
+      "districtId": "dist_mutare_urban",
+      "territoryId": "ct_175fe064-2da5-4de9-8f9a-92fa7b6edaf0",
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_kondo_sda",
+      "name": "Kondo SDA",
+      "lat": -20.468468,
+      "lng": 32.310181,
+      "districtId": "dist_chipinge",
+      "territoryId": "ct_6612fe83-14e0-49db-9649-29d1dec19e5a",
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_westend_church",
+      "name": "Westend church",
+      "lat": -18.202286,
+      "lng": 31.542858,
+      "districtId": "dist_marondera_urban",
+      "territoryId": "ct_af9a2fe0-7dfb-44f4-a5a6-fd155f56273f",
+      "city": "Marondera Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_marondera_city_centre",
+      "name": "Marondera City Centre",
+      "lat": -18.1889,
+      "lng": 31.540695,
+      "districtId": "hdist_city_centre",
+      "territoryId": "ct_0e420f25-e1e0-47d1-ba76-ba4cdbff9585",
+      "city": "Harare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mangunda_church",
+      "name": "Mangunda Church",
+      "lat": -18.513807,
+      "lng": 32.289638,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nerutanga_sda_church",
+      "name": "Nerutanga SDA Church",
+      "lat": -19.285148,
+      "lng": 31.355514,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_5a82a32d-43cc-4cb1-9d71-7929ec741714",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_sadza_church",
+      "name": "Sadza church",
+      "lat": -18.914427,
+      "lng": 31.455685,
+      "districtId": "dist_chikomba",
+      "territoryId": "ct_de0ce7fe-fa69-4755-a07f-507dfffa256c",
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_elmswood_park_sda_church",
+      "name": "Elmswood Park SDA Church",
+      "lat": -18.233465,
+      "lng": 31.525366,
+      "districtId": "dist_marondera_urban",
+      "territoryId": null,
+      "city": "Marondera Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_sanganai_sda_church",
+      "name": "Sanganai SDA church",
+      "lat": -18.837661,
+      "lng": 31.46537,
+      "districtId": "dist_chikomba",
+      "territoryId": "ct_79d59346-5a25-4ba7-a444-8fadff91e8d8",
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_redhill_church",
+      "name": "Redhill church",
+      "lat": -18.9613,
+      "lng": 31.444103,
+      "districtId": "dist_chikomba",
+      "territoryId": null,
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_eastview_church",
+      "name": "Eastview Church",
+      "lat": -18.981487,
+      "lng": 32.684376,
+      "districtId": "dist_mutare_urban",
+      "territoryId": null,
+      "city": "Mutare Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_rusape_east_sda_church",
+      "name": "Rusape east sda church",
+      "lat": -18.544693,
+      "lng": 32.119736,
+      "districtId": "dist_rusape",
+      "territoryId": "ct_b2e5f5d0-5d2e-4645-b6c9-0cb59b44c562",
+      "city": "Rusape",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_anderson_mutiweshiri_church",
+      "name": "Anderson Mutiweshiri Church",
+      "lat": -18.985766,
+      "lng": 31.922758,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_6634d4f3-bbee-4312-91ea-2d8f983ad00c",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_macheke_central_church",
+      "name": "Macheke central church",
+      "lat": -18.148195,
+      "lng": 31.852102,
+      "districtId": "dist_murehwa",
+      "territoryId": null,
+      "city": "Murehwa",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nzvenga_church",
+      "name": "Nzvenga Church",
+      "lat": -19.27783,
+      "lng": 32.210022,
+      "districtId": "dist_mutare",
+      "territoryId": "ct_46da4f20-f687-4382-a129-1e639a202dfd",
+      "city": "Mutare",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_dzidze_church",
+      "name": "Dzidze church",
+      "lat": -19.013197,
+      "lng": 31.406015,
+      "districtId": "dist_chikomba",
+      "territoryId": "ct_da6ae66e-2455-4d84-a143-a4bbf0deeb49",
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_headlands_central",
+      "name": "Headlands central",
+      "lat": -18.287102,
+      "lng": 32.038162,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_tasarirenhamo",
+      "name": "Tasarirenhamo",
+      "lat": -18.887108,
+      "lng": 31.389381,
+      "districtId": "dist_chikomba",
+      "territoryId": "ct_35b5990b-82e8-4b35-bfa1-9171ed158c0e",
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_rusape_west_church",
+      "name": "Rusape west church",
+      "lat": -18.549827,
+      "lng": 32.119925,
+      "districtId": "dist_rusape",
+      "territoryId": "ct_79cd354c-c411-4532-b2aa-ad836ca92c76",
+      "city": "Rusape",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_makonwe_church",
+      "name": "Makonwe church",
+      "lat": -18.828829,
+      "lng": 31.448679,
+      "districtId": "dist_chikomba",
+      "territoryId": "ct_2ca68301-9995-4a34-96b8-83bf091b9295",
+      "city": "Chikomba",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_hwedza_east_church_2",
+      "name": "Hwedza East Church",
+      "lat": -18.623708,
+      "lng": 31.573977,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_jenya_church_2",
+      "name": "Jenya Church",
+      "lat": -18.531368,
+      "lng": 31.416655,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_6cff1031-ed9a-4f1d-8a70-3575747ee45b",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chirasauta_church",
+      "name": "Chirasauta church",
+      "lat": -19.043331,
+      "lng": 31.591251,
+      "districtId": "dist_chimanimani",
+      "territoryId": "ct_aa21680e-e144-42bf-8511-3be025f0a1bf",
+      "city": "Chimanimani",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_ngurumbiri_church_2",
+      "name": "Ngurumbiri Church",
+      "lat": -18.7945,
+      "lng": 31.837439,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_shangwe_church",
+      "name": "Shangwe church",
+      "lat": -18.444328,
+      "lng": 32.052998,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mambo_east_church",
+      "name": "Mambo east church",
+      "lat": -19.117117,
+      "lng": 31.751034,
+      "districtId": "dist_buhera",
+      "territoryId": null,
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_mushawa_church",
+      "name": "Mushawa church",
+      "lat": -18.814058,
+      "lng": 31.927023,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_honeso_sda",
+      "name": "Honeso SDA",
+      "lat": -18.759506,
+      "lng": 32.104465,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_4e4bdc77-df54-4077-89ec-25c562c6e10e",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_gomo_church",
+      "name": "Gomo Church",
+      "lat": -18.914692,
+      "lng": 31.961637,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_c37ad80a-9a84-429c-9d08-1a489489746d",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_hande_sda_church",
+      "name": "Hande SDA Church",
+      "lat": -19.128307,
+      "lng": 31.745985,
+      "districtId": "dist_buhera",
+      "territoryId": "ct_20e58206-3a9f-467c-ba17-911b9ca5de5d",
+      "city": "Buhera",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nyameni_sda_church",
+      "name": "Nyameni SDA Church",
+      "lat": -18.205111,
+      "lng": 31.548021,
+      "districtId": "dist_marondera_urban",
+      "territoryId": null,
+      "city": "Marondera Urban",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nyazura_mission_church",
+      "name": "Nyazura Mission church",
+      "lat": -18.768143,
+      "lng": 32.225601,
+      "districtId": "dist_makoni",
+      "territoryId": "ct_7a726428-d051-4213-82c7-59fb46eb78b6",
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_hwedza_main_church",
+      "name": "Hwedza main church",
+      "lat": -18.618473,
+      "lng": 31.560421,
+      "districtId": "dist_hwedza",
+      "territoryId": null,
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chinyonga_church",
+      "name": "Chinyonga church",
+      "lat": -18.867125,
+      "lng": 31.884815,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_44e5d404-0c83-47a2-9e7e-10179e10ede3",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_gotora_church",
+      "name": "Gotora church",
+      "lat": -18.643241,
+      "lng": 31.451817,
+      "districtId": "dist_hwedza",
+      "territoryId": "ct_3962af02-00b7-4ef3-a73c-95cbae7eab5d",
+      "city": "Hwedza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chisumbanje_church",
+      "name": "Chisumbanje church",
+      "lat": -20.823393,
+      "lng": 32.203144,
+      "districtId": "dist_chipinge",
+      "territoryId": null,
+      "city": "Chipinge",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_dema_central_church_2",
+      "name": "Dema Central Church",
+      "lat": -18.137672,
+      "lng": 31.278778,
+      "districtId": "dist_seke",
+      "territoryId": null,
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_nyahukwe_church",
+      "name": "Nyahukwe church",
+      "lat": -18.464025,
+      "lng": 32.313915,
+      "districtId": "dist_nyanga",
+      "territoryId": "ct_351821e0-3001-414c-bbf9-dae464185e62",
+      "city": "Nyanga",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_chiedza_church",
+      "name": "Chiedza church",
+      "lat": -18.538734,
+      "lng": 32.279076,
+      "districtId": "dist_makoni",
+      "territoryId": null,
+      "city": "Makoni",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_streamside_sda_church",
+      "name": "Streamside SDA church",
+      "lat": -18.036501,
+      "lng": 31.096903,
+      "districtId": "dist_seke",
+      "territoryId": "ct_b959fd31-a9ae-4d07-8654-417b0fa0d2cb",
+      "city": "Seke",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_zengeza_east",
+      "name": "Zengeza East",
+      "lat": -18.013933,
+      "lng": 31.053396,
+      "districtId": "hdist_zengeza",
+      "territoryId": "ct_9067ba7c-a34e-4cb6-b414-ff9f52c065ca",
+      "city": "Chitungwiza",
+      "source": "field_gps"
+    },
+    {
+      "id": "ch_highlands_church",
+      "name": "Highlands church",
+      "lat": -17.798351,
+      "lng": 31.092955,
+      "districtId": "hdist_highlands",
+      "territoryId": "ct_34b509e1-a12f-49d3-8ddb-5134cb4e1451",
+      "city": "Harare",
+      "source": "field_gps"
+    }
+  ]
+}

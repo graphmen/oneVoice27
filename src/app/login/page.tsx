@@ -14,15 +14,19 @@ const DEMOS = [
 ];
 
 export default function LoginPage() {
-  const { login, ready } = useStore();
+  const { login, ready, live } = useStore();
   const router = useRouter();
   const [email, setEmail] = useState(DEMOS[2].email);
   const [password, setPassword] = useState(DEMO_PASSWORD);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const result = login(email, password);
+    setBusy(true);
+    setError("");
+    const result = await login(email, password);
+    setBusy(false);
     if (!result.ok) {
       setError(result.error || "Unable to sign in.");
       return;
@@ -40,7 +44,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-semibold">Sign in to SHEPHERD360</h1>
           <p className="mt-2 text-sm text-white/65">
             Pastors, church administrators and conference leaders use role-based access. Location is never collected at
-            login.
+            login. {live ? "This session uses the live conference directory." : "This device is on the local demo store until Firebase keys are set."}
           </p>
           <label className="mt-5 block text-sm text-white/70">Email</label>
           <input className="mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -53,8 +57,8 @@ export default function LoginPage() {
             required
           />
           {error && <p className="mt-3 text-sm text-rose">{error}</p>}
-          <button className="btn btn-primary btn-lg mt-5 w-full" disabled={!ready}>
-            Enter the field
+          <button className="btn btn-primary btn-lg mt-5 w-full" disabled={!ready || busy}>
+            {busy ? "Signing in…" : "Enter the field"}
           </button>
         </form>
         <div className="mt-4 glass rounded-lg p-4 text-sm">

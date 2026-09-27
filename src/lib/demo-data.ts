@@ -2,6 +2,7 @@ import type { AppState } from "./types";
 import { DEMO_PASSWORD, GIS_DATASET } from "./constants";
 import { seedTerritories } from "./territory-seed";
 import { demoLinks } from "./ezc-index";
+import { seedRegisteredChurches } from "./official-churches";
 
 const now = new Date("2026-09-02T08:00:00+02:00");
 const iso = (d: Date) => d.toISOString();
@@ -31,13 +32,15 @@ export function createDemoState(): AppState {
     regions: [
       { id: "reg_harare", name: "Harare", conference: "East Zimbabwe Conference" },
       { id: "reg_chitungwiza", name: "Chitungwiza District", conference: "East Zimbabwe Conference" },
+      { id: "reg_ezc", name: "Conference field", conference: "East Zimbabwe Conference" },
     ],
     territories: seedTerritories(),
-    churches: [
+    churches: seedRegisteredChurches([
       {
         id: "ch_central",
         name: "Harare Central SDA Church",
         regionId: "reg_harare",
+        source: "demo",
         districtId: demoLinks.harareCentralDistrictId,
         territoryId: demoLinks.centralChurchTerritoryId,
         address: "Corner Second Street & Speke Avenue",
@@ -55,6 +58,7 @@ export function createDemoState(): AppState {
         city: "Harare",
         lat: -17.8774,
         lng: 31.0341,
+        source: "demo",
       },
       {
         id: "ch_eastview",
@@ -66,8 +70,9 @@ export function createDemoState(): AppState {
         city: "Harare",
         lat: -17.7881,
         lng: 31.0918,
+        source: "demo",
       },
-    ],
+    ]),
     users: [
       {
         id: "usr_master",

@@ -1,12 +1,14 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { useStore } from "@/lib/store";
 import type { VisitCategory } from "@/lib/types";
 import { formatDateTime, uid } from "@/lib/utils";
 
 export default function SettingsPage() {
-  const { user, state, updateSettings, upsertCategory, resetDemo } = useStore();
+  const { user, state, live, updateSettings, upsertCategory, resetDemo, seedLiveCatalog } = useStore();
+  const [seedNote, setSeedNote] = useState("");
+  const [seeding, setSeeding] = useState(false);
   if (!user) return null;
   if (user.role !== "master_admin") return <p>Only the master administrator can change system settings.</p>;
 
@@ -41,6 +43,35 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="text-3xl font-semibold">System settings</h1>
+      <div className="glass mt-6 rounded-lg p-6">
+        <div className="text-xs uppercase tracking-[0.18em] text-cyan">Live directory</div>
+        <h2 className="mt-1 text-lg font-semibold">{live ? "Firebase is connected" : "Running on this device only"}</h2>
+        <p className="mt-2 text-sm text-white/60">
+          {live
+            ? "Members, visits, churches and accounts sync to Firestore. Seed the 168 field-GPS churches once so every signed-in device sees the same EZC directory."
+            : "Add NEXT_PUBLIC_FIREBASE_API_KEY and APP_ID in .env.local to share one flock across phones and the conference laptop."}
+        </p>
+        {live ? (
+          <button
+            type="button"
+            className="btn btn-cyan mt-4"
+            disabled={seeding}
+            onClick={async () => {
+              setSeeding(true);
+              const result = await seedLiveCatalog();
+              setSeeding(false);
+              setSeedNote(
+                result.ok
+                  ? `Seeded ${result.churches || 0} missing churches into the live directory.`
+                  : result.error || "Seed failed.",
+              );
+            }}
+          >
+            {seeding ? "Seeding…" : "Seed official churches"}
+          </button>
+        ) : null}
+        {seedNote ? <p className="mt-3 text-sm text-ok">{seedNote}</p> : null}
+      </div>
       <form className="glass mt-6 grid gap-4 rounded-lg p-6" onSubmit={saveSettings}>
         <input name="organizationName" defaultValue={state.settings.organizationName} />
         <input name="conferenceName" defaultValue={state.settings.conferenceName} />

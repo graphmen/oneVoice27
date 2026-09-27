@@ -2,10 +2,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() {
-      return request.auth != null;
+      return request.auth != null && request.auth.token.email is string;
+    }
+    function emailKey() {
+      return request.auth.token.email.lower();
     }
     function userDoc() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return get(/databases/$(database)/documents/users/$(emailKey())).data;
     }
     function isMaster() {
       return signedIn() && userDoc().role == 'master_admin';
@@ -16,10 +19,28 @@ service cloud.firestore {
     function isPastor() {
       return signedIn() && userDoc().role == 'pastor';
     }
+    function inMyChurches(churchId) {
+      return churchId in userDoc().churchIds;
+    }
+    function sharesChurch(data) {
+      return data.churchIds.hasAny(userDoc().churchIds);
+    }
 
     match /users/{userId} {
-      allow read: if signedIn() && (isMaster() || request.auth.uid == userId || isChurchAdmin());
-      allow write: if isMaster() || (isChurchAdmin() && request.resource.data.role in ['pastor', 'church_admin']);
+      allow read: if isMaster()
+        || (signedIn() && userId == emailKey())
+        || ((isChurchAdmin() || isPastor()) && sharesChurch(resource.data));
+      allow create: if isMaster()
+        || (signedIn() && userId == emailKey())
+        || (isChurchAdmin()
+          && request.resource.data.role in ['pastor', 'church_admin']
+          && sharesChurch(request.resource.data));
+      allow update: if isMaster()
+        || (signedIn() && userId == emailKey() && request.resource.data.role == resource.data.role)
+        || (isChurchAdmin()
+          && request.resource.data.role in ['pastor', 'church_admin']
+          && sharesChurch(request.resource.data));
+      allow delete: if isMaster();
     }
 
     match /territories/{id} {
@@ -29,7 +50,8 @@ service cloud.firestore {
 
     match /churches/{id} {
       allow read: if signedIn();
-      allow write: if isMaster();
+      allow create, delete: if isMaster();
+      allow update: if isMaster() || (isChurchAdmin() && id in userDoc().churchIds);
     }
 
     match /regions/{id} {
@@ -38,15 +60,28 @@ service cloud.firestore {
     }
 
     match /members/{id} {
-      allow read: if signedIn();
-      allow create, update: if isMaster() || isChurchAdmin();
-      allow delete: if isMaster();
+      allow read: if isMaster()
+        || (isChurchAdmin() && inMyChurches(resource.data.churchId))
+        || (isPastor() && resource.data.assignedPastorId == userDoc().id);
+      allow create: if isMaster()
+        || (isChurchAdmin() && inMyChurches(request.resource.data.churchId));
+      allow update: if isMaster()
+        || (isChurchAdmin() && inMyChurches(resource.data.churchId) && inMyChurches(request.resource.data.churchId))
+        || (isPastor() && resource.data.assignedPastorId == userDoc().id);
+      allow delete: if isMaster()
+        || (isChurchAdmin() && inMyChurches(resource.data.churchId));
     }
 
     match /visits/{id} {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.pastorId == request.auth.uid;
-      allow update: if isMaster() || isChurchAdmin() || resource.data.pastorId == request.auth.uid;
+      allow read: if isMaster()
+        || (isChurchAdmin() && inMyChurches(resource.data.churchId))
+        || (isPastor() && resource.data.pastorId == userDoc().id);
+      allow create: if isPastor() && request.resource.data.pastorId == userDoc().id;
+      allow update: if isMaster()
+        || (isChurchAdmin() && inMyChurches(resource.data.churchId))
+        || (isPastor() && resource.data.pastorId == userDoc().id);
+      allow delete: if isMaster()
+        || (isPastor() && resource.data.pastorId == userDoc().id && resource.data.status == 'scheduled');
     }
 
     match /categories/{id} {
@@ -55,8 +90,9 @@ service cloud.firestore {
     }
 
     match /notifications/{id} {
-      allow read: if signedIn() && resource.data.userId == request.auth.uid;
-      allow write: if signedIn();
+      allow read, update: if signedIn() && resource.data.userId == userDoc().id;
+      allow create: if signedIn();
+      allow delete: if isMaster();
     }
 
     match /auditLogs/{id} {

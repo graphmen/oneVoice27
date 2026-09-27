@@ -80,6 +80,7 @@ export interface Church {
   city: string;
   lat: number;
   lng: number;
+  source?: "demo" | "field_gps";
 }
 
 export interface UserAccount {

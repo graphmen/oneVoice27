@@ -256,7 +256,7 @@ export default function LeafletTerritoryMap({
 
       for (const c of churches) {
         const marker = L.circleMarker([c.lat, c.lng], {
-          radius: 8,
+          radius: churches.length > 20 ? 5 : 8,
           color: "#14001f",
           weight: 2,
           fillColor: "#9eecff",

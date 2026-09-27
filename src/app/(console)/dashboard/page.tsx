@@ -141,12 +141,18 @@ function ConferenceMonitor() {
         <Stat label="No flock" value={idle.length} warn={idle.length > 0} hint="Assign members to these shepherds" />
       </div>
 
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Stat label="Flock coverage" value={`${coverage.percent}%`} hint={`${coverage.overdue} overdue souls`} warn={coverage.percent < 80} compact />
         <Stat label="GPS-verified visits" value={verified.length} hint={`${verifiedRate(visits)}% of field visits`} compact />
         <Stat label="Bible studies" value={fruit.bibleStudy} compact />
         <Stat label="Baptism interest" value={fruit.baptismInterest} compact />
         <Stat label="Unassigned members" value={unassigned.length} warn={unassigned.length > 0} hint="No named shepherd" compact />
+        <Stat
+          label="Field GPS churches"
+          value={state.churches.filter((c) => c.source === "field_gps").length}
+          hint={`${state.churches.length} congregations on the books`}
+          compact
+        />
       </div>
 
       {(behind.length > 0 || watch.length > 0) && (

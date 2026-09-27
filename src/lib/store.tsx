@@ -9,8 +9,26 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { SESSION_KEY, STATE_KEY, GIS_DATASET } from "./constants";
 import { createDemoState } from "./demo-data";
+import { getFirebase, isFirebaseConfigured } from "./firebase";
+import {
+  ensureUserProfile,
+  liveDelete,
+  liveSetAudit,
+  liveSetCategory,
+  liveSetChurch,
+  liveSetMember,
+  liveSetNotification,
+  liveSetSettings,
+  liveSetUser,
+  liveSetVisit,
+  mergeLive,
+  pullLiveState,
+  seedLiveCatalog as seedLiveCatalogRemote,
+  subscribeLive,
+} from "./firestore-sync";
 import { attachOfficialGeometries, stripOfficialGeometry } from "./official-boundaries";
 import { remapLegacyTerritoryId, LEGACY_TERRITORY_IDS } from "./territory-seed";
 import type {
@@ -27,10 +45,13 @@ import { computeNextDue, formatLongDate, fullName, uid } from "./utils";
 
 type StoreContextValue = {
   ready: boolean;
+  live: boolean;
   user: UserAccount | null;
   state: AppState;
-  login: (email: string, password: string) => { ok: boolean; error?: string };
+  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => void;
+  importMembers: (members: Member[]) => { added: number };
+  seedLiveCatalog: () => Promise<{ ok: boolean; error?: string; churches?: number }>;
   upsertMember: (member: Member) => void;
   deleteMember: (id: string) => void;
   upsertUser: (account: UserAccount) => void;
@@ -52,8 +73,13 @@ type StoreContextValue = {
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
+function liveWrite(task: () => Promise<void>) {
+  if (!isFirebaseConfigured) return;
+  task().catch((err) => console.error("SHEPHERD360 sync", err));
+}
+
 function migrateState(parsed: AppState, fresh: AppState): AppState {
-  const churches = (parsed.churches || []).map((c) => {
+  const churches: Church[] = (parsed.churches || []).map((c) => {
     const seed = fresh.churches.find((f) => f.id === c.id);
     return {
       ...seed,
@@ -62,6 +88,10 @@ function migrateState(parsed: AppState, fresh: AppState): AppState {
       territoryId: remapLegacyTerritoryId(c.territoryId || seed?.territoryId),
     };
   });
+  const seenChurches = new Set(churches.map((c) => c.id));
+  for (const seed of fresh.churches) {
+    if (!seenChurches.has(seed.id)) churches.push(seed);
+  }
   const users = (parsed.users || []).map((u) => {
     const seed = fresh.users.find((f) => f.id === u.id);
     const sourceIds = u.territoryIds?.length ? u.territoryIds : seed?.territoryIds;
@@ -172,19 +202,75 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    const next = loadState();
-    setState(next);
-    setUser(loadUser(next.users));
-    setReady(true);
-    attachOfficialGeometries(next.territories)
+    const cached = loadState();
+    setState(cached);
+    attachOfficialGeometries(cached.territories)
       .then((territories) => {
         if (!cancelled) setState((s) => ({ ...s, territories }));
       })
       .catch(() => undefined);
+
+    if (!isFirebaseConfigured) {
+      setUser(loadUser(cached.users));
+      setReady(true);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const fb = getFirebase();
+    if (!fb) {
+      setUser(loadUser(cached.users));
+      setReady(true);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const unsub = onAuthStateChanged(fb.auth, async (fbUser) => {
+      try {
+        if (!fbUser?.email) {
+          if (!cancelled) {
+            setUser(null);
+            setReady(true);
+          }
+          return;
+        }
+        const profile = await ensureUserProfile(fbUser.email);
+        if (profile?.role === "master_admin") await seedLiveCatalogRemote();
+        const pulled = await pullLiveState();
+        if (cancelled) return;
+        setState((s) => mergeLive(s, pulled));
+        if (profile && profile.status === "active") {
+          setUser(profile);
+          localStorage.setItem(SESSION_KEY, profile.id);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("SHEPHERD360 live hydrate", err);
+        if (!cancelled) setUser(loadUser(cached.users));
+      } finally {
+        if (!cancelled) setReady(true);
+      }
+    });
     return () => {
       cancelled = true;
+      unsub();
     };
   }, []);
+
+  useEffect(() => {
+    if (!ready || !isFirebaseConfigured || !user) return;
+    return subscribeLive((patch) => {
+      setState((s) => ({
+        ...s,
+        ...patch,
+        settings: patch.settings ? { ...s.settings, ...patch.settings } : s.settings,
+        territories: s.territories,
+      }));
+    });
+  }, [ready, user]);
 
   useEffect(() => {
     if (!ready) return;
@@ -204,55 +290,71 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const login = useCallback(
-    (email: string, password: string) => {
-      const match = state.users.find(
-        (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.status === "active",
-      );
-      if (!match || match.password !== password) {
-        return { ok: false, error: "Invalid email or password." };
+    async (email: string, password: string) => {
+      const normalized = email.trim().toLowerCase();
+      const directory =
+        state.users.find((u) => u.email.toLowerCase() === normalized && u.status === "active") ||
+        createDemoState().users.find((u) => u.email.toLowerCase() === normalized && u.status === "active");
+
+      if (!isFirebaseConfigured) {
+        if (!directory || directory.password !== password) {
+          return { ok: false, error: "Invalid email or password." };
+        }
+        persistUser(directory);
+        return { ok: true };
       }
-      persistUser(match);
-      setState((s) => ({
-        ...s,
-        audit: [
-          {
-            id: uid("aud"),
-            actorId: match.id,
-            actorName: match.displayName,
-            action: "auth.login",
-            entityType: "user",
-            entityId: match.id,
-            createdAt: new Date().toISOString(),
-          },
-          ...s.audit,
-        ],
-      }));
+
+      const fb = getFirebase();
+      if (!fb) return { ok: false, error: "Firebase is not ready." };
+      try {
+        await signInWithEmailAndPassword(fb.auth, normalized, password);
+      } catch {
+        if (!directory || directory.password !== password) {
+          return { ok: false, error: "Invalid email or password." };
+        }
+        try {
+          await createUserWithEmailAndPassword(fb.auth, normalized, password);
+        } catch (err) {
+          const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+          if (code === "auth/email-already-in-use") {
+            return { ok: false, error: "Invalid email or password." };
+          }
+          return { ok: false, error: "Unable to sign in with the live directory." };
+        }
+      }
+      const profile = await ensureUserProfile(normalized, directory);
+      if (!profile || profile.status !== "active") {
+        return { ok: false, error: "Account is not active." };
+      }
+      persistUser(profile);
       return { ok: true };
     },
     [state.users],
   );
 
-  const logout = useCallback(() => persistUser(null), []);
+  const logout = useCallback(() => {
+    const fb = getFirebase();
+    if (fb) signOut(fb.auth).catch(() => undefined);
+    persistUser(null);
+  }, []);
 
   const log = useCallback(
     (action: string, entityType: string, entityId: string, metadata?: Record<string, unknown>) => {
       if (!user) return;
-      setState((s) => ({
-        ...s,
-        audit: [
-          {
-            id: uid("aud"),
-            actorId: user.id,
-            actorName: user.displayName,
-            action,
-            entityType,
-            entityId,
-            metadata,
-            createdAt: new Date().toISOString(),
-          },
-          ...s.audit,
-        ].slice(0, 400),
-      }));
+      const entry = {
+        id: uid("aud"),
+        actorId: user.id,
+        actorName: user.displayName,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        createdAt: new Date().toISOString(),
+      };
+      setState((s) => ({ ...s, audit: [entry, ...s.audit].slice(0, 400) }));
+      liveWrite(async () => {
+        await liveSetAudit(entry);
+      });
     },
     [user],
   );
@@ -265,6 +367,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ? s.members.map((m) => (m.id === member.id ? member : m))
           : [member, ...s.members],
       }));
+      liveWrite(async () => {
+        await liveSetMember(member);
+      });
       log("member.upsert", "member", member.id, { name: `${member.firstName} ${member.lastName}` });
     },
     [log],
@@ -278,6 +383,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         visits: s.visits.filter((v) => v.memberId !== id),
         notifications: s.notifications.filter((n) => n.href !== `/members/${id}` && n.href !== `/go/${id}`),
       }));
+      liveWrite(async () => {
+        await liveDelete("members", id);
+      });
       log("member.delete", "member", id);
     },
     [log],
@@ -292,6 +400,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           : [account, ...s.users],
       }));
       setUser((cur) => (cur?.id === account.id ? account : cur));
+      liveWrite(async () => {
+        await liveSetUser(account);
+      });
       log("user.upsert", "user", account.id, { role: account.role });
     },
     [log],
@@ -308,9 +419,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           assignedPastorIds: t.assignedPastorIds.filter((pid) => pid !== id),
         })),
       }));
+      liveWrite(async () => {
+        const account = state.users.find((u) => u.id === id);
+        if (account) await liveDelete("users", account.email.toLowerCase());
+      });
       log("user.delete", "user", id);
     },
-    [log],
+    [log, state.users],
   );
 
   const upsertChurch = useCallback(
@@ -321,6 +436,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ? s.churches.map((c) => (c.id === church.id ? church : c))
           : [church, ...s.churches],
       }));
+      liveWrite(async () => {
+        await liveSetChurch(church);
+      });
       log("church.upsert", "church", church.id);
     },
     [log],
@@ -343,6 +461,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         };
       });
       setUser((cur) => (cur ? { ...cur, churchIds: cur.churchIds.filter((cid) => cid !== id) } : cur));
+      liveWrite(async () => {
+        await liveDelete("churches", id);
+      });
       log("church.delete", "church", id);
     },
     [log],
@@ -380,6 +501,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ? s.categories.map((c) => (c.id === category.id ? category : c))
           : [...s.categories, category],
       }));
+      liveWrite(async () => {
+        await liveSetCategory(category);
+      });
       log("category.upsert", "category", category.id);
     },
     [log],
@@ -440,6 +564,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           createdAt: new Date().toISOString(),
           href: `/visits/${visit.id}`,
         };
+        const updatedMember = members.find((m) => m.id === visit.memberId);
+        const dropped = s.visits.filter(
+          (v) =>
+            happened &&
+            v.id !== visit.id &&
+            v.memberId === visit.memberId &&
+            v.pastorId === visit.pastorId &&
+            v.status === "scheduled",
+        );
+        liveWrite(async () => {
+          await liveSetVisit(visit);
+          if (updatedMember) await liveSetMember(updatedMember);
+          await liveSetNotification(note);
+          for (const old of dropped) await liveDelete("visits", old.id);
+        });
         return { ...s, visits, members, notifications: [note, ...s.notifications] };
       });
       log(
@@ -488,6 +627,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           createdAt: new Date().toISOString(),
           href: `/members/${memberId}`,
         };
+        liveWrite(async () => {
+          await liveSetVisit(visit);
+          const booked = members.find((m) => m.id === memberId);
+          if (booked) await liveSetMember(booked);
+          await liveSetNotification(note);
+        });
         return { ...s, visits, members, notifications: [note, ...s.notifications] };
       });
       log("visit.scheduled", "member", memberId, { scheduledAt, pastorId });
@@ -497,11 +642,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const cancelScheduledVisit = useCallback(
     (memberId: string) => {
-      setState((s) => ({
-        ...s,
-        members: s.members.map((m) => (m.id === memberId ? { ...m, scheduledVisitAt: undefined } : m)),
-        visits: s.visits.filter((v) => !(v.memberId === memberId && v.status === "scheduled")),
-      }));
+      setState((s) => {
+        const dropped = s.visits.filter((v) => v.memberId === memberId && v.status === "scheduled");
+        const members = s.members.map((m) => (m.id === memberId ? { ...m, scheduledVisitAt: undefined } : m));
+        liveWrite(async () => {
+          const member = members.find((m) => m.id === memberId);
+          if (member) await liveSetMember(member);
+          for (const visit of dropped) await liveDelete("visits", visit.id);
+        });
+        return {
+          ...s,
+          members,
+          visits: s.visits.filter((v) => !(v.memberId === memberId && v.status === "scheduled")),
+        };
+      });
       log("visit.schedule_cancelled", "member", memberId);
     },
     [log],
@@ -536,6 +690,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
                 : m,
             )
           : s.members;
+        liveWrite(async () => {
+          await liveSetVisit(next);
+          const member = members.find((m) => m.id === visit.memberId);
+          if (member) await liveSetMember(member);
+        });
         return { ...s, visits, members };
       });
       log(approve ? "visit.exception_approved" : "visit.exception_rejected", "visit", visitId);
@@ -544,19 +703,52 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   );
 
   const markNotificationRead = useCallback((id: string) => {
-    setState((s) => ({
-      ...s,
-      notifications: s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    }));
+    setState((s) => {
+      const notifications = s.notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
+      const note = notifications.find((n) => n.id === id);
+      if (note) {
+        liveWrite(async () => {
+          await liveSetNotification(note);
+        });
+      }
+      return { ...s, notifications };
+    });
   }, []);
 
   const updateSettings = useCallback(
     (patch: Partial<AppState["settings"]>) => {
-      setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
+      setState((s) => {
+        const settings = { ...s.settings, ...patch };
+        liveWrite(async () => {
+          await liveSetSettings(settings);
+        });
+        return { ...s, settings };
+      });
       log("settings.update", "settings", "global", patch);
     },
     [log],
   );
+
+  const importMembers = useCallback(
+    (members: Member[]) => {
+      setState((s) => ({ ...s, members: [...members, ...s.members] }));
+      liveWrite(async () => {
+        for (const member of members) await liveSetMember(member);
+      });
+      log("member.import", "member", "batch", { count: members.length });
+      return { added: members.length };
+    },
+    [log],
+  );
+
+  const seedLiveCatalog = useCallback(async () => {
+    const result = await seedLiveCatalogRemote();
+    if (result.ok) {
+      const pulled = await pullLiveState();
+      setState((s) => mergeLive(s, pulled));
+    }
+    return result;
+  }, []);
 
   const resetDemo = useCallback(() => {
     const fresh = createDemoState();
@@ -574,10 +766,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       ready,
+      live: isFirebaseConfigured,
       user,
       state,
       login,
       logout,
+      importMembers,
+      seedLiveCatalog,
       upsertMember,
       deleteMember,
       upsertUser,
@@ -602,6 +797,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       state,
       login,
       logout,
+      importMembers,
+      seedLiveCatalog,
       upsertMember,
       deleteMember,
       upsertUser,

@@ -1,4 +1,5 @@
 import { demoLinks, ezcIndex } from "./ezc-index";
+import { officialChurchIdByTerritory } from "./official-churches";
 import type { Territory } from "./types";
 
 export const LEGACY_TERRITORY_IDS: Record<string, string> = {
@@ -104,6 +105,7 @@ export function seedTerritories(): Territory[] {
     });
   }
 
+  const officialByTerritory = officialChurchIdByTerritory();
   for (const church of ezcIndex.churches) {
     const churchId =
       church.id === demoLinks.centralChurchTerritoryId
@@ -112,7 +114,7 @@ export function seedTerritories(): Territory[] {
           ? "ch_waterfalls"
           : church.id === demoLinks.eastviewChurchTerritoryId
             ? "ch_eastview"
-            : undefined;
+            : officialByTerritory.get(church.id);
     units.push({
       id: church.id,
       name: church.name,

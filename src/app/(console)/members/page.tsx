@@ -5,6 +5,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconPlus, IconSearch } from "@/components/icons";
 import { MemberActions } from "@/components/MemberActions";
+import { MemberImport } from "@/components/MemberImport";
 import { EmptyState, FilterChips, Pagination, StatusBadge } from "@/components/ui";
 import { useStore } from "@/lib/store";
 import type { Member, MemberType, Priority } from "@/lib/types";
@@ -213,6 +214,8 @@ function MembersInner() {
           )}
         </div>
       </div>
+
+      {canRegisterMembers(user) && user.role !== "pastor" && <MemberImport />}
 
       {conference && (
         <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
