@@ -18,7 +18,7 @@ type Props = {
   mode: MapMode;
   pin?: { lat: number; lng: number } | null;
   drawLatLngs?: { lat: number; lng: number }[];
-  flyTo?: { lat: number; lng: number; zoom?: number } | null;
+  flyTo?: { lat: number; lng: number; zoom?: number; token?: number } | null;
   className?: string;
   compactControl?: boolean;
   pinRadius?: number;
@@ -439,9 +439,16 @@ export default function LeafletTerritoryMap({
 
   useEffect(() => {
     if (fitPoints?.length) return;
-    if (!flyTo || !mapRef.current) return;
-    mapRef.current.flyTo([flyTo.lat, flyTo.lng], flyTo.zoom ?? 14, { duration: 0.8 });
-  }, [flyTo, ready, fitPoints]);
+    const map = mapRef.current;
+    if (!map || !flyTo) return;
+    map.invalidateSize();
+    map.flyTo([flyTo.lat, flyTo.lng], flyTo.zoom ?? 14, { duration: 0.7 });
+    const publish = () => {
+      const c = map.getCenter();
+      viewRef.current?.({ lat: c.lat, lng: c.lng, zoom: map.getZoom() });
+    };
+    map.once("moveend", publish);
+  }, [flyTo?.lat, flyTo?.lng, flyTo?.zoom, flyTo?.token, ready, fitPoints]);
 
   useEffect(() => {
     const map = mapRef.current;
