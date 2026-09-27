@@ -60,7 +60,7 @@ export default function ExceptionsPage() {
     (m) => m.status === "active" && (!validCoordinates(m.lat, m.lng) || (m.lat === 0 && m.lng === 0)),
   );
   const training = allVisits.filter((v) => v.trainingOverride && (v.status === "completed" || v.status === "exception_approved"));
-  const can = canApproveExceptions(user);
+  const can = user ? canApproveExceptions(user) : false;
   const needsApproval = state.settings.exceptionRequiresApproval !== false;
 
   const shown = useMemo(() => {
