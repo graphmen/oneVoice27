@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { EvaluationLegend, ShepherdPerformanceMatrix } from "@/components/ShepherdMatrix";
-import { StatCard } from "@/components/ui";
 import { useStore } from "@/lib/store";
+import { CONFERENCE_SHORT, SYSTEM_NAME } from "@/lib/constants";
 import {
   DUTY_LABEL,
   fieldCareVisits,
@@ -31,6 +31,15 @@ export default function ReportsPage() {
   const rows = shepherdMonitorRows(user, members, visits, state.churches, state.territories, state.users).filter(
     (row) => churchId === "all" || row.pastor.churchIds.includes(churchId),
   );
+  const churches = state.churches.filter((c) => user.role === "master_admin" || user.churchIds.includes(c.id));
+  const churchName = churchId === "all" ? "All churches" : churches.find((c) => c.id === churchId)?.name || "All churches";
+  const generated = new Date().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const byCategory = useMemo(() => {
     return state.categories.map((c) => ({
@@ -38,8 +47,6 @@ export default function ReportsPage() {
       count: completed.filter((v) => v.categoryId === c.id).length,
     }));
   }, [state.categories, completed]);
-
-  const churches = state.churches.filter((c) => user.role === "master_admin" || user.churchIds.includes(c.id));
 
   function exportReport() {
     downloadCsv("shepherd360-pastor-performance.csv", [
@@ -93,14 +100,22 @@ export default function ReportsPage() {
     ]);
   }
 
+  const kpis = [
+    { label: "Members", value: members.length, hint: churchName },
+    { label: "Field visits", value: completed.length, hint: `${training.length} training excluded` },
+    { label: "GPS verified", value: verified.length, hint: `${verifiedRate(visits)}% of field visits` },
+    { label: "Bible studies", value: fruit.bibleStudy, hint: `${fruit.baptismInterest} baptism interest` },
+    { label: "Overdue care", value: overdue.length, hint: "Households past due" },
+  ];
+
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="report-page mx-auto max-w-6xl">
+      <div className="no-print flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold">Reports</h1>
           <p className="mt-1 text-white/60">
-            Board-ready monitoring: flock coverage, GPS presence, and soul-winning fruit by shepherd. Training visits are
-            excluded from field counts.
+            Conference board copy: flock coverage, GPS presence, and fruit by shepherd. Training visits are excluded
+            from field counts.
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
@@ -122,51 +137,69 @@ export default function ReportsPage() {
           </div>
         </div>
       </div>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <StatCard label="Members" value={members.length} tone="cyan" />
-        <StatCard label="Field visits" value={completed.length} tone="ok" hint={`${training.length} training excluded`} />
-        <StatCard label="GPS verified" value={verified.length} tone="magenta" hint={`${verifiedRate(visits)}% of field visits`} />
-        <StatCard label="Bible studies" value={fruit.bibleStudy} tone="cyan" />
-        <StatCard label="Overdue care" value={overdue.length} tone="rose" />
-      </div>
-      <div className="glass mt-6 rounded-lg p-4 sm:p-5">
-        <h2 className="text-lg font-semibold">Pastor performance matrix</h2>
-        <p className="mt-1 text-sm text-white/50">
-          Same ratings as Monitor. Export CSV for the conference board. Print this page for a paper copy.
-        </p>
-        <EvaluationLegend />
-        <ShepherdPerformanceMatrix rows={rows} />
-      </div>
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="glass rounded-lg p-5">
-          <h2 className="font-semibold">Visits by category</h2>
-          <div className="mt-4 grid gap-3">
-            {byCategory.map((c) => (
-              <div key={c.name}>
-                <div className="flex justify-between text-sm">
-                  <span>{c.name}</span>
-                  <span className="text-cyan">{c.count}</span>
-                </div>
-                <div className="mt-1 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full bg-linear-to-r from-magenta to-cyan"
-                    style={{ width: `${completed.length ? (c.count / completed.length) * 100 : 0}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+
+      <div className="report-sheet mt-5 rounded-lg border border-white/10 bg-white/5 p-4 sm:p-6">
+        <header className="border-b border-white/10 pb-4">
+          <div className="text-xs uppercase tracking-[0.16em] text-cyan">
+            {state.settings.conferenceName || CONFERENCE_SHORT} · SHEPHERD360
           </div>
+          <h2 className="mt-1 text-2xl font-semibold">Pastoral visitation report</h2>
+          <p className="mt-1 text-sm text-white/60">
+            {churchName} · Generated {generated}
+          </p>
+          <p className="mt-2 hidden text-xs text-white/45 print:block">{SYSTEM_NAME}</p>
+        </header>
+
+        <div className="report-kpis mt-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
+          {kpis.map((kpi) => (
+            <div key={kpi.label} className="rounded-lg border border-white/10 bg-[#12001c]/40 px-3 py-3">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-white/50">{kpi.label}</div>
+              <div className="mt-1 text-2xl font-semibold">{kpi.value}</div>
+              <div className="mt-1 text-xs text-white/45">{kpi.hint}</div>
+            </div>
+          ))}
         </div>
-        <div className="glass rounded-lg p-5">
-          <h2 className="font-semibold">Members still waiting</h2>
-          <div className="mt-3 grid gap-2 text-sm">
-            {overdue.slice(0, 10).map((m) => (
-              <div key={m.id} className="flex justify-between rounded-2xl bg-white/5 px-3 py-2">
-                <span>{fullName(m)}</span>
-                <span className="text-rose">{m.memberType}</span>
-              </div>
-            ))}
-          </div>
+
+        <section className="mt-6">
+          <h3 className="text-lg font-semibold">Shepherd performance</h3>
+          <p className="no-print mt-1 text-sm text-white/50">
+            Same ratings as Monitor. Export CSV for the board, or print this sheet for a paper copy.
+          </p>
+          <EvaluationLegend />
+          <ShepherdPerformanceMatrix rows={rows} />
+        </section>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <section className="rounded-lg border border-white/10 p-4">
+            <h3 className="font-semibold">Visits by category</h3>
+            <div className="mt-3 grid gap-2">
+              {byCategory.length === 0 ? (
+                <p className="text-sm text-white/50">No field visits in this view yet.</p>
+              ) : (
+                byCategory.map((c) => (
+                  <div key={c.name} className="flex items-center justify-between gap-3 text-sm">
+                    <span>{c.name}</span>
+                    <span className="font-medium text-cyan">{c.count}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+          <section className="rounded-lg border border-white/10 p-4">
+            <h3 className="font-semibold">Members still waiting</h3>
+            <div className="mt-3 grid gap-2 text-sm">
+              {overdue.length === 0 ? (
+                <p className="text-white/50">No overdue households in this view.</p>
+              ) : (
+                overdue.slice(0, 10).map((m) => (
+                  <div key={m.id} className="flex justify-between gap-3 rounded-lg bg-white/5 px-3 py-2">
+                    <span>{fullName(m)}</span>
+                    <span className="text-rose">{m.memberType}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </div>

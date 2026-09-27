@@ -26,7 +26,7 @@ const RATINGS: DutyStatus[] = ["behind", "watch", "current", "idle"];
 
 export function EvaluationLegend() {
   return (
-    <div className="mt-4 grid gap-3 lg:grid-cols-3">
+    <div className="no-print mt-4 grid gap-3 lg:grid-cols-3">
       <div className="glass rounded-lg p-4">
         <div className="text-[11px] uppercase tracking-[0.16em] text-cyan">1. Coverage</div>
         <p className="mt-2 text-sm text-white/70">
@@ -67,7 +67,7 @@ export function ShepherdPerformanceMatrix({ rows }: { rows: Row[] }) {
 
   return (
     <>
-      <div className="mt-4 grid gap-3 md:hidden">
+      <div className="mt-4 grid gap-3 print-hidden md:hidden">
         {rows.map((row) => (
           <Link key={row.pastor.id} href={`/members?pastor=${row.pastor.id}`} className="rounded-lg bg-white/5 p-3">
             <div className="flex items-start justify-between gap-2">
@@ -102,9 +102,9 @@ export function ShepherdPerformanceMatrix({ rows }: { rows: Row[] }) {
           </Link>
         ))}
       </div>
-      <div className="table-scroll mt-4 hidden md:block">
-        <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="text-xs uppercase tracking-widest text-white/45">
+      <div className="report-table table-scroll mt-4 hidden md:block print:block">
+        <table className="w-full min-w-[860px] text-left text-sm print:min-w-0">
+          <thead className="text-xs uppercase tracking-wide text-white/45">
             <tr>
               <th className="pb-3">Shepherd</th>
               <th>Rating</th>
@@ -113,7 +113,7 @@ export function ShepherdPerformanceMatrix({ rows }: { rows: Row[] }) {
               <th>GPS proof</th>
               <th>Fruit</th>
               <th>Last field visit</th>
-              <th></th>
+              <th className="no-print"></th>
             </tr>
           </thead>
           <tbody>
@@ -143,7 +143,7 @@ export function ShepherdPerformanceMatrix({ rows }: { rows: Row[] }) {
                   </div>
                 </td>
                 <td className="py-3 text-white/60">{formatDate(row.lastVisitAt)}</td>
-                <td className="py-3 text-right">
+                <td className="no-print py-3 text-right">
                   <Link href={`/members?pastor=${row.pastor.id}`} className="text-cyan">
                     Flock
                   </Link>

@@ -95,7 +95,7 @@ export function Shell({ children }: { children: ReactNode }) {
         )}
         <aside
           className={cx(
-            "fixed inset-y-0 left-0 z-40 flex h-dvh max-h-dvh w-[min(18rem,88vw)] flex-col overflow-hidden border-r border-white/10 bg-[#12001c]/95 backdrop-blur-xl transition lg:sticky lg:top-0 lg:w-[280px] lg:bg-[#12001c]/85 lg:self-start",
+            "no-print fixed inset-y-0 left-0 z-40 flex h-dvh max-h-dvh w-[min(18rem,88vw)] flex-col overflow-hidden border-r border-white/10 bg-[#12001c]/95 backdrop-blur-xl transition lg:sticky lg:top-0 lg:w-[280px] lg:bg-[#12001c]/85 lg:self-start",
             open ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
           )}
         >
