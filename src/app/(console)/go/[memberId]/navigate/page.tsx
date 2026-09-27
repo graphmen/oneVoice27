@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { IconNav } from "@/components/icons";
@@ -26,7 +26,7 @@ const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerrit
 const OFF_ROUTE_M = 80;
 
 export default function NavigatePage() {
-  const { memberId } = useParams<{ memberId: string }>();
+  const memberId = useRouteParam("memberId");
   const { user, state } = useStore();
   const member = state.members.find((m) => m.id === memberId);
   const [fix, setFix] = useState<GpsFix | null>(null);

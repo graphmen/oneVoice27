@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { ChurchForm } from "@/components/ChurchForm";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { useStore } from "@/lib/store";
 import { canManageChurch } from "@/lib/utils";
 
 export default function EditChurchPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = useRouteParam("id");
   const router = useRouter();
   const { user, state, deleteChurch } = useStore();
   const church = state.churches.find((c) => c.id === id);

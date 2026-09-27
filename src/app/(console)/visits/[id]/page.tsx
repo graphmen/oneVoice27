@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { StatusBadge } from "@/components/ui";
 import { useStore } from "@/lib/store";
 import { fruitLabel, visitGrade } from "@/lib/care";
 import { canSeeConfidential, formatDateTime, fullName } from "@/lib/utils";
 
 export default function VisitDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = useRouteParam("id");
   const { user, state } = useStore();
   const visit = state.visits.find((v) => v.id === id);
   if (!user || !visit) return <p>Visit not found.</p>;

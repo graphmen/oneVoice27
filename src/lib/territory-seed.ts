@@ -17,16 +17,7 @@ export function remapLegacyTerritoryId(id?: string) {
 }
 
 export function seedTerritories(): Territory[] {
-  const tendai = ["usr_pastor_tendai"];
-  const grace = ["usr_pastor_grace"];
-  const john = ["usr_pastor_john"];
-
-  const assignedFor = (id: string) => {
-    if (id === demoLinks.harareCentralDistrictId || id === demoLinks.centralChurchTerritoryId) return tendai;
-    if (id === demoLinks.waterfallsDistrictId || id === demoLinks.waterfallsChurchTerritoryId) return grace;
-    if (id === demoLinks.highlandsDistrictId || id === demoLinks.eastviewChurchTerritoryId) return john;
-    return [];
-  };
+  const assignedFor = (_id: string) => [] as string[];
 
   const units: Territory[] = [
     {

@@ -12,7 +12,8 @@ import {
   type QueryConstraint,
   type Unsubscribe,
 } from "firebase/firestore";
-import { createDemoState } from "./demo-data";
+import { CONFERENCE_ENTRY_EMAIL } from "./constants";
+import { conferenceEntryAccount, createDemoState } from "./demo-data";
 import { getFirebase, isFirebaseConfigured } from "./firebase";
 import type {
   AppNotification,
@@ -338,8 +339,7 @@ export async function ensureUserProfile(email: string, fallback?: UserAccount) {
   const ref = doc(fb.db, "users", id);
   const snap = await getDoc(ref);
   if (snap.exists()) return snap.data() as UserAccount;
-  const seed = createDemoState().users.find((u) => u.email.toLowerCase() === id);
-  const profile = fallback || seed;
+  const profile = fallback || (id === CONFERENCE_ENTRY_EMAIL ? conferenceEntryAccount() : undefined);
   if (!profile) return null;
   const next = { ...profile, email: id, status: profile.status || "active" };
   await setDoc(ref, userToDoc(next), { merge: true });
@@ -359,12 +359,10 @@ export async function seedLiveCatalog() {
 
   const existingUsers = await readAll<UserAccount>("users");
   const haveUsers = new Set(existingUsers.map((u) => emailDocId(u.email)));
-  await writeChunk(
-    "users",
-    fresh.users
-      .filter((u) => !haveUsers.has(emailDocId(u.email)))
-      .map((u) => ({ id: emailDocId(u.email), data: userToDoc(u) })),
-  );
+  const conference = conferenceEntryAccount();
+  if (!haveUsers.has(emailDocId(conference.email))) {
+    await writeChunk("users", [{ id: emailDocId(conference.email), data: userToDoc(conference) }]);
+  }
 
   const cats = await readAll<VisitCategory>("categories");
   if (!cats.length) {
@@ -388,7 +386,7 @@ export async function seedLiveCatalog() {
   return {
     ok: true as const,
     churches: missing.length,
-    users: fresh.users.filter((u) => !haveUsers.has(emailDocId(u.email))).length,
+    users: haveUsers.has(emailDocId(conference.email)) ? 0 : 1,
   };
 }
 

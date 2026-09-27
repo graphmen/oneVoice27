@@ -10,8 +10,8 @@ import {
   type ReactNode,
 } from "react";
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { SESSION_KEY, STATE_KEY, GIS_DATASET } from "./constants";
-import { createDemoState } from "./demo-data";
+import { CONFERENCE_ENTRY_EMAIL, CONFERENCE_ENTRY_PASSWORD, SESSION_KEY, STATE_KEY, GIS_DATASET } from "./constants";
+import { conferenceEntryAccount, createDemoState } from "./demo-data";
 import { createStaffLogin, getFirebase, isFirebaseConfigured, sendStaffPasswordReset } from "./firebase";
 import {
   ensureUserProfile,
@@ -291,48 +291,55 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     else localStorage.removeItem(SESSION_KEY);
   };
 
-  const login = useCallback(
-    async (email: string, password: string) => {
-      const normalized = email.trim().toLowerCase();
-      const directory =
-        state.users.find((u) => u.email.toLowerCase() === normalized && u.status === "active") ||
-        createDemoState().users.find((u) => u.email.toLowerCase() === normalized && u.status === "active");
+  const login = useCallback(async (email: string, password: string) => {
+    const normalized = email.trim().toLowerCase();
+    const isConferenceEntry =
+      normalized === CONFERENCE_ENTRY_EMAIL && password === CONFERENCE_ENTRY_PASSWORD;
 
-      if (!isFirebaseConfigured) {
-        if (!directory || directory.password !== password) {
-          return { ok: false, error: "Invalid email or password." };
-        }
-        persistUser(directory);
-        return { ok: true };
+    if (!isFirebaseConfigured) {
+      if (!isConferenceEntry) {
+        return { ok: false, error: "This device needs the live conference directory. Use the conference entry account." };
       }
+      persistUser(conferenceEntryAccount());
+      return { ok: true };
+    }
 
-      const fb = getFirebase();
-      if (!fb) return { ok: false, error: "Firebase is not ready." };
-      try {
-        await signInWithEmailAndPassword(fb.auth, normalized, password);
-      } catch {
-        if (!directory || directory.password !== password) {
-          return { ok: false, error: "Invalid email or password." };
-        }
+    const fb = getFirebase();
+    if (!fb) return { ok: false, error: "Firebase is not ready." };
+    try {
+      await signInWithEmailAndPassword(fb.auth, normalized, password);
+    } catch (err) {
+      const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
+      if (
+        isConferenceEntry &&
+        (code === "auth/user-not-found" ||
+          code === "auth/invalid-credential" ||
+          code === "auth/invalid-login-credentials")
+      ) {
         try {
           await createUserWithEmailAndPassword(fb.auth, normalized, password);
-        } catch (err) {
-          const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
-          if (code === "auth/email-already-in-use") {
+        } catch (createErr) {
+          const createCode =
+            typeof createErr === "object" && createErr && "code" in createErr ? String(createErr.code) : "";
+          if (createCode === "auth/email-already-in-use") {
             return { ok: false, error: "Invalid email or password." };
           }
-          return { ok: false, error: "Unable to sign in with the live directory." };
+          return { ok: false, error: "Unable to open the conference entry account." };
         }
+      } else {
+        return { ok: false, error: "Invalid email or password." };
       }
-      const profile = await ensureUserProfile(normalized, directory);
-      if (!profile || profile.status !== "active") {
-        return { ok: false, error: "Account is not active." };
-      }
-      persistUser(profile);
-      return { ok: true };
-    },
-    [state.users],
-  );
+    }
+    const profile = await ensureUserProfile(
+      normalized,
+      isConferenceEntry ? conferenceEntryAccount() : undefined,
+    );
+    if (!profile || profile.status !== "active") {
+      return { ok: false, error: "This login is not on the conference directory yet. Ask conference to register you." };
+    }
+    persistUser(profile);
+    return { ok: true };
+  }, []);
 
   const logout = useCallback(() => {
     const fb = getFirebase();

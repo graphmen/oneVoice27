@@ -1,10 +1,19 @@
 {
   "hosting": {
-    "source": ".",
+    "site": "onevoice27-f9270",
+    "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+    "cleanUrls": true,
+    "trailingSlash": true,
+    "rewrites": [
+      { "source": "/go/*/navigate", "destination": "/go/_/navigate/index.html" },
+      { "source": "/go/**", "destination": "/go/_/index.html" },
+      { "source": "/members/*/edit", "destination": "/members/_/edit/index.html" },
+      { "source": "/members/**", "destination": "/members/_/index.html" },
+      { "source": "/pastors/*/edit", "destination": "/pastors/_/edit/index.html" },
+      { "source": "/churches/*/edit", "destination": "/churches/_/edit/index.html" },
+      { "source": "/visits/**", "destination": "/visits/_/index.html" }
+    ]
   },
   "firestore": {
     "rules": "firestore.rules",

@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { ShepherdForm } from "@/components/ShepherdForm";
 import { useStore } from "@/lib/store";
 import { canDeleteAccount, canManageAccount } from "@/lib/utils";
 
 export default function EditShepherdPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = useRouteParam("id");
   const router = useRouter();
   const { user, state, deleteUser } = useStore();
   const account = state.users.find((u) => u.id === id);

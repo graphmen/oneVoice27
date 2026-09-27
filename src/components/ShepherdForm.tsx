@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { HierarchyPicker, type HierarchyPick } from "@/components/HierarchyPicker";
 import { useStore } from "@/lib/store";
-import { DEMO_PASSWORD, EZC_CONFERENCE_ID } from "@/lib/constants";
+import { EZC_CONFERENCE_ID } from "@/lib/constants";
 import { demoLinks } from "@/lib/ezc-index";
 import type { Role, UserAccount } from "@/lib/types";
 import { uid } from "@/lib/utils";
@@ -65,7 +65,7 @@ export function ShepherdForm({
       return;
     }
     const password = String(fd.get("password") || "").trim();
-    if (!account && live && password.length < 6) {
+    if (!account && password.length < 6) {
       setError("Set a sign-in password of at least 6 characters. Give it to them in person or by WhatsApp.");
       return;
     }
@@ -73,7 +73,7 @@ export function ShepherdForm({
     const next: UserAccount = {
       id: account?.id || uid("usr"),
       email,
-      password: password || (!live ? DEMO_PASSWORD : undefined),
+      password: password || undefined,
       displayName: String(fd.get("displayName")),
       role: String(fd.get("role")) as Role,
       churchIds,
@@ -167,16 +167,14 @@ export function ShepherdForm({
           type="password"
           autoComplete="new-password"
           minLength={account ? undefined : 6}
-          required={!account && live}
-          placeholder={live ? "At least 6 characters" : DEMO_PASSWORD}
+          required={!account}
+          placeholder="At least 6 characters"
         />
       </label>
       <p className="sm:col-span-2 text-xs text-white/50">
         Assigned to {district?.name || "the selected district"}
-        {registeredChurch ? ` · ${registeredChurch.name}` : ""}.{" "}
-        {live
-          ? "They sign in on the web with this email and password. Church members do not get an account."
-          : `Local demo password: ${DEMO_PASSWORD}`}
+        {registeredChurch ? ` · ${registeredChurch.name}` : ""}. They sign in on the web with this email and
+        password. Church members do not get an account.
       </p>
       {error && <p className="sm:col-span-2 text-sm text-rose">{error}</p>}
       {resetNote && <p className="sm:col-span-2 text-sm text-ok">{resetNote}</p>}

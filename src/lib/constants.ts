@@ -11,12 +11,14 @@ export const ALL_THINGS_NEW = new Date("2026-09-05T11:00:00+02:00");
 export const HARVEST_MONTH = new Date("2027-09-01T00:00:00+02:00");
 
 export const SESSION_KEY = "ov27_session";
-export const STATE_KEY = "ov27_state_v1";
+export const STATE_KEY = "ov27_state_v2";
 export const OFFLINE_QUEUE_KEY = "ov27_offline_queue";
 export const GIS_DATASET = "ezc_official_v2";
 export const EZC_CONFERENCE_ID = "ter_zec";
 
-export const DEMO_PASSWORD = "Mission2027!";
+export const CONFERENCE_ENTRY_EMAIL = "master@onevoice27.org";
+export const CONFERENCE_ENTRY_PASSWORD = "Mission2027!";
+export const DEMO_PASSWORD = CONFERENCE_ENTRY_PASSWORD;
 
 export const PILLARS = [
   {

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import dynamic from "next/dynamic";
 import { BookVisit } from "@/components/BookVisit";
 import { MemberActions } from "@/components/MemberActions";
@@ -27,7 +28,7 @@ const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerrit
 });
 
 export default function MemberDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = useRouteParam("id");
   const router = useRouter();
   const { state, user, deleteMember } = useStore();
   const member = state.members.find((m) => m.id === id);

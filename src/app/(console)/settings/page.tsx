@@ -149,10 +149,10 @@ export default function SettingsPage() {
       <button
         className="btn btn-danger mt-6"
         onClick={() => {
-          if (confirm("Reset all demo data? This cannot be undone on this device.")) resetDemo();
+          if (confirm("Clear this device cache and sign out? Live conference records stay in Firebase.")) resetDemo();
         }}
       >
-        Reset demo data
+        Clear this device cache
       </button>
     </div>
   );

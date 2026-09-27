@@ -4,20 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
-import { DEMO_PASSWORD } from "@/lib/constants";
 import { useStore } from "@/lib/store";
-
-const DEMOS = [
-  { email: "master@onevoice27.org", label: "Master Administrator" },
-  { email: "admin.harare@onevoice27.org", label: "Church Administrator" },
-  { email: "pastor.tendai@onevoice27.org", label: "Pastor" },
-];
 
 export default function LoginPage() {
   const { login, ready, live, requestPasswordReset } = useStore();
   const router = useRouter();
-  const [email, setEmail] = useState(DEMOS[2].email);
-  const [password, setPassword] = useState(DEMO_PASSWORD);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [resetNote, setResetNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -63,20 +56,25 @@ export default function LoginPage() {
         <form onSubmit={onSubmit} className="glass rounded-lg p-6">
           <h1 className="text-2xl font-semibold">Sign in to SHEPHERD360</h1>
           <p className="mt-2 text-sm text-white/65">
-            Pastors, church administrators and conference leaders use role-based access. Location is never collected at
-            login.{" "}
-            {live
-              ? "If conference or a church clerk registered you, use the email and password they gave you."
-              : "This device is on the local demo store until Firebase keys are set."}
+            East Zimbabwe Conference holds the one conference entry account. Pastors and church clerks sign in with the
+            email and password conference registered for them. Church members do not get an account.
           </p>
           <label className="mt-5 block text-sm text-white/70">Email</label>
-          <input className="mt-1" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input
+            className="mt-1"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="username"
+            required
+          />
           <label className="mt-4 block text-sm text-white/70">Password</label>
           <input
             className="mt-1"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
             required
           />
           {error && <p className="mt-3 text-sm text-rose">{error}</p>}
@@ -95,30 +93,10 @@ export default function LoginPage() {
             </button>
           ) : (
             <p className="mt-3 text-xs text-white/50">
-              Local demo has no email reset. Ask conference to set a new password on the shepherd record.
+              This device is not connected to the live conference directory. Add Firebase keys before field use.
             </p>
           )}
         </form>
-        <div className="mt-4 glass rounded-lg p-4 text-sm">
-          <div className="text-xs uppercase tracking-[0.18em] text-white/45">Demo access</div>
-          <p className="mt-1 text-white/60">Password for all demo roles: {DEMO_PASSWORD}</p>
-          <div className="mt-3 grid gap-2">
-            {DEMOS.map((d) => (
-              <button
-                key={d.email}
-                type="button"
-                className="btn btn-ghost h-auto min-h-11 w-full flex-col items-start gap-0.5 py-2 text-left sm:flex-row sm:items-center sm:justify-between"
-                onClick={() => {
-                  setEmail(d.email);
-                  setPassword(DEMO_PASSWORD);
-                }}
-              >
-                <span>{d.label}</span>
-                <span className="break-all text-xs text-cyan">{d.email}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

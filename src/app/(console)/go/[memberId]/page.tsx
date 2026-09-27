@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { GeofenceRadar } from "@/components/GeofenceRadar";
@@ -25,7 +26,7 @@ const LeafletTerritoryMap = dynamic(() => import("@/components/gis/LeafletTerrit
 });
 
 export default function GoVisitPage() {
-  const { memberId } = useParams<{ memberId: string }>();
+  const memberId = useRouteParam("memberId");
   const { user, state, recordVisit, upsertMember } = useStore();
   const router = useRouter();
   const member = state.members.find((m) => m.id === memberId);

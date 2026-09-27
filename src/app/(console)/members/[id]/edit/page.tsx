@@ -1,13 +1,14 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useRouteParam } from "@/lib/route-id";
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { MemberForm } from "@/components/MemberForm";
 import { useStore } from "@/lib/store";
 import { canDeleteMember, canEditMember, fullName } from "@/lib/utils";
 
 export default function EditMemberPage() {
-  const { id } = useParams<{ id: string }>();
+  const id = useRouteParam("id");
   const router = useRouter();
   const { user, state, deleteMember } = useStore();
   const member = state.members.find((m) => m.id === id);
